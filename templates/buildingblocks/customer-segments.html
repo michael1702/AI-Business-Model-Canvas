@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Segments</title>
+    <link rel="stylesheet" href="../../static/styles/building-block.css">
+    <link rel="shortcut icon" type="image/x-icon" href="../static/favicon/favicon-32x32.ico">
+    <link rel="icon" type="image/png" sizes="96x96" href="../static/favicon/favicon-96x96.png">
+    <script>
+        // Include the data from sessionStorage
+        let inputData = JSON.parse(sessionStorage.getItem("inputData")) || {};
+    </script>
+</head>
+<body>
+    <div class="topbar">
+        <h1>Customer Segments</h1>
+        <button class="AI-button" onclick="toggleChat()">AI</button>
+    </div>
+    <div id="sidebar" class="sidebar">
+        <button id="sidebar-toggle" class="sidebar-toggle" onclick="toggleSidebar()">&#9776;</button>
+        <nav class="sidebar-menu">
+          <ul>
+            <li><a href="/">Main Page</a></li>
+            <li class="submenu">
+              <a href="#building-blocks" onclick="toggleBuildingBlocks()">
+                Building Blocks
+                <span id="building-blocks-arrow" class="arrow">&#x25B6;</span>
+              </a>
+              <ul id="building-blocks-menu" style="display: none;">
+                <li><a href="/key-partners">Key Partners</a></li>
+                <li><a href="/key-activities">Key Activities</a></li>
+                <li><a href="/key-resources">Key Resources</a></li>
+                <li><a href="/value-propositions">Value Propositions</a></li>
+                <li><a href="/customer-segments">Customer Segments</a></li>
+                <li><a href="/customer-relationships">Customer Relationships</a></li>
+                <li><a href="/channels">Channels</a></li>
+                <li><a href="/cost-structure">Cost Structure</a></li>
+                <li><a href="/revenue-streams">Revenue Streams</a></li>
+              </ul>
+            </li>
+    
+            <li><a href="/process">Process</a></li>
+            <li><a href="/value-proposition-canvas">Value Proposition Canvas</a></li>
+          </ul>
+        </nav>
+      </div>
+    <div id="main-content" class="container">
+        <button class="back-button" onclick="window.history.back()">&#8249;</button>
+        <div class="building-block-wrapper">
+            <div class="building-block-block">
+                <div class="building-block" id="building-block">
+                    <div class="block-header">
+                      <span class="block-title" id="block-title">Building Block</span>
+                    </div>
+                    <div class="block-input">
+                      <textarea name="block-details" id="block-details" placeholder="Enter your building block details here..."></textarea>
+                      <button class="save-button">Save Changes</button>
+                    </div>
+                  </div>
+            </div>
+
+            <div class="buttons-popup-wrapper">
+                <div class="buttons-wrapper">
+                  <button class="popup-button" data-target="how-to-fill">Description</button>
+                  <button class="popup-button" data-target="what-to-remember">What to remember</button>
+                  <button class="popup-button" data-target="trigger-questions">Trigger Questions</button>
+                  <button class="popup-button" data-target="value-proposition-canvas">Value Proposition Canvas</button>
+                  <button class="popup-button" data-target="notes">Notes</button>
+                </div>
+                <div id="how-to-fill" class="popup-text" style="display:none"><h3>Description of Customer Segments</h3> <p>The Customer Segments Building Block identifies the different groups of people or organizations that an enterprise aims to reach and serve. To better satisfy customers, a company may group them into distinct segments with common needs, behaviors, or attributes. A business model may define one or several large or small customer segments, and an organization must make a conscious decision about which segments to serve and which segments to ignore. Once this decision is made, a business model can be carefully designed around a strong understanding of specific customer needs.</p>
+                <p>There are different types of Customer Segments. Here are some examples:</p>
+                  <h4>Mass market</h4>
+                  <p>Business models focused on mass markets don’t distinguish between different Customer Segments. The Value Propositions, Distribution Channels, and Customer Relationships all focus on one large group of customers with broadly similar needs and problems. This type of business model is often found in the consumer electronics sector.</p>
+                  <h4>Niche market</h4>
+                  <p>Business models targeting niche markets cater to specific, specialized Customer Segments. The Value Propositions, Distribution Channels, and Customer Relationships are all tailored to the specific requirements of a niche market. Such business models are often found in supplier-buyer relationships. For example, many car part manufacturers depend heavily on purchases from major automobile manufacturers.</p>
+                  <h4>Segmented</h4>
+                  <p>Some business models distinguish between market segments with slightly different needs and problems. The retail arm of a bank like Credit Suisse, for example, may distinguish between a large group of customers and a smaller group of clients. Both segments have similar but varying needs and problems. This has implications for the other building blocks of Credit Suisse’s business model. Consider Micro Precision Systems, which specializes in providing outsourced micromechanical design and manufacturing solutions. It serves three different Customer Segments—the watch industry, the medical industry, and the industrial automation sector—and offers each slightly different Value Propositions.</p>
+                  <h4>Diversified</h4>
+                  <p>An organization with a diversified customer business model serves two unrelated Customer Segments with very different needs and problems. For example, in 2006 Amazon.com decided to diversify its retail business by selling “cloud computing” services: online storage space and on-demand server usage. Thus it started catering to a totally different Customer Segment—Web companies—with a totally different Value Proposition. The strategic rationale behind this diversification can be found in Amazon.com’s powerful IT infrastructure, which can be shared by its retail sales operations and the new cloud computing service unit.</p>
+                </div>
+                  <div id="what-to-remember" class="popup-text" style="display:none"><h3>What to remember about Customer Segments</h3> <p>What to Remember When Developing the Customer Segments Building Block:
+                  When developing the Customer Segments Building Block, keep in mind: </p>
+                  <ul>
+                    <li>Customers are the heart of any business model, and without profitable customers, no company can survive for long. </li>
+                    <li>A business model should group customers into distinct segments with common needs, behaviors, or other attributes.
+                    <li>A business model should make a conscious decision about which segments to serve and which to ignore.
+                    <li>Different customer segments require different offers, distribution channels, types of relationships, and pricing models.
+                    <li>Business models can target mass markets, niche markets, segmented markets, diversified markets, or multi-sided platforms, each with its unique set of customer needs and problems.
+                    <li>Careful design of the business model around a strong understanding of specific customer needs is crucial to success.
+                    </ul>
+                    <strong>To define your Customer Segments and build a solid value propositino with it, visit the Value Proposition Canvas! </strong>
+                  </div>
+                <div id="trigger-questions" class="popup-text" style="display:none"><h3>Trigger Questions for Customer Segments</h3>
+                  <ul>
+                    <li>For whom are we creating value?</li>
+                    <li>Who are our most important customers?</li>
+                    </ul>
+                  </div>
+                  <div id="value-proposition-canvas" class="popup-text" style="display:none">
+                    <h2><a href="/value-proposition-canvas">Value Proposition Canvas</a></h2>
+                    Click on the title of this page to refine your Value Proposition and Customer Segments by developing your Business Model to align customer needs with your value offerings. <br> Fill in the Value Proposition Canvas, and let ChatGPT help you by providing example value propositions, tips, or evaluations tailored to your use case. <br> Use the trigger questions on this page to guide your analysis.
+                  </div>
+                <div id="notes" class="popup-text" style="display:none">
+                  <h3>Take notes</h3>
+                  <textarea name="note-details" id="note-details" class="notes-textarea" placeholder="Take notes for prototyping, saving information or keeping track of tasks..."></textarea>
+                </div>
+          </div>
+    </div>
+      <!-- AI Area -->
+      <div id="overlay" class="overlay" onclick="toggleButtons()"></div>
+      <div id="buttons-container" class="buttons-container">
+          <div class="overlay-content">
+            <div class="warning-sign-container">
+              <div class="warning">
+                <span class="warning-sign">&#9888;</span>                
+                <span class="warning-text">ChatGPT is a language model and may provide unreliable information. Evaluate the model outputs critically.</span>
+              </div>
+            </div>
+              <div class="methodological-aid">
+                  <h2>Procedual support from AI:</h2>
+                  <div class="method-buttons">
+                      <button id="tips-button" class="tips-button">Tips from ChatGPT</button>
+                  </div>
+              </div>
+              <div class="contextual-aid">
+                  <h2>Contextual support from AI:</h2>
+                  <div class="context-buttons">
+                    <button id="prefill-button" class="prefill-button">Prefill current Building Block</button>
+                    <button id="evaluate-button" class="evaluate-button">Evaluate Current Idea</button>
+                    </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Chat container -->
+      <div id="chat-container" class="chat-container">
+          <div class="chat">
+              <div class="chat-header">
+                  <span class="chat-header-title">Chat with ChatGPT</span>
+                  <button onclick="toggleChat()" class="close-button">Close</button>
+              </div>
+              <div id="chat-history" class="chat-history"></div>
+              <div class="chat-input-container">
+                  <input id="chat-input" class="chat-input" placeholder="Type your message here..." onkeydown="sendMessage(event)">
+                  <button id="send-button" class="send-button"> Send </button>
+              </div>
+          </div>
+          <div id="loading-circle-container" class="loading-circle-container">
+              <div id="loading-circle" class="loading-circle"></div>
+          </div>
+      </div>
+
+    <script src="../static/scripts/building-block.js"> </script>
+    <script>
+    //Event Listener, welche den building block angeben
+    const blockType = "customer-segments"; 
+    const blockTitle = "Customer Segments";
+    loadSavedDetails(blockType, blockTitle);
+    document.querySelector(".save-button").addEventListener("click", () => {
+        saveDetails(blockType);
+    });
+    document.getElementById("evaluate-button").addEventListener("click", async () => {
+        await evaluateBuildingBlock(blockType);
+    });
+    document.getElementById("tips-button").addEventListener("click", async () => {
+        await tipsBuildingBlock(blockType, blockTitle);
+    });
+
+    document.getElementById("prefill-button").addEventListener("click", async () => {
+        await prefillBuildingBlock(blockType, blockTitle);
+    });
+
+    </script>  
+</body>
+</html>

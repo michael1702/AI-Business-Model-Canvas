@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Key Resources</title>
+    <link rel="stylesheet" href="../../static/styles/building-block.css">
+    <link rel="shortcut icon" type="image/x-icon" href="../static/favicon/favicon-32x32.ico">
+    <link rel="icon" type="image/png" sizes="96x96" href="../static/favicon/favicon-96x96.png">
+
+    <script>
+        // Include the data from sessionStorage
+        let inputData = JSON.parse(sessionStorage.getItem("inputData")) || {};
+    </script>
+</head>
+<body>
+    <div class="topbar">
+        <h1>Key Resources</h1>
+        <button class="AI-button" onclick="toggleChat()">AI</button>
+      </div>
+    <div id="sidebar" class="sidebar">
+        <button id="sidebar-toggle" class="sidebar-toggle" onclick="toggleSidebar()">&#9776;</button>
+        <nav class="sidebar-menu">
+          <ul>
+            <li><a href="/">Main Page</a></li>
+            <li class="submenu">
+              <a href="#building-blocks" onclick="toggleBuildingBlocks()">
+                Building Blocks
+                <span id="building-blocks-arrow" class="arrow">&#x25B6;</span>
+              </a>
+              <ul id="building-blocks-menu" style="display: none;">
+                <li><a href="/key-partners">Key Partners</a></li>
+                <li><a href="/key-activities">Key Activities</a></li>
+                <li><a href="/key-resources">Key Resources</a></li>
+                <li><a href="/value-propositions">Value Propositions</a></li>
+                <li><a href="/customer-segments">Customer Segments</a></li>
+                <li><a href="/customer-relationships">Customer Relationships</a></li>
+                <li><a href="/channels">Channels</a></li>
+                <li><a href="/cost-structure">Cost Structure</a></li>
+                <li><a href="/revenue-streams">Revenue Streams</a></li>
+              </ul>
+            </li>
+            <li><a href="/process">Process</a></li>
+            <li><a href="/value-proposition-canvas">Value Proposition Canvas</a></li>
+          </ul>
+        </nav>
+      </div>
+    <div id="main-content" class="container">
+        <button class="back-button" onclick="window.history.back()">&#8249;</button>
+        <div class="building-block-wrapper">
+            <div class="building-block-block">
+                <div class="building-block" id="building-block">
+                    <div class="block-header">
+                      <span class="block-title" id="block-title">Building Block</span>
+                    </div>
+                    <div class="block-input">
+                      <textarea name="block-details" id="block-details" placeholder="Enter your building block details here..."></textarea>
+                      <button class="save-button">Save Changes</button>
+                    </div>
+                  </div>
+                  
+            </div>
+
+            <div class="buttons-popup-wrapper">
+              <div class="buttons-wrapper">
+                <div class="buttons-wrapper">
+                  <button class="popup-button" data-target="how-to-fill">Description</button>
+                  <button class="popup-button" data-target="what-to-remember">What to remember</button>
+                  <button class="popup-button" data-target="trigger-questions">Trigger Questions</button>
+                  <button class="popup-button" data-target="notes">Notes</button>
+                </div>
+                <div id="how-to-fill" class="popup-text" style="display:none"><h3>Description of Key Resources</h3>
+                  <p>The Key Resources Building Block describes the most important assets needed to create and offer a Value Proposition, reach markets, maintain relationships with Customer Segments, and earn revenues. Key Resources can be physical, financial, intellectual, or human, and they can be owned or leased by the company or acquired from key partners. Depending on the type of business model, different Key Resources are required. </p>
+                  <p>Physical assets, such as manufacturing facilities, buildings, vehicles, machines, systems, point-of-sale systems, and distribution networks, are vital to capital-intensive businesses, such as retailers like Walmart and Amazon.com. Intellectual resources, such as brands, proprietary knowledge, patents and copyrights, partnerships, and customer databases, are critical to the success of consumer goods companies like Nike and Sony, as well as technology firms like Microsoft and SAP. In contrast, human resources are particularly prominent in knowledge-intensive and creative industries, such as pharmaceutical componies. Some business models call for financial resources and/or financial guarantees, such as cash, lines of credit, or a stock option pool for hiring key employees, and companies may leverage financial resources to provide vendor financing.</p></div>
+                <div id="what-to-remember" class="popup-text" style="display:none"><h3>What to remember about Key Resources</h3>
+                  <p>When filling in the Key Resources Building Block, it is important to remember the following:</p>
+                  <ul>
+                    <li>Identify the most critical assets required to create and offer a Value Proposition, reach markets, maintain relationships with Customer Segments, and earn revenues.</li>
+                    <li>Evaluate which Key Resources are unique or rare, and how they provide a competitive advantage.</li>
+                    <li>Optimize Key Resources to maximize their value to the business model. This may involve assessing how Key Resources can be used more effectively to generate revenue or increase efficiency.</li>
+                    <li>Protect or defend Key Resources against competition through patents, trademarks, or trade secrets.</li>
+                    <li>Analyze the overall impact of Key Resources on the business model and how they contribute to the creation of value for Customer Segments and the generation of revenue.</li>
+                  </ul>
+                </div>
+                <div id="trigger-questions" class="popup-text" style="display:none"><h3>Trigger Questions for Key Resources</h3>
+                  <ul>
+                    <li>What Key Resources do our Value Propositions require?</li>
+                    <li>What Key Resources do our Distribution Channels require?</li>
+                    <li>What Key Resources do our Customer Relationships require?</li>
+                    <li>What Key Resources do our Revenue Streams require?</li>
+                  </ul>
+                </div>
+                <div id="notes" class="popup-text" style="display:none">
+                  <h3>Take notes</h3>
+                  <textarea name="note-details" id="note-details" class="notes-textarea" placeholder="Take notes for prototyping, saving information or keeping track of tasks..."></textarea>
+                </div>
+          </div>
+        </div>
+    </div>
+
+         <!-- Chat container -->
+         <div id="overlay" class="overlay" onclick="toggleChat()"></div>
+         <div id="chat-container" class="chat-container">
+            <div class="chat-header">
+            <span class="chat-header-title">Chat with ChatGPT</span>
+            <button onclick="toggleChat()" class="close-button">Close</button>
+            </div>
+            <div id="chat-history" class="chat-history"></div>
+            <div class="chat-input-container">
+            <input id="chat-input" class="chat-input" placeholder="Type your message here..." onkeydown="sendMessage(event)">
+            <button id="send-button" class="send-button"> Send </button>
+            </div>
+            <div class="extra-buttons">
+                <button id="tips-button" class="tips-button">Tips from ChatGPT</button>
+                <button id="prefill-button" class="prefill-button">Prefill current Building Block</button>
+                <button id="evaluate-button" class="evaluate-button" onclick="evaluateBuildingBlock()">Evaluate Current Idea</button>
+            </div>
+            <div id="loading-circle-container" class="loading-circle-container">
+              <div id="loading-circle" class="loading-circle"></div>
+            </div>
+        </div>
+
+    <script src="../static/scripts/building-block.js"> </script>
+    <script>
+    //Event Listener, welche den building block angeben
+    const blockType = "key-resources"; 
+    const blockTitle = "Key Resources";
+    loadSavedDetails(blockType, blockTitle);
+    document.querySelector(".save-button").addEventListener("click", () => {
+        saveDetails(blockType);
+    });
+    document.getElementById("evaluate-button").addEventListener("click", async () => {
+        await evaluateBuildingBlock(blockType);
+    });
+    document.getElementById("tips-button").addEventListener("click", async () => {
+        await tipsBuildingBlock(blockType, blockTitle);
+    });
+
+    document.getElementById("prefill-button").addEventListener("click", async () => {
+        await prefillBuildingBlock(blockType, blockTitle);
+    });
+    </script>  
+</body>
+</html>

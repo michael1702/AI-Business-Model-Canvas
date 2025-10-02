@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business Model Canvas with GPT-3</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+  <link rel="shortcut icon" type="image/x-icon" href="../static/favicon/favicon-32x32.ico">
+  <link rel="icon" type="image/png" sizes="96x96" href="../static/favicon/favicon-96x96.png">
+  <script>
+      let inputData = JSON.parse(sessionStorage.getItem("inputData")) || {};  
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+
+<body>
+  <div class="topbar">
+    <h1>Business Model Canvas with GPT-3</h1>
+    <button class="AI-button" onclick="toggleChat()">AI</button>
+  </div>
+  
+  <div id="sidebar" class="sidebar">
+    <button id="sidebar-toggle" class="sidebar-toggle" onclick="toggleSidebar()">&#9776;</button>
+    <nav class="sidebar-menu">
+      <ul>
+        <li><a href="/">Main Page</a></li>
+        <li class="submenu">
+          <a href="#building-blocks" onclick="toggleBuildingBlocks()">
+            Building Blocks
+            <span id="building-blocks-arrow" class="arrow">&#x25B6;</span>
+          </a>
+          <ul id="building-blocks-menu" style="display: none;">
+            <li><a href="/key-partners">Key Partners</a></li>
+            <li><a href="/key-activities">Key Activities</a></li>
+            <li><a href="/key-resources">Key Resources</a></li>
+            <li><a href="/value-propositions">Value Propositions</a></li>
+            <li><a href="/customer-segments">Customer Segments</a></li>
+            <li><a href="/customer-relationships">Customer Relationships</a></li>
+            <li><a href="/channels">Channels</a></li>
+            <li><a href="/cost-structure">Cost Structure</a></li>
+            <li><a href="/revenue-streams">Revenue Streams</a></li>
+          </ul>
+        </li>
+        <li><a href="/process">Process</a></li>
+        <li><a href="/value-proposition-canvas">Value Proposition Canvas</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div id="main-content" class="container">
+      <div class="business-idea">
+        <label for="business-idea-input">Product Idea: </label>
+        <input type="text" id="product-idea" placeholder="e.g. Project Management Tool, Fitness App, Unicorn food delivery service" onblur="saveProductIdea()">
+      </div>      
+
+      <div class="button-container">
+        <button id="help-button" type="button" onclick="toggleHelpWindow()">Getting Started</button>
+        <button id="edit-button" type="button" onclick="toggleEditMode()">Edit Building Blocks</button>
+        <div class="dropdown-container">
+          <select id="canvas-select" class="canvas-dropdown" onchange="updateCanvasTemplate()">
+            <option value="" disabled selected hidden>Choose Template...</option>
+            <option value="bmc">Business Model Canvas</option>
+            <option value="lean">Lean Canvas</option>
+            <option value="environmental">Environmental Layer TLBMC</option>
+            <option value="social">Social Layer TLBMC</option>
+          </select>
+        </div>
+        <button id="notes-button" type="button" onclick="toggleNoteWindow()">Notes</button>
+
+      </div>
+      
+      <div id="bmc">
+
+        <div class="building-block key-partners">
+          <h2>
+            <a href="key-partners" class="block-title"  onclick="editTitle(event)">
+              <span id="key-partners-title">Key Partners</span>
+            </a>
+          </h2>                  
+          <div class="input-wrapper">
+            <textarea name="key-partners-details" id="key-partners-details" class="block-title" placeholder="Enter your key partners details here..."></textarea>
+          </div>
+        </div>
+        <div class="building-block key-activities">
+          <h2>
+            <a href="key-activities" class="block-title"  onclick="editTitle(event)">
+              <span id="key-activities-title">Key Activities</span>
+            </a>          
+          </h2>
+          <div class="input-wrapper">
+            <textarea name="key-activities-details" id="key-activities-details" class="block-title" placeholder="Enter your key activities details here..."></textarea>          </div>
+        </div>
+        <div class="building-block key-resources">
+          <h2>
+            <a href="key-resources" class="block-title"  onclick="editTitle(event)">
+              <span id="key-resources-title">Key Resources</span>
+            </a>          
+          </h2>
+          <div class="input-wrapper">
+            <textarea name="key-resources-details" id="key-resources-details" class="block-title" placeholder="Enter your key resources details here..."></textarea>
+          </div>
+        </div>
+        <div class="building-block value-propositions">
+          <h2>
+            <a href="value-propositions" class="block-title" onclick="editTitle(event)">
+              <span id="value-propositions-title">Value Propositions</span>
+            </a>
+          </h2>
+          <div class="input-wrapper">
+            <textarea name="value-propositions-details" id="value-propositions-details" class="block-title"  placeholder="Enter your value propositions details here..."></textarea>
+          </div>
+        </div>
+        <div class="building-block customer-relationships">
+          <h2>
+            <a href="customer-relationships" class="block-title"  onclick="editTitle(event)">
+              <span id="customer-relationships-title">Customer Relationships</span>
+            </a>
+           </h2>
+          <div class="input-wrapper">
+            <textarea name="customer-relationships-details" id="customer-relationships-details" class="block-title" placeholder="Enter your customer relationships details here..."></textarea>
+          </div>
+        </div>
+        <div class="building-block channels">
+          <h2>
+            <a href="channels" class="block-title"  onclick="editTitle(event)">
+              <span id="channels-title">Channels</span>
+            </a>
+          </h2>
+          <div class="input-wrapper">
+            <textarea name="channels-details" id="channels-details" class="block-title" placeholder="Enter your channels details here..."></textarea>
+          </div>
+        </div>
+        <div class="building-block customer-segments">
+          <h2>
+            <a href="customer-segments" class="block-title"  onclick="editTitle(event)">
+              <span id="customer-segments-title">Customer Segments</span>
+            </a>
+          </h2>
+          <div class="input-wrapper">
+            <textarea name="customer-segments-details" id="customer-segments-details" class="block-title" placeholder="Enter your customer segments details here..."></textarea>
+          </div>
+        </div>
+        <div class="building-block cost-structure">
+          <h2>
+            <a href="cost-structure" class="block-title"  onclick="editTitle(event)">
+              <span id="cost-structure-title">Cost Structure</span>
+            </a>
+          </h2>
+          <div class="input-wrapper">
+            <textarea name="cost-structure-details" id="cost-structure-details" class="block-title" placeholder="Enter your cost structure details here..."></textarea>
+          </div>
+        </div>
+        <div class="building-block revenue-streams">
+          <h2>
+            <a href="revenue-streams" class="block-title"  onclick="editTitle(event)">
+              <span id="revenue-streams-title">Revenue Streams</span>
+            </a>
+          </h2>
+          <div class="input-wrapper">
+            <textarea name="revenue-streams-details" id="revenue-streams-details" class="block-title" placeholder="Enter your revenue streams details here..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="button-container">
+        <button class="save-button" type="submit">Save Changes</button>
+        <button id="export-button">Export to PNG</button>
+        <button id="export-data-button" type="button" onclick="exportLocalStorage()">Export Data</button>
+        <button id="import-data-button" type="button" onclick="importLocalStorage()">Import Data</button>
+
+      </div>
+
+      <!-- Note container -->
+      <div id="note-container" class="note-container">
+        <div class="note">
+          <div class="note-header">
+            <span class="note-header-title">Notes</span>
+            <button onclick="toggleNoteWindow()" class="close-button">Close</button>
+          </div>
+          <textarea id="note-text" class="note-text" placeholder="Take notes for prototyping, saving information or keeping track of tasks..." onblur="saveNotesToLocalStorage()"></textarea>
+        </div>
+      </div>
+
+      <!-- Help container -->
+      <div id="help-container" class="help-container">
+        <div class="help">
+          <div class="help-header">
+            <span class="help-header-title">Getting Started</span>
+            <button onclick="toggleHelpWindow()" class="close-button">Close</button>
+          </div>
+          <div id="help-text" class="help-text">
+            <p>Welcome to our Webtool, designed to help you create and refine your business model using the Business Model Canvas and AI-powered ChatGPT assistance. In this user guide, we'll introduce you to the various features and functionalities available within the Webtool.</p>
+            
+            <h3>Business Model Canvas</h3>
+            <p>To begin, start by filling in your Product Idea. This can range from a bakery to project management tool or a fitness app, just describe what you want to do in some key words. Then, you can start filling up the Business Model Canvas. <br>
+              Click on the input areas within the Business Model Canvas to fill in the details. Remember to save your changes by clicking the "Save Changes" button. </p>
+
+            <p><strong>AI Assistance with ChatGPT:</strong>
+             Enhance your Business Model development with the help of ChatGPT. This AI-powered tool can provide you with an example Canvas for your product idea, which can be a good starting point at the development for getting inputs. Please note that the example function will replace the existing Canvas, so make sure to save any changes using the save button. <br> ChatGPT may give you procedual support like tips on developing your business model or check the correctness of your ideas. The AI can also evaluate your BMC, suggest business model patterns, or generate "what-if" questions to spark creativity.</p>
+   
+            <p><strong>Templates:</strong> Business Model Canvas is a general template, but you can also explore other templates provided like the Lean Canvas or the Triple Layered BMC, each Layer is one Template. Want more customization? Change the building block titles with the "Edit Building Blocks" button.</p>
+            <p><strong>Notes:</strong> Keep track of important details, store information, or note tasks by using the "Notes" button. Your notes will be saved and accessible on any page.</p>
+            <p><strong>Notes:</strong> Want to keep going later? No problem, just use the export data button to save all your changes you've made in your session. When you want to get back to developing, use the import button and import the session data and you're good to go! <br>
+             You can also Export your Canvas to PNG to share it with peers.</p>
+            
+            
+            <h3>Building Block Level</h3>
+            <p>Click on any title to dive deeper into the individual building blocks. In this view, you'll find descriptions, trigger questions, and input suggestions for each building block. ChatGPT can also provide additional assistance by telling you about what to remember at the current building block, offering example inputs or evaluating your ideas. Don't forget to save any notes related to the building block as you analyze and brainstorm.</p>
+            
+            <h3>Value Proposition Canvas</h3>
+            <p>Refine your Value Proposition and Customer Segments by developing your Business Model Canvas to align customer needs with your value offerings. Fill in the Value Proposition Canvas, and let ChatGPT help you by providing example value propositions, tips, or evaluations tailored to your use case. Use the trigger questions on this page to guide your analysis.</p>
+            
+            <h3>Process</h3>
+            <p>Visit the "Process" section to learn about the five stages of developing the Business Model Canvas,  with descriptions of each stage. This step-by-step guide will help you develop your Business Model and manage it using the Business Model Canvas.</p>
+            
+            <p> If you have any questions or need further assistance, feel free to ask ChatGPT for help.</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- AI Area -->
+      <div id="overlay" class="overlay" onclick="toggleButtons()"></div>
+      <div id="buttons-container" class="buttons-container">
+          <div class="overlay-content">
+            <div class="warning-sign-container">
+              <div class="warning">
+                <span class="warning-sign">&#9888;</span>                
+                <span class="warning-text">ChatGPT is a language model and may provide unreliable information. Evaluate the model outputs critically.</span>
+              </div>
+            </div>
+              <div class="methodological-aid">
+                  <h2>Procedual support from AI:</h2>
+                  <div class="method-buttons">
+                      <button id="tips-button" class="tips-button">Tips from ChatGPT</button>
+                      <button id="correctness-button" class="correctness-button">Check Correctness</button>
+                  </div>
+              </div>
+              <div class="contextual-aid">
+                  <h2>Contextual support from AI:</h2>
+                  <div class="context-buttons">
+                      <button id="example-button" class="example-button">Example Canvas for your product</button>
+                      <button id="evaluate-button" class="evaluate-button">Evaluate Business Model Canvas</button>
+                      <button id="patterns-examples-button" class="patterns-examples-button">Example Business Model Patterns</button>
+                      <button id="whatif-button" class="whatif-button">What-If Questions for your Product</button>
+                    </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Chat container -->
+      <div id="chat-container" class="chat-container">
+          <div class="chat">
+              <div class="chat-header">
+                  <span class="chat-header-title">Chat with ChatGPT</span>
+                  <button onclick="toggleChat()" class="close-button">Close</button>
+              </div>
+              <div id="chat-history" class="chat-history"></div>
+              <div class="chat-input-container">
+                  <input id="chat-input" class="chat-input" placeholder="Type your message here..." onkeydown="sendMessage(event)">
+                  <button id="send-button" class="send-button"> Send </button>
+              </div>
+          </div>
+          <div id="loading-circle-container" class="loading-circle-container">
+              <div id="loading-circle" class="loading-circle"></div>
+          </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+  
+<script src="../static/scripts/index.js"></script>  
+</body>
+
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Key Partners</title>
+    <link rel="stylesheet" href="../../static/styles/building-block.css">
+    <link rel="shortcut icon" type="image/x-icon" href="../static/favicon/favicon-32x32.ico">
+    <link rel="icon" type="image/png" sizes="96x96" href="../static/favicon/favicon-96x96.png">
+
+    <script>
+        // Include the data from sessionStorage
+        let inputData = JSON.parse(sessionStorage.getItem("inputData")) || {};
+    </script>
+</head>
+<body>
+    <div class="topbar">
+        <h1>Key Partners</h1>
+        <button class="AI-button" onclick="toggleChat()">AI</button>
+      </div>
+    <div id="sidebar" class="sidebar">
+        <button id="sidebar-toggle" class="sidebar-toggle" onclick="toggleSidebar()">&#9776;</button>
+        <nav class="sidebar-menu">
+          <ul>
+            <li><a href="/">Main Page</a></li>
+            <li class="submenu">
+              <a href="#building-blocks" onclick="toggleBuildingBlocks()">
+                Building Blocks
+                <span id="building-blocks-arrow" class="arrow">&#x25B6;</span>
+              </a>
+              <ul id="building-blocks-menu" style="display: none;">
+                <li><a href="/key-partners">Key Partners</a></li>
+                <li><a href="/key-activities">Key Activities</a></li>
+                <li><a href="/key-resources">Key Resources</a></li>
+                <li><a href="/value-propositions">Value Propositions</a></li>
+                <li><a href="/customer-segments">Customer Segments</a></li>
+                <li><a href="/customer-relationships">Customer Relationships</a></li>
+                <li><a href="/channels">Channels</a></li>
+                <li><a href="/cost-structure">Cost Structure</a></li>
+                <li><a href="/revenue-streams">Revenue Streams</a></li>
+              </ul>
+            </li>
+    
+            <li><a href="/process">Process</a></li>
+            <li><a href="/value-proposition-canvas">Value Proposition Canvas</a></li>
+          </ul>
+        </nav>
+      </div>
+    <div id="main-content" class="container">
+        <button class="back-button" onclick="window.history.back()">&#8249;</button>
+        <div class="building-block-wrapper">
+            <div class="building-block-block">
+                <div class="building-block" id="building-block">
+                    <div class="block-header">
+                      <span class="block-title" id="block-title">Building Block</span>
+                    </div>
+                    <div class="block-input">
+                      <textarea name="block-details" id="block-details" placeholder="Enter your building block details here..."></textarea>
+                      <button class="save-button">Save Changes</button>
+                    </div>
+                  </div>
+                  
+            </div>
+
+            <div class="buttons-popup-wrapper">
+              <div class="buttons-wrapper">
+                <div class="buttons-wrapper">
+                  <button class="popup-button" data-target="how-to-fill">Description</button>
+                  <button class="popup-button" data-target="what-to-remember">What to remember</button>
+                  <button class="popup-button" data-target="trigger-questions">Trigger Questions</button>
+                  <button class="popup-button" data-target="notes">Notes</button>
+                </div>
+                <div id="how-to-fill" class="popup-text" style="display:none"><h3> Description of the Key Partners</h3>
+                  <p>The Key Partnerships Building Block describes the network of suppliers and partners that a company relies on to make its business model work. Partnerships can be formed for many reasons, including optimizing business models, reducing risk, and acquiring resources. There are four different types of partnerships, including strategic alliances between non-competitors, coopetition between competitors, joint ventures to develop new businesses, and buyer-supplier relationships to assure reliable supplies. </p></div>
+                <div id="what-to-remember" class="popup-text" style="display:none"><h3>What to remember about Key Partners</h3>
+                 <p> When developing the Key Partnerships Building Block, remember the following: </p>
+                 <ul>
+                  <li>Identify the partners that are essential to the success of the business model.</li>
+                  <li>Evaluate the benefits and risks of different types of partnerships. This includes assessing the potential advantages and disadvantages of forming partnerships with different types of partners, including competitors and suppliers.</li>
+                  <li>Assess the capabilities and resources of potential partners. This involves evaluating the strengths and weaknesses of potential partners and determining their suitability for the partnership.</li>
+                  <li>Develop clear and specific partnership agreements. This includes creating contracts or agreements that define the roles and responsibilities of each partnerp.</li>
+                  <li>Monitor and manage partnerships to ensure success. This includes tracking the performance of partnerships and making adjustments as necessary to ensure that the partnerships are meeting their objectives.</li>
+                  <li>Maintain flexibility in partnerships to adapt to changing circumstances.</li>
+                  </ul>                
+                </div>
+                <div id="trigger-questions" class="popup-text" style="display:none"><h3>Trigger Questions for Key Partners</h3>
+                  <ul>
+                    <li>Who are our Key Partners?</li>
+                    <li>Who are our key suppliers?</li>
+                    <li>Which Key Resources are we acquiring from partners?</li>
+                    <li>Which Key Activities do partners perform?</li>
+                  </ul>
+                </div>
+                <div id="notes" class="popup-text" style="display:none">
+                  <h3>Take notes</h3>
+                  <textarea name="note-details" id="note-details" class="notes-textarea" placeholder="Take notes for prototyping, saving information or keeping track of tasks..."></textarea>
+                </div>
+          </div>
+        </div>
+    </div>
+
+      <!-- AI Area -->
+      <div id="overlay" class="overlay" onclick="toggleButtons()"></div>
+      <div id="buttons-container" class="buttons-container">
+          <div class="overlay-content">
+            <div class="warning-sign-container">
+              <div class="warning">
+                <span class="warning-sign">&#9888;</span>                
+                <span class="warning-text">ChatGPT is a language model and may provide unreliable information. Evaluate the model outputs critically.</span>
+              </div>
+            </div>
+              <div class="methodological-aid">
+                  <h2>Procedual support from AI:</h2>
+                  <div class="method-buttons">
+                      <button id="tips-button" class="tips-button">Tips from ChatGPT</button>
+                  </div>
+              </div>
+              <div class="contextual-aid">
+                  <h2>Contextual support from AI:</h2>
+                  <div class="context-buttons">
+                    <button id="prefill-button" class="prefill-button">Prefill current Building Block</button>
+                    <button id="evaluate-button" class="evaluate-button">Evaluate Current Idea</button>
+                    </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Chat container -->
+      <div id="chat-container" class="chat-container">
+          <div class="chat">
+              <div class="chat-header">
+                  <span class="chat-header-title">Chat with ChatGPT</span>
+                  <button onclick="toggleChat()" class="close-button">Close</button>
+              </div>
+              <div id="chat-history" class="chat-history"></div>
+              <div class="chat-input-container">
+                  <input id="chat-input" class="chat-input" placeholder="Type your message here..." onkeydown="sendMessage(event)">
+                  <button id="send-button" class="send-button"> Send </button>
+              </div>
+          </div>
+          <div id="loading-circle-container" class="loading-circle-container">
+              <div id="loading-circle" class="loading-circle"></div>
+          </div>
+      </div>
+
+    <script src="../static/scripts/building-block.js"> </script>
+    <script>
+    //Event Listener, welche den building block angeben
+    const blockType = "key-partners"; 
+    const blockTitle = "Key Partners";
+    loadSavedDetails(blockType, blockTitle);
+    document.querySelector(".save-button").addEventListener("click", () => {
+        saveDetails(blockType);
+    });
+    document.getElementById("evaluate-button").addEventListener("click", async () => {
+        await evaluateBuildingBlock(blockType);
+    });
+    document.getElementById("tips-button").addEventListener("click", async () => {
+        await tipsBuildingBlock(blockType, blockTitle);
+    });
+
+    document.getElementById("prefill-button").addEventListener("click", async () => {
+        await prefillBuildingBlock(blockType, blockTitle);
+    });
+    </script>  
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Value Proposition Canvas</title>
+  <link rel="stylesheet" href="/static/styles/value_proposition_canvas.css">
+  <link rel="shortcut icon" type="image/x-icon" href="../static/favicon/favicon-32x32.ico">
+  <link rel="icon" type="image/png" sizes="96x96" href="../static/favicon/favicon-96x96.png">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+</head>
+<body>
+  <div class="topbar">
+    <h1>Value Proposition Canvas</h1>
+    <button class="AI-button" onclick="toggleChat()">AI</button>
+  </div>
+<div id="sidebar" class="sidebar">
+    <button id="sidebar-toggle" class="sidebar-toggle" onclick="toggleSidebar()">&#9776;</button>
+    <nav class="sidebar-menu">
+      <ul>
+        <li><a href="/">Main Page</a></li>
+        <li class="submenu">
+          <a href="#building-blocks" onclick="toggleBuildingBlocks()">
+            Building Blocks
+            <span id="building-blocks-arrow" class="arrow">&#x25B6;</span>
+          </a>
+          <ul id="building-blocks-menu" style="display: none;">
+            <li><a href="/key-partners">Key Partners</a></li>
+            <li><a href="/key-activities">Key Activities</a></li>
+            <li><a href="/key-resources">Key Resources</a></li>
+            <li><a href="/value-propositions">Value Propositions</a></li>
+            <li><a href="/customer-segments">Customer Segments</a></li>
+            <li><a href="/customer-relationships">Customer Relationships</a></li>
+            <li><a href="/channels">Channels</a></li>
+            <li><a href="/cost-structure">Cost Structure</a></li>
+            <li><a href="/revenue-streams">Revenue Streams</a></li>
+          </ul>
+        </li>
+        <li><a href="/process">Process</a></li>
+        <li><a href="/value-proposition-canvas">Value Proposition Canvas</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div id="main-content" class="container">
+    <button class="back-button" onclick="window.history.back()">&#8249;</button>
+
+    <div class="button-container">
+      <button id="help-button" type="button" onclick="toggleHelpWindow()">Getting Started</button>
+      <button id="trigger-questions-button" type="button" onclick="toggleTriggerQuestionsWindow()">Trigger Questions</button>
+      <button id="notes-button" type="button" onclick="toggleNoteWindow()">Notes</button>
+    </div>
+
+    <!-- Value Proposition Block -->
+    <div class="building-block-wrapper">
+        <div class="value-proposition-block">
+            <div class="building-block" id="value-propositions">
+                <div class="block-header">
+                  <span class="block-title" id="valprop-title"><a href="value-propositions" class="block-title" > Value Propositions </a></span>
+                </div>
+                <div class="block-input">
+                  <textarea name="block-details" id="valprop-details" placeholder="Enter your Value Propositions details here..."></textarea>
+                </div>
+            </div>
+        </div>
+        <!-- Value Proposition Canvas -->
+        <div class="canvas-container">
+            <h2 class="canvas-title">Value Proposition Canvas</h2>
+            <div id="value-proposition-canvas">
+                <div id="value-proposition" class="value-proposition-canvas">
+                    <h3 class="canvas-subtitle">Value Proposition</h3>
+                    <div class="canvas-block products-services">
+                        <h4 class="canvas-subsubtitle">Products &amp; Services</h4>
+                        <textarea name="products-services-details" id="products-services-details" placeholder="Products & Services"></textarea>
+                    </div>
+                    <div class="canvas-block gain-creators">
+                        <h4 class="canvas-subsubtitle">Gain Creators</h4>
+                        <textarea name="gain-creators-details" id="gain-creators-details" placeholder="Gain Creators"></textarea>
+                    </div>
+                    <div class="canvas-block pain-relievers">
+                        <h4 class="canvas-subsubtitle">Pain Relievers</h4>
+                        <textarea name="pain-relievers-details" id="pain-relievers-details" placeholder="Pain Relievers"></textarea>
+                    </div>
+                </div>
+                <div class="fit-container">
+                    <div class="fit-text">FIT</div>
+                    <div class="fit-arrow-left"></div>
+                    <div class="fit-arrow-right"></div>
+                </div>
+                <div id="customer-profile" class="value-proposition-canvas">
+                    <h3 class="canvas-subtitle">Customer Profile</h3>
+                    <div class="canvas-block customer-jobs">
+                        <h4 class="canvas-subsubtitle">Customer Jobs</h4>
+                        <textarea name="customer-jobs-details" id="customer-jobs-details" placeholder="Customer Jobs"></textarea>
+                    </div>
+                    <div class="canvas-block gains">
+                        <h4 class="canvas-subsubtitle">Gains</h4>
+                        <textarea name="gains-details" id="gains-details" placeholder="Gains"></textarea>
+                    </div>
+                    <div class="canvas-block pains">
+                        <h4 class="canvas-subsubtitle">Pains</h4>
+                        <textarea name="pains-details" id="pains-details" placeholder="Pains"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Customer Segments Block -->
+        <div class="customer-segments-block">
+                <div class="building-block" id="customer-segments">
+                    <div class="block-header">
+                      <span class="block-title" id="custseg-title"><a href="customer-segments" class="block-title">Customer Segments </a></span>
+                    </div>
+                    <div class="block-input">
+                      <textarea name="block-details" id="custseg-details" placeholder="Enter your Customer Segments details here..."></textarea>
+                    </div>
+                </div>
+        </div>
+    </div>
+    <div class="button-container">
+      <button class="save-button" type="submit">Save Changes</button>
+      <button id="export-button">Export to PNG</button>
+    </div>
+
+    <!-- Help container -->
+    <div id="help-container" class="help-container">
+      <div class="help">
+        <div class="help-header">
+          <span class="help-header-title">Getting Started</span>
+          <button onclick="toggleHelpWindow()" class="close-button">Close</button>
+        </div>
+        <div id="help-text" class="help-text">
+          <p>Welcome to our Value Proposition subsite, designed to help you create and refine your value proposition using the Value Proposition Canvas and AI-powered ChatGPT assistance. In this user guide, we'll introduce you to the various features and functionalities available within the subsite.</p>
+
+          <h3>Business Model Canvas Integration</h3>
+          <p>You can access the Business Model Canvas on the left and right sides of the page, and any changes you make to the canvas will be automatically saved. </p>
+          
+          <h3>Value Proposition Canvas</h3>
+          <p>The Value Proposition Canvas is located in the center of the page. Here, you can define your products and services, identify your pain relievers and gain creators, and analyze your customer profile to create a value proposition that meets the needs of your customers.</p>
+          
+          <p><strong>Trigger Questions:</strong> Use the trigger questions to guide you through the process of filling in the canvas. These questions will help you identify the key elements of your value proposition and ensure that you are addressing the needs of your customers.</p>
+          <p><strong>Notes:</strong> Keep track of important details, store information, or note tasks by using the "Notes" button. Your notes will be saved and accessible on any page.</p>
+          
+          <h3>AI Assistance with ChatGPT:</h3>
+          <p>Enhance your Value Proposition development with the help of ChatGPT. This AI-powered tool can provide tips on developing your value proposition, check the correctness of your ideas, and offer contextual support. ChatGPT can also provide example value propositions for your product idea, evaluate your Value Proposition Canvas, and make suggestions to improve your value proposition. It can help you understand the purpose of each block and provide examples of how to fill it in.</p>
+          
+          <p>If you have any questions or need further assistance, feel free to ask ChatGPT for help.</p>
+        </div>
+      </div>
+    </div>
+      <!-- Note container -->
+      <div id="note-container" class="note-container">
+        <div class="note">
+          <div class="note-header">
+            <span class="note-header-title">Notes</span>
+            <button onclick="toggleNoteWindow()" class="close-button">Close</button>
+          </div>
+          <textarea id="note-text" class="note-text" placeholder="Take notes for prototyping, saving information or keeping track of tasks..." onblur="saveNotesToLocalStorage()"></textarea>
+        </div>
+      </div>
+
+          <!-- Trigger Questions container -->
+      <div id="trigger-questions-container" class="trigger-questions-container">
+        <div class="trigger-questions">
+          <div class="trigger-questions-header">
+            <span class="trigger-questions-header-title">Trigger Questions</span>
+            <button onclick="toggleTriggerQuestionsWindow()" class="close-button">Close</button>
+          </div>
+          <div id="trigger-questions-text" class="trigger-questions-text">
+            <h3>Products and Services</h3>
+            <ul>
+              <li>What specific products and services do you offer to your customers?</li>
+              <li>How do these products and services help your customers complete their functional, social, or emotional jobs?</li>
+              <li>Do you offer any supporting products or services to help customers perform their roles as buyers, co-creators, or transferrers of value?</li>
+            </ul>
+            <h3>Pain Relievers</h3>
+            <ul>
+              <li>Can your products/services produce savings in time, money, or effort?</li>
+              <li>Can they make customers feel better by eliminating frustrations or annoyances?</li>
+              <li>Can they solve difficulties and challenges by making things easier or removing obstacles?</li>
+              <li>Can they reduce risks (financial, social, technical) and potential problems?</li>
+              <li>Can they remove barriers preventing adoption, such as upfront costs or learning curve?</li>
+            </ul>
+            <h3>Gain Creators</h3>
+            <ul>
+              <li>Can your products/services create savings in time, money, or effort?</li>
+              <li>Can they outperform current value propositions with better features, performance, or quality?</li>
+              <li>Can they make customers' work or life easier through usability, accessibility, services, or lower cost of ownership?</li>
+              <li>Can they help customers achieve aspirations or relieve hardships?</li>
+              <li>Can they make adoption easier with lower costs, reduced risks, better quality, improved performance, or better design?</li>
+            </ul>
+            <h3>Customer Jobs</h3>
+            <ul>
+              <li>What are the main tasks or problems that your customers are trying to complete or solve?</li>
+              <li>How do your customers want to be perceived by others, what social jobs are they trying to accomplish?</li>
+              <li>What emotional states are your customers seeking? What personal or emotional jobs are they trying to fulfill?</li>
+            </ul>
+            <h3>Customer Pains</h3>
+            <ul>
+              <li>What obstacles might prevent your customers from getting started with a job or slow them down?</li>
+              <li>What are some ancillary factors that might annoy your customers when trying to get a job done?</li>
+              <li>What social or emotional aspects might make your customers feel bad about using a solution?</li>
+              <li>What are some potential negative consequences that might arise from using a solution and cause your customers to lose credibility or suffer other negative outcomes?</li>
+            </ul>
+            <h3>Customer Gains</h3>
+            <ul>
+              <li>What functional, social, emotional, or cost-saving gains do your customers want to achieve?</li>
+              <li>What gains are required for your solution to work? What gains do customers expect or desire?</li>
+              <li>What gains would be unexpected, surprising, or go beyond customer expectations?</li>
+            </ul>
+
+            <h3>Fit Phase</h3>
+              <ul>
+              <li>What jobs are the customers trying to complete or solve, and how can our products/services address them?</li>
+              <li>What extreme pains do the customers have that are currently not being addressed, and how can our products/services alleviate them?</li>
+              <li>What essential gains matter most to the customers, and how can our products/services create them?</li>
+              <li>How can we focus on the pains and gains that matter most to customers and make a difference?</li>
+              <li>How can we ensure that our products/services address the important jobs, alleviate extreme pains, and create essential gains that customers care about?</li>
+              <li>How can we find and maintain Fit, which is the essence of value proposition design?</li>
+              </ul>
+          </div>   
+        </div>
+      </div>
+
+    
+      <!-- AI Area -->
+      <div id="overlay" class="overlay" onclick="toggleButtons()"></div>
+      <div id="buttons-container" class="buttons-container">
+          <div class="overlay-content">
+            <div class="warning-sign-container">
+              <div class="warning">
+                <span class="warning-sign">&#9888;</span>                
+                <span class="warning-text">ChatGPT is a language model and may provide unreliable information. Evaluate the model outputs critically.</span>
+              </div>
+            </div>
+              <div class="methodological-aid">
+                  <h2>Procedual support from AI:</h2>
+                  <div class="method-buttons">
+                      <button id="tips-button" class="tips-button">Tips from ChatGPT</button>
+                      <button id="correctness-button" class="correctness-button">Check Correctness</button>
+                  </div>
+              </div>
+              <div class="contextual-aid">
+                  <h2>Contextual support from AI:</h2>
+                  <div class="context-buttons">
+                    <button id="example-button" class="example-button">Example Value Proposition Canvas for your product</button>                
+                    <button id="evaluate-button" class="evaluate-button">Evaluate Value Proposition Canvas</button>
+                    </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Chat container -->
+      <div id="chat-container" class="chat-container">
+          <div class="chat">
+              <div class="chat-header">
+                  <span class="chat-header-title">Chat with ChatGPT</span>
+                  <button onclick="toggleChat()" class="close-button">Close</button>
+              </div>
+              <div id="chat-history" class="chat-history"></div>
+              <div class="chat-input-container">
+                  <input id="chat-input" class="chat-input" placeholder="Type your message here..." onkeydown="sendMessage(event)">
+                  <button id="send-button" class="send-button"> Send </button>
+              </div>
+          </div>
+          <div id="loading-circle-container" class="loading-circle-container">
+              <div id="loading-circle" class="loading-circle"></div>
+          </div>
+      </div>
+
+  <script src="/static/scripts/value_proposition_canvas.js"></script>
+  <script>
+    //Event Listener, welche den building block angeben
+
+    loadSavedDetails();
+
+    document.getElementById("evaluate-button").addEventListener("click", async () => {
+        await evaluateValuePropositionCanvas(blockType);
+    });
+
+    
+    </script>  
+</body>
+</html>
