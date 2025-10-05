@@ -8,93 +8,72 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
+client = openai.OpenAI()
 
-# Setze OpenAI API key
-openai.api_key = os.getenv('OPENAI_API_KEY')
-openai.Model.list()
-GPT_API_URL = "https://api.openai.com/v1/chat/completions"
+
+def llm(messages, *, model="gpt-5-mini", max_tokens=2000):
+    """
+    - json_mode=True erzwingt strikt gültiges JSON via Responses-API.
+    - max_tokens erhöht, damit das Modell nicht in der Mitte abbricht.
+    """
+    args = {
+        "model": model,
+        "input": messages,
+        "max_output_tokens": max_tokens,
+    }
+
+    resp = client.responses.create(**args)
+
+    # bevorzugt: SDK-Shortcut
+    txt = getattr(resp, "output_text", None)
+    if txt:
+        return txt.strip()
 
 # Main index route
 @app.route("/")
 def index():
     return render_template("index.html")
 
-# Route für den Chat with GPT
+
+
+# Route: Chat mit GPT
 @app.route("/chat_with_gpt4", methods=["POST"])
 def chat_with_gpt4():
-    # Extrahiere die messages und new_message der eingehenden Anfrage
     messages = request.json["messages"]
     new_message = request.json["new_message"]
+    messages = list(messages) + [{"role": "user", "content": new_message}]
 
-    # Vorbereiten der Kopfdaten der API Request
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"
-    }
-
-    # Einfügen der neuen Nachricht in die Nachrichtenliste
-    messages.append({"role": "user", "content": new_message})
-
-    # Befülle die Daten der API Request
-    data = {
-        "model": "gpt-3.5-turbo",
-        "messages": messages,
-        "max_tokens": 500,
-        "n": 1,
-        "temperature": 0.5
-    }
-
-    # Ausführen der API Request und Vorbereitung der JSON-Antwort
-    response = requests.post(GPT_API_URL, headers=headers, json=data)
-
-    # Extrahiere die Antwort aus der API response
-    reply = response.json()["choices"][0]["message"]["content"].strip()
-    
-    # Return die Antwort als JSON-Objekt
+    #API-Call
+    reply = llm(messages, model="gpt-5-mini", max_tokens=500)
+    #return JSON-File of reply
     return jsonify({"reply": reply})
 
 
-#Route um ein Beispielcanvas für eine gegebene Produktidee zu generieren. 
+
 @app.route('/example_canvas_by_product', methods=["POST"])
 def example_canvas():
     product_idea = request.json["product_idea"]
-    #Prompt gibt die Syntax der JSON an. Dabei doppelte geschweifte klammern, sodass die Struktur richtig an die AI gesendet wird
     prompt = f'''Your role: An AI Business Model Development Assistant.
-    Task: I am Building a Business Model Canvas. Provide an example of the building blocks for said product idea as a JSON object. Example Input product Idea: Bakery. Example output: 
+    Task: I am Building a Business Model Canvas. Provide an example of the building blocks for said product idea as a JSON object. Example Input product Idea: Bakery. Example output:
     {{
-    "key-partners": "-Local farmers\\n-suppliers\\n-distributors",
-    "key-activities": -Baking\\n-packaging\\n-distributing products",
-    "key-resources": "-Equipment\\n-ingredients\\n-staff\\n-delivery vehicles",
-    "value-propositions": "-Fresh\\n-quality ingredients\\n-unique flavor combinations\\n-convenience",
-    "customer-relationships": "-Personalized customer service \\n-loyalty programs",
-    "channels": "-Retail stores\\n-online ordering\\n-delivery services",
-    "customer-segments": "-Local residents\\n-tourists\\n-businesses",
-    "cost-structure": "-Ingredients\\n-labor\\n-equipment\\n-delivery costs",
-    "revenue-streams": "-Retail sales\\n-online orders\\n-delivery fees"
+    "key-partners": "-Local farmers\n-suppliers\n-distributors",
+    "key-activities": -Baking\n-packaging\n-distributing products",
+    "key-resources": "-Equipment\n-ingredients\n-staff\n-delivery vehicles",
+    "value-propositions": "-Fresh\n-quality ingredients\n-unique flavor combinations\n-convenience",
+    "customer-relationships": "-Personalized customer service \n-loyalty programs",
+    "channels": "-Retail stores\n-online ordering\n-delivery services",
+    "customer-segments": "-Local residents\n-tourists\n-businesses",
+    "cost-structure": "-Ingredients\n-labor\n-equipment\n-delivery costs",
+    "revenue-streams": "-Retail sales\n-online orders\n-delivery fees"
     }}
-     Input: The Product Idea: {product_idea}  \\n
-     Output:'''    
-    # Bereite die Kopfdaten der API Request vor
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"
-    }
+    Input: The Product Idea: {product_idea} \n Output:'''
 
-    # Befülle die Daten der API Request 
-    data = {
-        "model": "gpt-3.5-turbo",
-        "messages": [{"role": "user", "content": f"{prompt}"}],
-        "temperature": 0.5,
-        "max_tokens": 1000
-    }
 
-    # Ausführen der  API request und Vorbereitung der JSON Antwort
-    response = requests.post(GPT_API_URL, headers=headers, json=data)
-    output = response.json()["choices"][0]["message"]["content"].strip()
-    output_index = output.index("{")
-
-    output_formatted = output[output_index:]
-    return jsonify(json.loads(output_formatted))  # Return die JSON Antwort
+    output = llm([{"role": "user", "content": prompt}], max_tokens=2000)
+    start = output.find("{")
+    if start == -1:
+        return jsonify({"error": "Kein JSON im Modell-Output gefunden.", "raw": output}), 502
+    return jsonify(json.loads(output[start:]))
 
 #Route um einen gegebenen Building Block ausgefüllt zu bekommen, abhängig von der Produktidee
 @app.route('/prefill_building_block', methods=["POST"])
@@ -110,23 +89,9 @@ def prefill_building_block():
     }}
      Input: The Product Idea: {product_idea}  \\n The Building Block: {building_block} \\n
      Output:'''    
-    # Vorbereiten der Kopfdaten der API Request
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"
-    }
-
-    # Befülle die Daten der API Request
-    data = {
-        "model": "gpt-3.5-turbo",
-        "messages": [{"role": "user", "content": f"{prompt}"}],
-        "temperature": 0.5,
-        "max_tokens": 1000
-    }
 
     # Ausführen der API Request und Vorbereitung der JSON-Antwort
-    response = requests.post(GPT_API_URL, headers=headers, json=data)
-    output = response.json()["choices"][0]["message"]["content"].strip()
+    output = llm([{"role": "user", "content": prompt}], max_tokens=1000)
     output_index = output.index("{")
     output_formatted = output[output_index:]
 
@@ -163,20 +128,7 @@ Example Output:
     Customer Segments: {customer_segments},
     Output as JSON:'''
 
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"
-    }
-
-    data = {
-        "model": "gpt-3.5-turbo",
-        "messages": [{"role": "user", "content": f"{prompt}"}],
-        "temperature": 0.5,
-        "max_tokens": 1000
-    }
-
-    response = requests.post(GPT_API_URL, headers=headers, json=data)
-    output = response.json()["choices"][0]["message"]["content"].strip()
+    output = llm([{"role": "user", "content": prompt}], max_tokens=2000)
     output_index = output.index("{")
 
     output_formatted = output[output_index:]
@@ -198,27 +150,9 @@ def check_correctness():
     message += f'''chat input: {chat_input}. '''
     message += '''\\nWork as a correctness checker. Check for syntax and semantic mistakes and general mistakes at filling out the canvas. Also check if the inputs fit to their building block. Correctness check:'''
 
-    # Vorbereiten der Kopfdaten der API Request
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"
-    }
-
-    # Befülle die Daten der API Request
-    data = {
-        "model": "gpt-3.5-turbo",
-        "messages": [{"role": "user", "content": f"{message} Please evaluate these inputs."}],
-        "temperature": 0.5,
-        "max_tokens": 1000
-    }
-
-    # Ausführen der API Request und Vorbereitung der JSON-Antwort
-    response = requests.post(GPT_API_URL, headers=headers, json=data)
-    # Extrahiere die Ausgabe aus der API-Antwort
-    check_result = response.json()["choices"][0]["message"]["content"].strip()
+    check_result = llm([{"role": "user", "content": message}], max_tokens=1000)
     # Return das Ergebnis als JSON-Objekt
     return jsonify({"check_result": check_result})
-
 
 #Route für die Correctness Checker Funktion im VPC
 @app.route("/check_correctness_vpc", methods=["POST"])
@@ -236,25 +170,8 @@ def check_correctness_vpc():
         message += f'''{block}: {input_value} \\n'''
     message += f'''chat input: {chat_input}. '''
     message += '''\\nWork as a correctness checker. Check for syntax and semantic mistakes and general mistakes at filling out the canvas. Also check if the inputs fit to their building block. Correctness check:'''
-
-    # Vorbereiten der Kopfdaten der API Request
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"
-    }
-
-    # Befülle die Daten der API Request
-    data = {
-        "model": "gpt-3.5-turbo",
-        "messages": [{"role": "user", "content": f"{message} Please evaluate these inputs."}],
-        "temperature": 0.5,
-        "max_tokens": 1000
-    }
-
-    # Ausführen der API Request und Vorbereitung der JSON-Antwort
-    response = requests.post(GPT_API_URL, headers=headers, json=data)
-    check_result = response.json()["choices"][0]["message"]["content"].strip()
-
+    
+    check_result = llm([{"role": "user", "content": message}], max_tokens=1000)
     # Return das Ergebnis als JSON-Objekt
     return jsonify({"check_result": check_result})
 
@@ -273,25 +190,7 @@ def evaluate_all_inputs():
         message += f'''{block}: {input_value} \\n'''
     message += f'''chat input: {chat_input}  \\n Give me Feedback. Would you recommend alternatives? Evaluation:'''
 
-    # Vorbereiten der Kopfdaten der API Request
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"
-    }
-
-    # Befülle die Daten der API Request
-    data = {
-        "model": "gpt-3.5-turbo",
-        "messages": [{"role": "user", "content": f"{message} Please evaluate these inputs."}],
-        "temperature": 0.5,
-        "max_tokens": 1000
-    }
-
-    # Ausführen der API Request und Vorbereitung der JSON-Antwort
-    response = requests.post(GPT_API_URL, headers=headers, json=data)
-
-    # Extrahiere die Ausgabe aus der API-Antwort
-    evaluation_result = response.json()["choices"][0]["message"]["content"].strip()
+    evaluation_result = llm([{"role": "user", "content": message}], max_tokens=1000)
 
     # Return das Ergebnis als JSON-Objekt
     return jsonify({"evaluation_result": evaluation_result})
@@ -313,26 +212,7 @@ def evaluate_vpc():
         message += f'''{block}: {input_value} \\n'''
     message += f'''chat input: {chat_input}  \\n Give me Feedback. Would you recommend alternatives? Evaluation:'''
 
-    # Vorbereiten der Kopfdaten der API Request
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"
-    }
-
-    # Befülle die Daten der API Request
-    data = {
-        "model": "gpt-3.5-turbo",
-        "messages": [{"role": "user", "content": f"{message} Please evaluate these inputs."}],
-        "temperature": 0.5,
-        "max_tokens": 1000
-    }
-
-    # Ausführen der API Request und Vorbereitung der JSON-Antwort
-    response = requests.post(GPT_API_URL, headers=headers, json=data)
-
-    # Extrahiere die Ausgabe aus der API-Antwort
-    evaluation_result = response.json()["choices"][0]["message"]["content"].strip()
-
+    evaluation_result = llm([{"role": "user", "content": message}], max_tokens=1000)
     # Return das Ergebnis als JSON-Objekt
     return jsonify({"evaluation_result": evaluation_result})
 
@@ -348,25 +228,7 @@ def evaluate_building_block():
 
     message = f'''Your role: An AI Business Model Development Assistant.
 Task:I'm Building a Business Model Canvas. The Product Idea: {product_idea} \\n The building block: {building_block} \\n The Idea for the Building block: {building_block_input}  \\n chat input: {chat_input}  \\n Give me Feedback. Would you recommend alternatives? Evaluation:'''
-    # Vorbereiten der Kopfdaten der API Request
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"
-    }
-
-    # Befülle die Daten der API Request
-    data = {
-        "model": "gpt-3.5-turbo",
-        "messages": [{"role": "user", "content": f"{message}"}],
-        "temperature": 0.5,
-        "max_tokens": 1000
-    }
-
-    # Ausführen der API Request und Vorbereitung der JSON-Antwort
-    response = requests.post(GPT_API_URL, headers=headers, json=data)
-
-    # Extrahiere die Ausgabe aus der API-Antwort
-    evaluation_result = response.json()["choices"][0]["message"]["content"].strip()
+    evaluation_result = llm([{"role": "user", "content": message}], max_tokens=1000)
     # Return das Ergebnis als JSON-Objekt
     return jsonify({"evaluation_result": evaluation_result})
 
@@ -381,26 +243,7 @@ def get_business_model_patterns():
     message = f'''Your role: An AI Business Model Development Assistant.
     Task:I'm Building a Business Model Canvas. The Product Idea: {product_idea}. \\n chat input: {chat_input}  \\n I want to be more creative in building my BMC and need Business Model Patterns for it. Give me relevant Business Model Patterns for my use case. Output:'''
 
-
-    # Vorbereiten der Kopfdaten der API Request
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"
-    }
-
-    # Befülle die Daten der API Request
-    data = {
-        "model": "gpt-3.5-turbo",
-        "messages": [{"role": "user", "content": f"{message}"}],
-        "temperature": 0.5,
-        "max_tokens": 1000
-    }
-
-    # Ausführen der API Request und Vorbereitung der JSON-Antwort
-    response = requests.post(GPT_API_URL, headers=headers, json=data)
-
-    # Extrahiere die Ausgabe aus der API-Antwort
-    evaluation_result = response.json()["choices"][0]["message"]["content"].strip()
+    evaluation_result = llm([{"role": "user", "content": message}], max_tokens=1000)
 
     # Return das Ergebnis als JSON-Objekt
     return jsonify({"evaluation_result": evaluation_result})
@@ -422,23 +265,7 @@ def get_what_if_stimuli():
     3. What if voice calls were free worldwide? In 2003 Skype launched a service that allowed free voice calling via the Internet. After five years Skype had acquired 400 million registered users who collectively had made 100 billion free calls.
     The Product Idea: {product_idea}. \\n chat input: {chat_input}  \\nOutput:'''
 
-    # Vprbereiten der Kopfdaten der API Request
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"
-    }
-
-    # Befülle die Daten der API Request
-    data = {
-        "model": "gpt-3.5-turbo",
-        "messages": [{"role": "user", "content": f"{message}"}],
-        "temperature": 0.5,
-        "max_tokens": 1000
-    }
-
-    # Ausführen der API Request und Vorbereitung der JSON Antwort
-    response = requests.post(GPT_API_URL, headers=headers, json=data)
-    whatif_result = response.json()["choices"][0]["message"]["content"].strip()
+    whatif_result = llm([{"role": "user", "content": message}], max_tokens=1000)
 
     # Return das Ergebnis als JSON-Objekt
     return jsonify({"whatif_result": whatif_result})
@@ -452,22 +279,7 @@ def tips_business_model_canvas():
 
     message = f'''Your role: An AI Business Model Development Assistant.
     Task:I'm Building a Business Model Canvas. The Product Idea: {product_idea} \\n chat input: {chat_input}  \\n Instruction: Mention the Value Proposition Canvas, a subsite on the webApp \\n What tips do you have for developing the Business Model Canvas? What are the steps I should take? Tips:'''
-    # Vorbereiten der Kopfdaten der API Request
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"
-    }
-
-    # Befülle die Daten der API Request
-    data = {
-        "model": "gpt-3.5-turbo",
-        "messages": [{"role": "user", "content": f"{message}"}],
-        "temperature": 0.5,
-        "max_tokens": 1000
-    }
-    # Ausführen der API Request und Vorbereitung der JSON-Antwort
-    response = requests.post(GPT_API_URL, headers=headers, json=data)
-    tips_result = response.json()["choices"][0]["message"]["content"].strip()
+    tips_result = llm([{"role": "user", "content": message}], max_tokens=1000)
     # Return das Tipps-Ergebnis als JSON-Objekt
     return jsonify({"tips_result": tips_result})
 
@@ -482,23 +294,7 @@ def tips_building_block():
 
     message = f'''Your role: An AI Business Model Development Assistant.
     Task:I'm Building a Business Model Canvas. The Product Idea: {product_idea} \\n The building block: {building_block} \\n The Idea for the Building block: {building_block_input}  \\n chat input: {chat_input}  \\n What tips do you have for filling in this building block? What are the steps I should take? Tips:'''
-    # Vorbereiten der Kopfdaten der API Request
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"
-    }
-
-    # Befülle die Daten der API Request
-    data = {
-        "model": "gpt-3.5-turbo",
-        "messages": [{"role": "user", "content": f"{message}"}],
-        "temperature": 0.5,
-        "max_tokens": 1000
-    }
-
-    # Ausführen der API Request und Vorbereitung der JSON-Antwort
-    response = requests.post(GPT_API_URL, headers=headers, json=data)
-    tips_result = response.json()["choices"][0]["message"]["content"].strip()
+    tips_result = llm([{"role": "user", "content": message}], max_tokens=1000)
     # Return das Tipps-Ergebnis als JSON-Objekt
     return jsonify({"tips_result": tips_result})
 
@@ -512,23 +308,7 @@ def tips_value_proposition_canvas():
 
     message = f'''Your role: An AI Business Model Development Assistant.
     Task:I'm Building a Value Proposition Canvas as proposed from Osterwalder and Pigneur which makes a Customer Profile and a Value Proposition in order to to improve the Value Proposition and the Customer segments of a Business Model Canvas and create a match between the customer needs and my value offering. Also explain about the fit-phase where you match the pains and gains with the pain relievers and gain creators. The Product Idea: {product_idea} chat input: {chat_input}  \\n What tips do you have for developing the Value Proposition Canvas? What steps should I take? Tips:'''
-    # Vorbereiten der Kopfdaten der API Request
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"
-    }
-
-    # Befülle die Daten der API Request
-    data = {
-        "model": "gpt-3.5-turbo",
-        "messages": [{"role": "user", "content": f"{message}"}],
-        "temperature": 0.5,
-        "max_tokens": 1000
-    }
-
-    # Ausführen der API Request und Vorbereitung der JSON-Antwort
-    response = requests.post(GPT_API_URL, headers=headers, json=data)
-    tips_result = response.json()["choices"][0]["message"]["content"].strip()
+    tips_result = llm([{"role": "user", "content": message}], max_tokens=1000)
     # Return das Tipps-Ergebnis als JSON-Objekt
     return jsonify({"tips_result": tips_result})
 
