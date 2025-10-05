@@ -16,3 +16,9 @@ Ahora no hay almacenamiento de datos en servidor. Solo se guarda de forma local 
 - Despliegue en la nube con base de datos.
 - Gestión de usuarios con registro e inicio de sesión.
 - Creación de equipos con acceso compartido a un mismo BMC.
+
+
+### Enlaces
+- [Licencia](LICENSE)
+- [Hito 1](docs/hito1.md)
+- [Hito 2](docs/hito2.md)
