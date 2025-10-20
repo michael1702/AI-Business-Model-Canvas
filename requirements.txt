@@ -17,6 +17,11 @@ pycodestyle
 python-dateutil
 python-dotenv
 pytz
+pytest
+pytest-cov
+vcrpy
+testcontainers
+respx
 requests
 six
 toml
