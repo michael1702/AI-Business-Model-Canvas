@@ -1,0 +1,130 @@
+interactions:
+- request:
+    body: '{"input":[{"role":"user","content":"Your role: An AI Business Model Development
+      Assistant.\n    Task: I am Building a Business Model Canvas. Provide an example
+      of the building block I tell you for said product idea as a JSON object. Example
+      Input product Idea: Bakery. Example Building block: Value Propositions Example
+      output: \n    {\n    \"value-propositions\": \"-Fresh\\n-Quality ingredients\\n-Unique
+      flavor combinations\\n-Convenience\"\n    }\n     Input: The Product Idea: bakery  \\n
+      The Building Block: value-propositions \\n\n     Output:"}],"max_output_tokens":1000,"model":"gpt-5-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '600'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.1.0
+      x-stainless-arch:
+      - other:amd64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - Windows
+      x-stainless-package-version:
+      - 2.1.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.12.4
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: "{\n  \"id\": \"resp_02b21906313f1bc10068fa2f1aab8081a28ba71e106ef87635\",\n
+        \ \"object\": \"response\",\n  \"created_at\": 1761226522,\n  \"status\":
+        \"completed\",\n  \"background\": false,\n  \"billing\": {\n    \"payer\":
+        \"developer\"\n  },\n  \"error\": null,\n  \"incomplete_details\": null,\n
+        \ \"instructions\": null,\n  \"max_output_tokens\": 1000,\n  \"max_tool_calls\":
+        null,\n  \"model\": \"gpt-5-mini-2025-08-07\",\n  \"output\": [\n    {\n      \"id\":
+        \"rs_02b21906313f1bc10068fa2f1ba48881a2b650c9006ff2f6cf\",\n      \"type\":
+        \"reasoning\",\n      \"summary\": []\n    },\n    {\n      \"id\": \"msg_02b21906313f1bc10068fa2f1e935c81a2853e04f718325899\",\n
+        \     \"type\": \"message\",\n      \"status\": \"completed\",\n      \"content\":
+        [\n        {\n          \"type\": \"output_text\",\n          \"annotations\":
+        [],\n          \"logprobs\": [],\n          \"text\": \"{\\n  \\\"value-propositions\\\":
+        \\\"-Freshly baked daily\\\\n-High-quality ingredients (locally sourced)\\\\n-Artisanal
+        and unique flavors\\\\n-Wide variety: breads, pastries, cakes\\\\n-Custom
+        orders & catering for events\\\\n-Convenient ordering: online, pickup, delivery\\\\n-Healthy
+        & dietary options (gluten-free, vegan)\\\\n-Seasonal & limited-edition items\\\\n-Warm,
+        community-focused experience\\\"\\n}\"\n        }\n      ],\n      \"role\":
+        \"assistant\"\n    }\n  ],\n  \"parallel_tool_calls\": true,\n  \"previous_response_id\":
+        null,\n  \"prompt_cache_key\": null,\n  \"reasoning\": {\n    \"effort\":
+        \"medium\",\n    \"summary\": null\n  },\n  \"safety_identifier\": null,\n
+        \ \"service_tier\": \"default\",\n  \"store\": true,\n  \"temperature\": 1.0,\n
+        \ \"text\": {\n    \"format\": {\n      \"type\": \"text\"\n    },\n    \"verbosity\":
+        \"medium\"\n  },\n  \"tool_choice\": \"auto\",\n  \"tools\": [],\n  \"top_logprobs\":
+        0,\n  \"top_p\": 1.0,\n  \"truncation\": \"disabled\",\n  \"usage\": {\n    \"input_tokens\":
+        114,\n    \"input_tokens_details\": {\n      \"cached_tokens\": 0\n    },\n
+        \   \"output_tokens\": 287,\n    \"output_tokens_details\": {\n      \"reasoning_tokens\":
+        192\n    },\n    \"total_tokens\": 401\n  },\n  \"user\": null,\n  \"metadata\":
+        {}\n}"
+    headers:
+      CF-RAY:
+      - 99319e031b10b59b-LIS
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 23 Oct 2025 13:35:28 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=BqHTDvTKVz8tc9BoS64BaYjF0abXzYmoyii9Ze4jrjY-1761226528-1.0.1.1-Mzocsa5WFgFpUjVr3ieM3jsuIDh.mmxIYLhiAtL5u1LKbRdA2N7m_NXPF0A0NvlCLylXgDvm5NcT_lrLhjQEzmvPHXNJLrV3GchELouBsz4;
+        path=/; expires=Thu, 23-Oct-25 14:05:28 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=AkQpegL_QS1v_2Ac2bGkFrc.AMl9ZXbDtGGm4PEVPI4-1761226528031-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      content-length:
+      - '1933'
+      openai-organization:
+      - user-tcef3qlifclhzor2tnstkteg
+      openai-processing-ms:
+      - '5322'
+      openai-project:
+      - proj_l2vybIC3tavRnF6xzMrQp8ZM
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '5325'
+      x-ratelimit-limit-requests:
+      - '500'
+      x-ratelimit-limit-tokens:
+      - '500000'
+      x-ratelimit-remaining-requests:
+      - '499'
+      x-ratelimit-remaining-tokens:
+      - '499669'
+      x-ratelimit-reset-requests:
+      - 120ms
+      x-ratelimit-reset-tokens:
+      - 39ms
+      x-request-id:
+      - req_3d9a2e6e16c94396857398d7b880cc67
+    status:
+      code: 200
+      message: OK
+version: 1

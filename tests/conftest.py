@@ -1,11 +1,20 @@
 import os
 import pytest
+import vcr
 
 from dotenv import load_dotenv
 
-load_dotenv()  # zuerst versuchen, echte Werte zu laden
+load_dotenv()  # load environment data
  
-# Nur wenn wirklich nichts da ist (z. B. im CI ohne Secret), nimm Platzhalter:
+# VCR-Instance: specify how the vcr-cassette is being recorded
+vcr_config = vcr.VCR(
+    record_mode="once",  # first run recorded, afterwards it's reused to reduce the amount of calls for the API
+    filter_headers=["authorization"], #hide the API key from the cassette
+    decode_compressed_response=True, # prettier yaml format
+    match_on=["method", "scheme", "host", "port", "path", "query", "body"],
+)
+
+#If no OPENAI-Key use sk-test-placeholder
 if not os.getenv("OPENAI_API_KEY"):
     os.environ["OPENAI_API_KEY"] = "sk-test-placeholder"
 
