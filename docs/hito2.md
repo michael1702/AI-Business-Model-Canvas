@@ -16,8 +16,9 @@ En este hito apliqué TDD y configuré la integración continua del proyecto. Po
 - Local: make test (el primer run graba la cassette; los siguientes se reproducen).
 - CI: el workflow .github/workflows/ci.yml ejecuta pytest; usa la cassette, no necesita clave ni red.
 
-### Cobertura de funciones
+### Cobertura de funcionas
 - Rellenar un building block con datos generados por la API (test con vcrpy).
 - Rellenar el Canvas completo con datos generados por la API (test con vcrpy).
 - Futuro: usuarios, grupos y persistencia en nube (se añadirán tests de integración con DB usando testcontainers).
+
 
