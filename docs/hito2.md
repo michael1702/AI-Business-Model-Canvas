@@ -19,5 +19,5 @@ En este hito apliqué TDD y configuré la integración continua del proyecto. Po
 ### Cobertura de funciones
 - Rellenar un building block con datos generados por la API (test con vcrpy).
 - Rellenar el Canvas completo con datos generados por la API (test con vcrpy).
-- Cambio de plantilla (test parametrizado; xfail hasta implementarlo).
 - Futuro: usuarios, grupos y persistencia en nube (se añadirán tests de integración con DB usando testcontainers).
+
