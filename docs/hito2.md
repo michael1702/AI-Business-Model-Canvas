@@ -13,12 +13,22 @@ En este hito apliqué TDD y configuré la integración continua del proyecto. Po
 - /example_canvas_by_product con vcrpy: graba y reproduce un caso donde se genera un Canvas completo de ejemplo para una idea de producto.
 
 ### Cómo se ejecuta
-- Local: make test (el primer run graba la cassette; los siguientes se reproducen).
+- Local: make test (el primer run graba la cassette; los siguientes se reproducen). Requisito: Tienes que tener make.exe instalado en tu dispositivo.
 - CI: el workflow .github/workflows/ci.yml ejecuta pytest; usa la cassette, no necesita clave ni red.
+
+En cada push o pull request, GitHub Actions ejecuta automáticamente los tests definidos en .github/workflows/ci.yml
+<img width="2153" height="759" alt="image" src="https://github.com/user-attachments/assets/8d92bf92-97b2-4618-92e1-c27f468673b8" />
+
+#### Ejecución local de tests:
+En local los tests se ejecutan de forma sencilla con Makefile.
+- Todos los tests: make test
+- Un test concreto: pytest tests/test_api_vcr.py -q
+<img width="2159" height="1191" alt="image" src="https://github.com/user-attachments/assets/48b523ea-204d-4df1-a30f-356faca68730" />
 
 ### Cobertura de funcionas
 - Rellenar un building block con datos generados por la API (test con vcrpy).
 - Rellenar el Canvas completo con datos generados por la API (test con vcrpy).
 - Futuro: usuarios, grupos y persistencia en nube (se añadirán tests de integración con DB usando testcontainers).
+
 
 
