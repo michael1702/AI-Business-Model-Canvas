@@ -4,7 +4,7 @@ from flask import Flask, jsonify, redirect, render_template, request, url_for, j
 import requests
 from dotenv import load_dotenv
 
-# Lade environment variables
+# Cargar variables de entorno
 load_dotenv()
 
 app = Flask(__name__)
@@ -13,8 +13,8 @@ client = openai.OpenAI()
 
 def llm(messages, *, model="gpt-5-mini", max_tokens=2000):
     """
-    - json_mode=True erzwingt strikt gültiges JSON via Responses-API.
-    - max_tokens erhöht, damit das Modell nicht in der Mitte abbricht.
+    - json_mode=True fuerza JSON válido estrictamente vía Responses-API.
+    - max_tokens aumentado para que el modelo no se corte a mitad.
     """
     args = {
         "model": model,
@@ -24,31 +24,27 @@ def llm(messages, *, model="gpt-5-mini", max_tokens=2000):
 
     resp = client.responses.create(**args)
 
-    # bevorzugt: SDK-Shortcut
+    # preferido: atajo del SDK
     txt = getattr(resp, "output_text", None)
     if txt:
         return txt.strip()
 
-# Main index route
+# Ruta principal índice
 @app.route("/")
 def index():
     return render_template("index.html")
 
-
-
-# Route: Chat mit GPT
+# Ruta: Chat con GPT
 @app.route("/chat_with_gpt4", methods=["POST"])
 def chat_with_gpt4():
     messages = request.json["messages"]
     new_message = request.json["new_message"]
     messages = list(messages) + [{"role": "user", "content": new_message}]
 
-    #API-Call
+    # Llamada a la API
     reply = llm(messages, model="gpt-5-mini", max_tokens=500)
-    #return JSON-File of reply
+    # devolver archivo JSON con la respuesta
     return jsonify({"reply": reply})
-
-
 
 @app.route('/example_canvas_by_product', methods=["POST"])
 def example_canvas():
@@ -75,13 +71,13 @@ def example_canvas():
         return jsonify({"error": "Kein JSON im Modell-Output gefunden.", "raw": output}), 502
     return jsonify(json.loads(output[start:]))
 
-#Route um einen gegebenen Building Block ausgefüllt zu bekommen, abhängig von der Produktidee
+# Ruta para rellenar un Bloque de Construcción dado, dependiendo de la idea de producto
 @app.route('/prefill_building_block', methods=["POST"])
 def prefill_building_block():
 
     product_idea = request.json["product_idea"]
     building_block= request.json["building_block"]
-    #Prompt gibt die Syntax der JSON. Dabei doppelte geschweifte klammern, sodass die Struktur richtig an die AI gesendet wird
+    # El prompt define la sintaxis del JSON. Doble llave para que la estructura se envíe correctamente a la IA
     prompt = f'''Your role: An AI Business Model Development Assistant.
     Task: I am Building a Business Model Canvas. Provide an example of the building block I tell you for said product idea as a JSON object. Example Input product Idea: Bakery. Example Building block: Value Propositions Example output: 
     {{
@@ -90,15 +86,15 @@ def prefill_building_block():
      Input: The Product Idea: {product_idea}  \\n The Building Block: {building_block} \\n
      Output:'''    
 
-    # Ausführen der API Request und Vorbereitung der JSON-Antwort
+    # Ejecutar la petición a la API y preparar la respuesta JSON
     output = llm([{"role": "user", "content": prompt}], max_tokens=1000)
     output_index = output.index("{")
     output_formatted = output[output_index:]
 
-    return jsonify(json.loads(output_formatted))  # Return die JSON Antwort
+    return jsonify(json.loads(output_formatted))  # Devolver la respuesta JSON
 
 
-#Route um ein Example Value Proposition Canvas für eine gegebene Produktidee, Value Proposition und Customer Segments zu erhalten.
+# Ruta para obtener un ejemplo de Value Proposition Canvas para una idea de producto dada, Value Proposition y Customer Segments.
 @app.route('/exampleVPC', methods=["POST"])
 def example_value_proposition_canvas():
     product_idea = request.json["productIdea"]
@@ -134,15 +130,15 @@ Example Output:
     output_formatted = output[output_index:]
     return jsonify(json.loads(output_formatted))
 
-#Route für die Correctness Checker Funktion im BMC
+# Ruta para la función Correctness Checker en el BMC
 @app.route("/check_correctness", methods=["POST"])
 def check_correctness():
-    # Extrahiere die Inputs der eingehenden Anfrage
+    # Extraer las entradas de la petición entrante
     inputs_data = request.json["inputs_data"]
     chat_input = request.json["chat_input"]
     product_idea = request.json["product_idea"]
 
-    # Vorbereiten der message für GPT
+    # Preparar el mensaje para GPT
     message = f'''Your role: An AI Business Model Development Assistant.
     Task:I'm Building a Business Model Canvas. The Product Idea: {product_idea}. \\n  The inputs for the building blocks are: \\n'''
     for block, input_value in inputs_data.items():
@@ -151,18 +147,18 @@ def check_correctness():
     message += '''\\nWork as a correctness checker. Check for syntax and semantic mistakes and general mistakes at filling out the canvas. Also check if the inputs fit to their building block. Correctness check:'''
 
     check_result = llm([{"role": "user", "content": message}], max_tokens=1000)
-    # Return das Ergebnis als JSON-Objekt
+    # Devolver el resultado como objeto JSON
     return jsonify({"check_result": check_result})
 
-#Route für die Correctness Checker Funktion im VPC
+# Ruta para la función Correctness Checker en el VPC
 @app.route("/check_correctness_vpc", methods=["POST"])
 def check_correctness_vpc():
-    # Extrahiere die Inputs der eingehenden Anfrage
+    # Extraer las entradas de la petición entrante
     inputs_data = request.json["inputs_data"]
     chat_input = request.json["chat_input"]
     product_idea = request.json["product_idea"]
 
-    # Vorbereiten der message für GPT
+    # Preparar el mensaje para GPT
     message = f'''Your role: An AI Business Model Development Assistant.
     Task:I'm Building a Value Proposition Canvas as proposed from Osterwalder and Pigneur which makes a Customer Profile and a Value Proposition in order to to improve the Value Proposition and the Customer segments of a Business Model Canvas and create a match between the customer needs and my value offering. 
     Also remember there should be the fit-phase where you match the pains and gains with the pain relievers and gain creators. The Product Idea: {product_idea}. \\n  The inputs for the canvas blocks are: \\n'''
@@ -172,18 +168,18 @@ def check_correctness_vpc():
     message += '''\\nWork as a correctness checker. Check for syntax and semantic mistakes and general mistakes at filling out the canvas. Also check if the inputs fit to their building block. Correctness check:'''
     
     check_result = llm([{"role": "user", "content": message}], max_tokens=1000)
-    # Return das Ergebnis als JSON-Objekt
+    # Devolver el resultado como objeto JSON
     return jsonify({"check_result": check_result})
 
-#Route für die inhaltliche Evaluierfunktion
+# Ruta para la función de evaluación de contenido
 @app.route("/evaluate_all_inputs", methods=["POST"])
 def evaluate_all_inputs():
-    # Extrahiere die Inputs der eingehenden Anfrage
+    # Extraer las entradas de la petición entrante
     inputs_data = request.json["inputs_data"]
     chat_input = request.json["chat_input"]
     product_idea = request.json["product_idea"]
 
-    # Vorbereiten der message für GPT
+    # Preparar el mensaje para GPT
     message = f'''Your role: An AI Business Model Development Assistant.
     Task:I'm Building a Business Model Canvas. The Product Idea: {product_idea}. \\n  The inputs for the building blocks are: \\n'''
     for block, input_value in inputs_data.items():
@@ -192,19 +188,19 @@ def evaluate_all_inputs():
 
     evaluation_result = llm([{"role": "user", "content": message}], max_tokens=1000)
 
-    # Return das Ergebnis als JSON-Objekt
+    # Devolver el resultado como objeto JSON
     return jsonify({"evaluation_result": evaluation_result})
 
 
-#Route für die inhaltliche Evaluierfunktion auf VPC Ebene
+# Ruta para la función de evaluación de contenido a nivel VPC
 @app.route("/evaluate_vpc", methods=["POST"])
 def evaluate_vpc():
-    # Extrahiere die Inputs der eingehenden Anfrage
+    # Extraer las entradas de la petición entrante
     inputs_data = request.json["inputs_data"]
     chat_input = request.json["chat_input"]
     product_idea = request.json["product_idea"]
 
-    # Vorbereiten der message für GPT
+    # Preparar el mensaje para GPT
     message = f'''Your role: An AI Business Model Development Assistant.
     Task:I'm Building a Value Proposition Canvas as proposed from Osterwalder and Pigneur which makes a Customer Profile and a Value Proposition in order to to improve the Value Proposition and the Customer segments of a Business Model Canvas and create a match between the customer needs and my value offering. 
     Also remember there should be the fit-phase where you match the pains and gains with the pain relievers and gain creators. The Product Idea: {product_idea}. \\n  The inputs for the canvas blocks are: \\n'''
@@ -213,11 +209,11 @@ def evaluate_vpc():
     message += f'''chat input: {chat_input}  \\n Give me Feedback. Would you recommend alternatives? Evaluation:'''
 
     evaluation_result = llm([{"role": "user", "content": message}], max_tokens=1000)
-    # Return das Ergebnis als JSON-Objekt
+    # Devolver el resultado como objeto JSON
     return jsonify({"evaluation_result": evaluation_result})
 
 
-# Route für die Evaluierfunktion auf Building Block Ebene
+# Ruta para la función de evaluación a nivel de Bloque de Construcción
 @app.route("/evaluate_building_block", methods=["POST"])
 def evaluate_building_block():
 
@@ -229,33 +225,33 @@ def evaluate_building_block():
     message = f'''Your role: An AI Business Model Development Assistant.
 Task:I'm Building a Business Model Canvas. The Product Idea: {product_idea} \\n The building block: {building_block} \\n The Idea for the Building block: {building_block_input}  \\n chat input: {chat_input}  \\n Give me Feedback. Would you recommend alternatives? Evaluation:'''
     evaluation_result = llm([{"role": "user", "content": message}], max_tokens=1000)
-    # Return das Ergebnis als JSON-Objekt
+    # Devolver el resultado como objeto JSON
     return jsonify({"evaluation_result": evaluation_result})
 
-#Route für die Business Model Patterns Funktion
+# Ruta para la función Business Model Patterns
 @app.route("/get_business_model_patterns", methods=["POST"])
 def get_business_model_patterns():
-    # Extrahiere die Inputs der eingehenden Anfrage
+    # Extraer las entradas de la petición entrante
     chat_input = request.json["chat_input"]
     product_idea = request.json["product_idea"]
 
-    # Vorbereiten der message für GPT
+    # Preparar el mensaje para GPT
     message = f'''Your role: An AI Business Model Development Assistant.
     Task:I'm Building a Business Model Canvas. The Product Idea: {product_idea}. \\n chat input: {chat_input}  \\n I want to be more creative in building my BMC and need Business Model Patterns for it. Give me relevant Business Model Patterns for my use case. Output:'''
 
     evaluation_result = llm([{"role": "user", "content": message}], max_tokens=1000)
 
-    # Return das Ergebnis als JSON-Objekt
+    # Devolver el resultado como objeto JSON
     return jsonify({"evaluation_result": evaluation_result})
 
-#Route um What-If Stimuli für eine gegebene Produktidee zu erhalten
+# Ruta para obtener estímulos "What-If" para una idea de producto dada
 @app.route("/get_what_if_stimuli", methods=["POST"])
 def get_what_if_stimuli():
-    # Extrahiere die Inputs der eingehenden Anfrage
+    # Extraer las entradas de la petición entrante
     chat_input = request.json["chat_input"]
     product_idea = request.json["product_idea"]
 
-    # Vorbereiten der message für GPT
+    # Preparar el mensaje para GPT
     message = f'''Your role: An AI Business Model Development Assistant.
     Task:I'm Building a Business Model Canvas. I want to be more creative in building my BMC and need What-If questions for it. Give me relevant What-If questions for my use case. 
     “What if” questions help us break free of constraints imposed by current models. They should provoke us and challenge our thinking. They should disturb us as intriguing, difficult-to-execute propositions. 
@@ -267,10 +263,10 @@ def get_what_if_stimuli():
 
     whatif_result = llm([{"role": "user", "content": message}], max_tokens=1000)
 
-    # Return das Ergebnis als JSON-Objekt
+    # Devolver el resultado como objeto JSON
     return jsonify({"whatif_result": whatif_result})
 
-# Route um Tips für die Entwicklung des BMC zu erhalten
+# Ruta para obtener consejos para desarrollar el BMC
 @app.route("/tips_business_model_canvas", methods=["POST"])
 def tips_business_model_canvas():
 
@@ -280,13 +276,13 @@ def tips_business_model_canvas():
     message = f'''Your role: An AI Business Model Development Assistant.
     Task:I'm Building a Business Model Canvas. The Product Idea: {product_idea} \\n chat input: {chat_input}  \\n Instruction: Mention the Value Proposition Canvas, a subsite on the webApp \\n What tips do you have for developing the Business Model Canvas? What are the steps I should take? Tips:'''
     tips_result = llm([{"role": "user", "content": message}], max_tokens=1000)
-    # Return das Tipps-Ergebnis als JSON-Objekt
+    # Devolver el resultado de consejos como objeto JSON
     return jsonify({"tips_result": tips_result})
 
-# Route um Tipps im derzeitigen Building Block zu erhalten
+# Ruta para obtener consejos para el Bloque de Construcción actual
 @app.route("/tips_building_block", methods=["POST"])
 def tips_building_block():
-    # Extrahiere die Produktidee und Building Block Details aus der eingehenden Anfrage
+    # Extraer la idea de producto y los detalles del Bloque de Construcción de la petición entrante
     product_idea = request.json["product_idea"]
     building_block = request.json["building_block"]
     building_block_input = request.json["building_block_input"]
@@ -295,11 +291,11 @@ def tips_building_block():
     message = f'''Your role: An AI Business Model Development Assistant.
     Task:I'm Building a Business Model Canvas. The Product Idea: {product_idea} \\n The building block: {building_block} \\n The Idea for the Building block: {building_block_input}  \\n chat input: {chat_input}  \\n What tips do you have for filling in this building block? What are the steps I should take? Tips:'''
     tips_result = llm([{"role": "user", "content": message}], max_tokens=1000)
-    # Return das Tipps-Ergebnis als JSON-Objekt
+    # Devolver el resultado de consejos como objeto JSON
     return jsonify({"tips_result": tips_result})
 
 
-# Route um Tipps beim VPC zu erhalten
+# Ruta para obtener consejos para el VPC
 @app.route("/tips_VPC", methods=["POST"])
 def tips_value_proposition_canvas():
 
@@ -309,60 +305,60 @@ def tips_value_proposition_canvas():
     message = f'''Your role: An AI Business Model Development Assistant.
     Task:I'm Building a Value Proposition Canvas as proposed from Osterwalder and Pigneur which makes a Customer Profile and a Value Proposition in order to to improve the Value Proposition and the Customer segments of a Business Model Canvas and create a match between the customer needs and my value offering. Also explain about the fit-phase where you match the pains and gains with the pain relievers and gain creators. The Product Idea: {product_idea} chat input: {chat_input}  \\n What tips do you have for developing the Value Proposition Canvas? What steps should I take? Tips:'''
     tips_result = llm([{"role": "user", "content": message}], max_tokens=1000)
-    # Return das Tipps-Ergebnis als JSON-Objekt
+    # Devolver el resultado de consejos como objeto JSON
     return jsonify({"tips_result": tips_result})
 
-#Route für die process page
+# Ruta para la página de proceso
 @app.route('/process')
 def process():
     return render_template('process.html')
 
-#Route für die key partners page
+# Ruta para la página key partners
 @app.route('/key-partners')
 def key_partners():
     return render_template('buildingblocks/key-partners.html')
 
-#Route für die key activities page
+# Ruta para la página key activities
 @app.route('/key-activities')
 def key_activities():
     return render_template('buildingblocks/key-activities.html')
 
-##Route für die key resources page
+## Ruta para la página key resources
 @app.route('/key-resources')
 def key_resources():
     return render_template('buildingblocks/key-resources.html')
 
-##Route für die value proposition page
+## Ruta para la página value proposition
 @app.route('/value-propositions')
 def value_proposition():
     return render_template('/buildingblocks/value-propositions.html')
 
-#Route für die customer segments page
+# Ruta para la página customer segments
 @app.route('/customer-segments')
 def customer_segments():
     return render_template('buildingblocks/customer-segments.html')
 
-#Route für die customer relationships page
+# Ruta para la página customer relationships
 @app.route('/customer-relationships')
 def customer_relationships():
     return render_template('buildingblocks/customer-relationships.html')
 
-#Route für die channels page
+# Ruta para la página channels
 @app.route('/channels')
 def channels():
     return render_template('buildingblocks/channels.html')
 
-#Route für die cost structure page
+# Ruta para la página cost structure
 @app.route('/cost-structure')
 def cost_structure():
     return render_template('buildingblocks/cost-structure.html')
 
-#Route für die revenue streams page
+# Ruta para la página revenue streams
 @app.route('/revenue-streams')
 def revenue_streams():
     return render_template('buildingblocks/revenue-streams.html')
 
-#Route für die the value proposition canvas
+# Ruta para el Value Proposition Canvas
 @app.route('/value-proposition-canvas')
 def value_proposition_canvas():
     return render_template('value-proposition-canvas.html')
