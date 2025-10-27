@@ -38,3 +38,4 @@ Necesitas añadir un fichero .env, donde añades tu llave de API para OpenAI (mi
 - [Licencia](LICENSE)
 - [Hito 1](docs/hito1.md)
 - [Hito 2](docs/hito2.md)
+- [Hito 3](docs/hito3.md)
