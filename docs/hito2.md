@@ -9,8 +9,18 @@ En este hito apliqué TDD y configuré la integración continua del proyecto. Po
 - CI / Integración continua: GitHub Actions para ejecutar los tests en cada push y pull request. Tiene la ventaja que es gratuito para repos públicos, tiene integración directa con GitHub y hay matrices de Python.
 
 ### Tests implementados
-- /prefill_building_block con vcrpy: graba y reproduce un caso donde se rellena un bloque del BMC a partir de una idea de producto.
-- /example_canvas_by_product con vcrpy: graba y reproduce un caso donde se genera un Canvas completo de ejemplo para una idea de producto.
+
+- /test_example_canvas_vcr con vcrpy: graba y reproduce un caso donde se genera un Canvas completo de ejemplo para una idea de producto.
+  - Hace una petición POST a /example_canvas_by_product con la idea de producto bakery.
+  - Comprueba la respuesta: código 200 y que exista el campo value-propositions con texto.
+  - Revisa la llamada real grabada con vcrpy: que haya exactamente 1 petición a https://api.openai.com/v1/responses, método POST.
+  - Valida el cuerpo enviado: modelo empieza por gpt-5-mini, max_output_tokens es 2000, y que el prompt contenga bakery y hable de building blocks.
+ 
+- /test_prefill_building_block_vcr con vcrpy: graba y reproduce un caso donde se rellena un bloque del BMC a partir de una idea de producto.
+  - Hace un POST a /prefill_building_block con product_idea=bakery y building_block=value-propositions.
+  - Comprueba la respuesta: 200 y value-propositions con texto.
+  - Verifica con vcrpy que hubo solo 1 petición externa al endpoint de OpenAI, método POST.
+  - Revisa el cuerpo: modelo empieza por gpt-5-mini, max_output_tokens es 1000, input es una lista con un mensaje de usuario y que el contenido incluye bakery y la frase building block.
 
 ### Cómo se ejecuta
 - Local: make test (el primer run graba la cassette; los siguientes se reproducen). Requisito: Tienes que tener make.exe instalado en tu dispositivo.
@@ -22,13 +32,14 @@ En cada push o pull request, GitHub Actions ejecuta automáticamente los tests d
 #### Ejecución local de tests:
 En local los tests se ejecutan de forma sencilla con Makefile.
 - Todos los tests: make test
-- Un test concreto: pytest tests/test_api_vcr.py -q
+- Un test concreto: pytest tests/test_example_canvas_vcr.py -q
 <img width="2159" height="1191" alt="image" src="https://github.com/user-attachments/assets/48b523ea-204d-4df1-a30f-356faca68730" />
 
 ### Cobertura de funcionas
 - Rellenar un building block con datos generados por la API (test con vcrpy).
 - Rellenar el Canvas completo con datos generados por la API (test con vcrpy).
 - Futuro: usuarios, grupos y persistencia en nube (se añadirán tests de integración con DB usando testcontainers).
+
 
 
 
