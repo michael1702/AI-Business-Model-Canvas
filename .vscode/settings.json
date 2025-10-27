@@ -3,5 +3,7 @@
         "tests"
     ],
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+    "python.testing.pytestEnabled": true,
+    "makefile.makefilePath": "C:\\Users\\micha\\AI-Business-Model-Canvas\\Makefile",
+    "makefile.makePath": "C:\\Users\\micha\\scoop\\apps\\make\\current\\bin\\make.exe"
 }

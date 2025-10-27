@@ -11,6 +11,7 @@ MarkupSafe
 numpy
 openai
 openpyxl
+make
 pandas
 pandas-stubs
 pycodestyle
