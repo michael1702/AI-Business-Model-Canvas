@@ -1,32 +1,32 @@
-# app.py (im Projekt-Root)
+# app.py (project root)
 import os
 from flask import Flask, render_template
 from dotenv import load_dotenv
 from bmc_service.adapters.openai_client import OpenAIClient
 from bmc_service.app_logging import setup_logging
 
-# .env laden (JWT_SECRET etc.)
+# Load .env (JWT_SECRET etc.)
 load_dotenv()
 
-# Blueprints importieren
+# Import blueprints
 from bmc_service.api import api as bmc_api
 from user_service.api import api as user_api
 
 def create_app():
     app = Flask(
         __name__,
-        # Bis dein Frontend separiert ist, dienen wir die Assets aus bmc_service
+        # Until your frontend is separated, serve assets from bmc_service
         static_folder="frontend/static",
         template_folder="frontend/templates",
     )
 
-    # Blueprints registrieren
+    # Register blueprints
     app.register_blueprint(bmc_api)   # -> /api/v1/bmc/...
     app.register_blueprint(user_api)  # -> /api/v1/users/...
-    app.config["LLM"] = OpenAIClient()   # <- Service-Injektion
-    setup_logging(app)                   # <- Logging zentral aktivieren
+    app.config["LLM"] = OpenAIClient()   # <- Service injection
+    setup_logging(app)                   # <- Enable centralized logging
 
-    # HTML-Seiten (deine bestehenden Routen)
+    # HTML pages (your existing routes)
     @app.get("/")
     def index():
         return render_template("index.html")

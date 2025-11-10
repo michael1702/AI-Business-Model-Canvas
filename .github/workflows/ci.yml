@@ -19,15 +19,20 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install runtime deps (service)
+      - name: Install runtime deps (both services, because app.py imports both)
         run: |
           python -m pip install -U pip
-          pip install -r ${{ matrix.service }}/requirements.txt
+          pip install -r bmc_service/requirements.txt
+          pip install -r user_service/requirements.txt
 
-      - name: Install test deps
+      - name: Install test deps (if not in reqs)
         run: |
           pip install pytest pytest-cov vcrpy
 
       - name: Run tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+          JWT_SECRET: test-super-secret
+          OPENAI_API_KEY: sk-test-placeholder
         run: |
           pytest -q tests/${{ matrix.service }}
