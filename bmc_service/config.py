@@ -1,7 +1,7 @@
 from flask import Flask
-from .api import api
-from .adapters.openai_client import OpenAIClient
-from .logging import setup_logging
+from api import api
+from adapters.openai_client import OpenAIClient
+from app_logging import setup_logging
 
 def create_app():
     app = Flask(__name__,

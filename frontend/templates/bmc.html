@@ -9,7 +9,8 @@
   <link rel="shortcut icon" type="image/x-icon" href="../static/favicon/favicon-32x32.ico">
   <link rel="icon" type="image/png" sizes="96x96" href="../static/favicon/favicon-96x96.png">
   <script>
-      let inputData = JSON.parse(sessionStorage.getItem("inputData")) || {};  
+    // vorhandene Daten aus Session
+    window.inputData = JSON.parse(sessionStorage.getItem("inputData") || "{}");
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
@@ -25,6 +26,10 @@
     <nav class="sidebar-menu">
       <ul>
         <li><a href="/">Main Page</a></li>
+        <li data-auth="user"><a href="/my-bmcs">My BMCs</a></li>
+        <li data-auth="user"><a href="/profile">Profile</a></li>
+        <li data-auth="user"><button id="logout-btn" class="linklike">Sign out</button></li>
+
         <li class="submenu">
           <a href="#building-blocks" onclick="toggleBuildingBlocks()">
             Building Blocks
@@ -162,13 +167,15 @@
         </div>
       </div>
 
-      <div class="button-container">
-        <button class="save-button" type="submit">Save Changes</button>
-        <button id="export-button">Export to PNG</button>
-        <button id="export-data-button" type="button" onclick="exportLocalStorage()">Export Data</button>
-        <button id="import-data-button" type="button" onclick="importLocalStorage()">Import Data</button>
+    <div class="button-container">
+      <button class="save-button" id="save-button" type="button">Save</button>
+      <button class="save-button" id="save-new-button" type="button">Save as New</button>
+      <button id="export-button" type="button">Export to PNG</button>
+      <button id="export-data-button" type="button" onclick="exportLocalStorage()">Export Data</button>
+      <button id="import-data-button" type="button" onclick="importLocalStorage()">Import Data</button>
+    </div>
+    <p id="save-msg" class="msg"></p>
 
-      </div>
 
       <!-- Note container -->
       <div id="note-container" class="note-container">
@@ -270,9 +277,20 @@
 </div>
 
   
-<script defer src="{{ url_for('static', filename='scripts/app_config.js') }}"></script>
-<script defer src="{{ url_for('static', filename='scripts/index.js') }}"></script>
+  <p id="save-msg" class="msg"></p>
+
+  <script defer src="{{ url_for('static', filename='scripts/app_config.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='scripts/bmc_page.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='scripts/index.js') }}"></script>  
+  <script defer>
+  document.addEventListener('DOMContentLoaded', () => {
+    ensureAuthUI();
+    document.getElementById('logout-btn')?.addEventListener('click', () => {
+      clearToken(); sessionStorage.removeItem('currentBmc'); location.href='/';
+    });
+  });
+</script>
 
 </body>
-
 </html>
+

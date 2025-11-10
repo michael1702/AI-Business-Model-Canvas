@@ -501,32 +501,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
-//Sidebar aktivieren oder deaktivieren
-function toggleSidebar() {
-  document.getElementById("sidebar").classList.toggle("collapsed");
-}
 
-//Eventlistener für Sidebar Toggle, welcher den Hauptcontainer verschiebt
-document.querySelector(".sidebar-toggle").addEventListener("click", function() {
-  const mainContent = document.querySelector("#main-content");
-  const sidebarMenu = document.querySelector(".sidebar-menu");
-
-  sidebarMenu.classList.toggle("open");
-  mainContent.classList.toggle("sidebar-open");
-});
-
-//Funktion um die Building blocks aufzuklappen
-function toggleBuildingBlocks() {
-  const buildingBlocksMenu = document.getElementById("building-blocks-menu");
-  const buildingBlocksArrow = document.getElementById("building-blocks-arrow");
-  if (buildingBlocksMenu.style.display === "none") {
-    buildingBlocksMenu.style.display = "block";
-    buildingBlocksArrow.innerHTML = "&#x25BC;";
-  } else {
-    buildingBlocksMenu.style.display = "none";
-    buildingBlocksArrow.innerHTML = "&#x25B6;";
-  }
-}
 
 //Dropdown Canvas Template
 function updateCanvasTemplate() {
@@ -758,3 +733,42 @@ function toggleHelpWindow() {
     helpContainer.style.bottom = "20px";
   }
 }
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const guest = document.getElementById('guest-actions');
+  const user = document.getElementById('user-actions');
+  const emailSpan = document.getElementById('user-email');
+  const logoutBtn = document.getElementById('logout-btn');
+
+  async function loadMe() {
+    const token = getToken();
+    if (!token) {
+      guest.style.display = '';
+      user.style.display = 'none';
+      return;
+    }
+    try {
+      const r = await fetch(API('/users/me'), {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!r.ok) throw new Error('unauthorized');
+      const me = await r.json();
+      emailSpan.textContent = me.email;
+      guest.style.display = 'none';
+      user.style.display = '';
+    } catch (e) {
+      clearToken();
+      guest.style.display = '';
+      user.style.display = 'none';
+    }
+  }
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      clearToken();
+      location.reload();
+    });
+  }
+
+  loadMe();
+});

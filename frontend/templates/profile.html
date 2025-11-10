@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+  <header class="topbar">
+
+  </header>
+<!-- Left Sidebar (same everywhere) -->
+<aside id="sidebar" class="sidebar">
+  <button class="sidebar-toggle" onclick="toggleSidebar()">&#9776;</button>
+  <nav class="sidebar-menu">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li data-auth="user"><a href="/my-bmcs">My BMCs</a></li>
+      <li data-auth="user"><a href="/profile">Profile</a></li>
+      <li data-auth="guest"><a href="/auth">Sign in</a></li>
+      <li data-auth="user"><button id="logout-btn" class="linklike">Sign out</button></li>
+
+      <li class="submenu">
+        <a href="#building-blocks" onclick="toggleBuildingBlocks()">
+          Building Blocks
+          <span id="building-blocks-arrow" class="arrow">&#x25B6;</span>
+        </a>
+        <ul id="building-blocks-menu" style="display: none;">
+          <li><a href="/key-partners">Key Partners</a></li>
+          <li><a href="/key-activities">Key Activities</a></li>
+          <li><a href="/key-resources">Key Resources</a></li>
+          <li><a href="/value-propositions">Value Propositions</a></li>
+          <li><a href="/customer-segments">Customer Segments</a></li>
+          <li><a href="/customer-relationships">Customer Relationships</a></li>
+          <li><a href="/channels">Channels</a></li>
+          <li><a href="/cost-structure">Cost Structure</a></li>
+          <li><a href="/revenue-streams">Revenue Streams</a></li>
+        </ul>
+      </li>
+
+      <li><a href="/process">Process</a></li>
+      <li><a href="/value-proposition-canvas">Value Proposition Canvas</a></li>
+    </ul>
+  </nav>
+</aside>
+
+  <main class="container narrow">
+    <section class="card">
+      <h2>Your Account</h2>
+      <p><strong>Email:</strong> <span id="me-email">…</span></p>
+      <p class="muted">More profile fields can be added later.</p>
+    </section>
+  </main>
+
+  <script defer src="{{ url_for('static', filename='scripts/app_config.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='scripts/index.js') }}"></script>  
+
+    <script defer>
+    document.addEventListener('DOMContentLoaded', () => {
+        ensureAuthUI();
+        document.getElementById('logout-btn')?.addEventListener('click', () => {
+        clearToken();
+        sessionStorage.removeItem('currentBmc');
+        location.href = '/';
+        });
+    });
+    </script>
+
+</body>
+</html>

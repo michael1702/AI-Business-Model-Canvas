@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>AI Business Model Canvas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <h1>AI Business Model Canvas</h1>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/process">Process</a>
+      <a href="/value-proposition-canvas">VPC</a>
+      <a id="auth-link" href="/auth">Sign in</a>
+      <a id="my-bmcs-link" href="/my-bmcs" style="display:none">My BMCs</a>
+      <a id="profile-link" href="/profile" style="display:none">Profile</a>
+      <button id="logout-btn" class="button small" style="display:none">Sign out</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Welcome</h2>
+      <p>Sign in to view and edit your Business Model Canvas.</p>
+      <p><a class="button button-primary" href="/auth">Sign in / Register</a></p>
+    </section>
+  </main>
+
+  <script defer src="{{ url_for('static', filename='scripts/app_config.js') }}"></script>
+  <script defer>
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = getToken();
+      const auth = document.getElementById('auth-link');
+      const my = document.getElementById('my-bmcs-link');
+      const prof = document.getElementById('profile-link');
+      const out = document.getElementById('logout-btn');
+
+      function setLoggedInUI(on) {
+        auth.style.display = on ? 'none' : '';
+        my.style.display = on ? '' : 'none';
+        prof.style.display = on ? '' : 'none';
+        out.style.display = on ? '' : 'none';
+      }
+
+      setLoggedInUI(!!token);
+      out?.addEventListener('click', () => { clearToken(); sessionStorage.removeItem('currentBmc'); location.reload(); });
+    });
+  </script>
+</body>
+</html>

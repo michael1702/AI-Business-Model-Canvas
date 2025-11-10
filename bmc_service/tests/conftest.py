@@ -1,7 +1,7 @@
 import os
 import pytest
 import vcr
-from service.config import create_app
+from app import create_app
 
 from dotenv import load_dotenv
 
