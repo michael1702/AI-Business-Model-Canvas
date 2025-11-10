@@ -79,6 +79,9 @@ De momento **sin BD**: lado servidor mínimo (memoria) y **almacenamiento local 
 * Al abrir un BMC guardado, a veces la **Product Idea** no se actualiza si hay estado previo del navegador.
 * Sidebar homogénea en todas las páginas: aún se está afinando el orden de carga de scripts. (Se resolverá junto con la persistencia real).
 
+## Prueba que los tests funcionan
+<img width="2137" height="924" alt="image" src="https://github.com/user-attachments/assets/518d1962-fabd-4117-b3f4-74c4e8bcb987" />
+
 ## Próximos pasos
 
 * **Base de Datos** para usuarios y BMCs; migración del almacenamiento en memoria.
