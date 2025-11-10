@@ -151,7 +151,8 @@
           </div>
       </div>
 
-    <script src="../static/scripts/building-block.js"> </script>
+    <script defer src="{{ url_for('static', filename='scripts/app_config.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='scripts/building-block.js') }}"></script>
     <script>
     //Event Listener, welche den building block angeben
     const blockType = "channels"; 

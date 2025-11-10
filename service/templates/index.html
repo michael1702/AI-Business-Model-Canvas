@@ -270,7 +270,9 @@
 </div>
 
   
-<script src="../static/scripts/index.js"></script>  
+<script defer src="{{ url_for('static', filename='scripts/app_config.js') }}"></script>
+<script defer src="{{ url_for('static', filename='scripts/index.js') }}"></script>
+
 </body>
 
 </html>

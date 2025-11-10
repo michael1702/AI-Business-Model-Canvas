@@ -75,7 +75,7 @@ async function sendMessage(event) {
 
     console.log(messages);
 
-    const response = await fetch("/chat_with_gpt4", {
+    const response = await fetch(API("/chat"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -129,7 +129,7 @@ async function evaluateBuildingBlock(blockType) {
     return;
   }
   // API Anfrage der Evaluation
-  const response = await fetch("/evaluate_building_block", {
+  const response = await fetch(API("/bmc/evaluate_block"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -166,7 +166,7 @@ async function tipsBuildingBlock(blockType,blockTitle) {
     chatInput = `Give me tips for developing the ${blockTitle}.`;
   }
   // API Anfrage nach Tipps
-  const response = await fetch("/tips_building_block", {
+  const response = await fetch(API("/bmc/tips_block"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -197,7 +197,7 @@ async function prefillBuildingBlock(blockType) {
 
   const product_idea = localStorage.getItem("product-idea");
 
-  const response = await fetch('/prefill_building_block', {
+  const response = await fetch(API('/bmc/prefill'), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

@@ -63,7 +63,7 @@ async function sendMessage(event) {
       messages.push({ role, content });
     });
 
-    const response = await fetch("/chat_with_gpt4", {
+    const response = await fetch(API("/chat"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -220,7 +220,7 @@ sendButton.addEventListener("click", async (event) => {
 
 //Beispielcanvas für aktuelles Produkt anfordern
 async function getExampleCanvas(product_idea) {
-  const response = await fetch('/example_canvas_by_product', {
+  const response = await fetch(API('/bmc/example'), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -277,7 +277,7 @@ async function checkCorrectness() {
     }
   });
 
-  const response = await fetch("/check_correctness", {
+  const response = await fetch(API("/bmc/check_correctness"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -329,7 +329,7 @@ async function evaluateAllInputs() {
 
   console.log(inputsData);
 
-  const response = await fetch("/evaluate_all_inputs", {
+  const response = await fetch(API("/bmc/evaluate"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -372,7 +372,7 @@ async function getBusinessModelPatterns() {
 
   console.log(inputsData);
 
-  const response = await fetch("/get_business_model_patterns", {
+  const response = await fetch(API("/bmc/patterns"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -415,7 +415,7 @@ async function getWhatIf() {
 
   console.log(inputsData);
 
-  const response = await fetch("/get_what_if_stimuli", {
+  const response = await fetch(API("/bmc/what_if"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -456,7 +456,7 @@ async function tipsBusinessModelCanvas() {
     chatInput = `Give me tips for developing the Business Model Canvas.`;
   }
   // API Anfrage nach Tipps
-  const response = await fetch("/tips_business_model_canvas", {
+  const response = await fetch(API("/bmc/tips"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

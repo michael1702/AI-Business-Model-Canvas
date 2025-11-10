@@ -1,6 +1,7 @@
 import os
 import pytest
 import vcr
+from service.config import create_app
 
 from dotenv import load_dotenv
 
@@ -21,6 +22,5 @@ if not os.getenv("OPENAI_API_KEY"):
 #cliente de pruebas de Flask y helpers
 @pytest.fixture
 def client():
-    #importar la app.py
-    from app import app
+    app = create_app()
     return app.test_client()

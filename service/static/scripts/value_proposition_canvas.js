@@ -150,7 +150,7 @@ function toggleButtons() {
         messages.push({ role, content });
       });
   
-      const response = await fetch("/chat_with_gpt4", {
+      const response = await fetch(API("/chat"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -209,7 +209,7 @@ function toggleBuildingBlocks() {
 
 //Funktion um ein Value Proposition Canvas Beispiel zu bekommen
 async function getValuePropositionCanvas(productIdea, valuePropositions, customerSegments) {
-  const response = await fetch('/exampleVPC', {
+  const response = await fetch(API('/vpc/example'), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -242,7 +242,7 @@ async function tipsFunction() {
     chatInput = `Give me tips for developing the Value Proposition Canvas.`;
   }
   // API Anfrage nach Tipps
-  const response = await fetch("/tips_VPC", {
+  const response = await fetch(API("/vpc/tips"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -291,7 +291,7 @@ async function checkCorrectness() {
     }
   });
 
-  const response = await fetch("/check_correctness_vpc", {
+  const response = await fetch(API("/vpc/check_correctness"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -344,7 +344,7 @@ async function evaluateAllInputs() {
 
   console.log(inputsData);
 
-  const response = await fetch("/evaluate_vpc", {
+  const response = await fetch(API("/vpc/evaluate"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

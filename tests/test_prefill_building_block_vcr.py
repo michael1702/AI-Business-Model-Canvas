@@ -9,7 +9,7 @@ def test_prefill_building_block_vcr(client):
     # Context Manager: Zugriff auf die Requests in der Kassette
     with vcr.use_cassette(CASSETTE_PATH) as cass:
         resp = client.post(
-            "/prefill_building_block",
+            "/api/v1/bmc/prefill_building_block",
             json={"product_idea": "bakery", "building_block": "value-propositions"},
         )
 

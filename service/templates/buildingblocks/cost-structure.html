@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Relationships</title>
+    <title>Cost Structure</title>
+    <link rel="stylesheet" href="../../static/styles/building-block.css">
     <link rel="shortcut icon" type="image/x-icon" href="../static/favicon/favicon-32x32.ico">
     <link rel="icon" type="image/png" sizes="96x96" href="../static/favicon/favicon-96x96.png">
-
-    <link rel="stylesheet" href="../../static/styles/building-block.css">
     <script>
         // Include the data from sessionStorage
         let inputData = JSON.parse(sessionStorage.getItem("inputData")) || {};
@@ -15,7 +14,7 @@
 </head>
 <body>
     <div class="topbar">
-        <h1>Customer Relationships</h1>
+        <h1>Cost Structure</h1>
         <button class="AI-button" onclick="toggleChat()">AI</button>
       </div>
     <div id="sidebar" class="sidebar">
@@ -70,22 +69,23 @@
                   <button class="popup-button" data-target="trigger-questions">Trigger Questions</button>
                   <button class="popup-button" data-target="notes">Notes</button>
                 </div>
-                <div id="how-to-fill" class="popup-text" style="display:none"><h3> Description of the Customer Relationships</h3> The Customer Relationships Building Block describes the types of relationships a company establishes with specific Customer Segments. It is important for a company to clarify the type of relationship it wants to establish with each Customer Segment, as these relationships deeply influence the overall customer experience. Relationships may be driven by motivations such as customer acquisition, customer retention, or boosting sales.</p>
+                <div id="how-to-fill" class="popup-text" style="display:none"><h3>Description of the Cost Structure</h3>
+                 <p>The Cost Structure Building Block describes all costs incurred while operating under a particular business model. Costs happen during creating and delivering value, maintaining customer relationships, and generating revenue. The costs need to be calculated after defining Key Resources, Key Activities, and Key Partnerships. Cost Structures can be cost-driven or value-driven, with cost-driven business models focused on minimizing costs wherever possible, while value-driven business models prioritize value creation. </p></div>
+                <div id="what-to-remember" class="popup-text" style="display:none"><h3>What to remember about Cost Structure</h3>
+                  <p>When developing the Cost Structure Building Block, remember the following:</p>
+                  <ul>
+                  <li>Identify and prioritize the most important costs associated with the business model. This includes assessing the unique needs and requirements of the business model and identifying the costs that are necessary to create and deliver value, maintain customer relationships, and generate revenue.</li>
+                  <li>Evaluate the trade-offs between cost and value. This includes balancing the costs of the business model with the value it creates, and identifying opportunities to reduce costs without sacrificing value.</li>
+                  <li>Evaluate the cost-revenue relationship to develop a profitable business model. This involves assessing the costs of the business model ensuring that the revenue generated will be sufficient to cover these costs and generate a profit. </li>
+                  <li>Assess the impact of economies of scale and scope on the cost structure.</li>
+                  <li>Develop a clear understanding of fixed and variable costs. This includes identifying costs that remain constant regardless of output (fixed costs) and costs that vary with output (variable costs), and finding ways to manage and optimize both types of costs.</li>
+                  <li>Explore opportunities to optimize the cost structure through automation, outsourcing, or other strategies.</li>
+                  </ul>
                 </div>
-                <div id="what-to-remember" class="popup-text" style="display:none"><h3>What to remember about Customer Relationships</h3>
-                  <p>When developing the Customer Relationships Building Block, consider the following:</p>
-                  <ul>
-                  <li>Clarify the type of relationship you want to establish with each Customer Segment.</li>
-                  <li>Keep the motivationds behind customer relationships in mind, such as customer acquisition, customer retention and boosting sales (upselling).</li>
-                  <li>Distinguish between different categories of customer relationships that may co-exist in your company's relationship with a particular Customer Segment, such as personal assistance, dedicated personal assistance, self-service, automated services, communities, and co-creation.</li>
-                  </ul></div>
-                <div id="trigger-questions" class="popup-text" style="display:none"><h3>Trigger Questions for Customer Relationships</h3>
-                  <ul>
-                    <li>What type of relationship does each of our Customer Segments expect us to establish and maintain with them?</li>
-                    <li>Which ones have we established?</li>
-                    <li>How costly are they?</li>
-                    <li>How are they integrated with the rest of our business model?</li>
-                </ul>
+                  <div id="trigger-questions" class="popup-text" style="display:none"><h3>Trigger Questions for Cost Structure</h3>
+                    <p>What are the most important costs inherent in our business model?</p>
+                    <p>Which Key Resources are most expensive?</p>
+                    <p>Which Key Activities are most expensive?</p>
                  </div>
                 <div id="notes" class="popup-text" style="display:none">
                   <h3>Take notes</h3>
@@ -139,11 +139,12 @@
           </div>
       </div>
 
-    <script src="../static/scripts/building-block.js"> </script>
+    <script defer src="{{ url_for('static', filename='scripts/app_config.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='scripts/building-block.js') }}"></script>
     <script>
     //Event Listener, welche den building block angeben
-    const blockType = "customer-relationships"; 
-    const blockTitle = "Customer Relationships";
+    const blockType = "cost-structure"; 
+    const blockTitle = "Cost Structure";
     loadSavedDetails(blockType, blockTitle);
     document.querySelector(".save-button").addEventListener("click", () => {
         saveDetails(blockType);

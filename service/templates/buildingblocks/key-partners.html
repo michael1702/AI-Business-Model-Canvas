@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Segments</title>
+    <title>Key Partners</title>
     <link rel="stylesheet" href="../../static/styles/building-block.css">
     <link rel="shortcut icon" type="image/x-icon" href="../static/favicon/favicon-32x32.ico">
     <link rel="icon" type="image/png" sizes="96x96" href="../static/favicon/favicon-96x96.png">
+
     <script>
         // Include the data from sessionStorage
         let inputData = JSON.parse(sessionStorage.getItem("inputData")) || {};
@@ -14,9 +15,9 @@
 </head>
 <body>
     <div class="topbar">
-        <h1>Customer Segments</h1>
+        <h1>Key Partners</h1>
         <button class="AI-button" onclick="toggleChat()">AI</button>
-    </div>
+      </div>
     <div id="sidebar" class="sidebar">
         <button id="sidebar-toggle" class="sidebar-toggle" onclick="toggleSidebar()">&#9776;</button>
         <nav class="sidebar-menu">
@@ -58,55 +59,46 @@
                       <button class="save-button">Save Changes</button>
                     </div>
                   </div>
+                  
             </div>
 
             <div class="buttons-popup-wrapper">
+              <div class="buttons-wrapper">
                 <div class="buttons-wrapper">
                   <button class="popup-button" data-target="how-to-fill">Description</button>
                   <button class="popup-button" data-target="what-to-remember">What to remember</button>
                   <button class="popup-button" data-target="trigger-questions">Trigger Questions</button>
-                  <button class="popup-button" data-target="value-proposition-canvas">Value Proposition Canvas</button>
                   <button class="popup-button" data-target="notes">Notes</button>
                 </div>
-                <div id="how-to-fill" class="popup-text" style="display:none"><h3>Description of Customer Segments</h3> <p>The Customer Segments Building Block identifies the different groups of people or organizations that an enterprise aims to reach and serve. To better satisfy customers, a company may group them into distinct segments with common needs, behaviors, or attributes. A business model may define one or several large or small customer segments, and an organization must make a conscious decision about which segments to serve and which segments to ignore. Once this decision is made, a business model can be carefully designed around a strong understanding of specific customer needs.</p>
-                <p>There are different types of Customer Segments. Here are some examples:</p>
-                  <h4>Mass market</h4>
-                  <p>Business models focused on mass markets don’t distinguish between different Customer Segments. The Value Propositions, Distribution Channels, and Customer Relationships all focus on one large group of customers with broadly similar needs and problems. This type of business model is often found in the consumer electronics sector.</p>
-                  <h4>Niche market</h4>
-                  <p>Business models targeting niche markets cater to specific, specialized Customer Segments. The Value Propositions, Distribution Channels, and Customer Relationships are all tailored to the specific requirements of a niche market. Such business models are often found in supplier-buyer relationships. For example, many car part manufacturers depend heavily on purchases from major automobile manufacturers.</p>
-                  <h4>Segmented</h4>
-                  <p>Some business models distinguish between market segments with slightly different needs and problems. The retail arm of a bank like Credit Suisse, for example, may distinguish between a large group of customers and a smaller group of clients. Both segments have similar but varying needs and problems. This has implications for the other building blocks of Credit Suisse’s business model. Consider Micro Precision Systems, which specializes in providing outsourced micromechanical design and manufacturing solutions. It serves three different Customer Segments—the watch industry, the medical industry, and the industrial automation sector—and offers each slightly different Value Propositions.</p>
-                  <h4>Diversified</h4>
-                  <p>An organization with a diversified customer business model serves two unrelated Customer Segments with very different needs and problems. For example, in 2006 Amazon.com decided to diversify its retail business by selling “cloud computing” services: online storage space and on-demand server usage. Thus it started catering to a totally different Customer Segment—Web companies—with a totally different Value Proposition. The strategic rationale behind this diversification can be found in Amazon.com’s powerful IT infrastructure, which can be shared by its retail sales operations and the new cloud computing service unit.</p>
+                <div id="how-to-fill" class="popup-text" style="display:none"><h3> Description of the Key Partners</h3>
+                  <p>The Key Partnerships Building Block describes the network of suppliers and partners that a company relies on to make its business model work. Partnerships can be formed for many reasons, including optimizing business models, reducing risk, and acquiring resources. There are four different types of partnerships, including strategic alliances between non-competitors, coopetition between competitors, joint ventures to develop new businesses, and buyer-supplier relationships to assure reliable supplies. </p></div>
+                <div id="what-to-remember" class="popup-text" style="display:none"><h3>What to remember about Key Partners</h3>
+                 <p> When developing the Key Partnerships Building Block, remember the following: </p>
+                 <ul>
+                  <li>Identify the partners that are essential to the success of the business model.</li>
+                  <li>Evaluate the benefits and risks of different types of partnerships. This includes assessing the potential advantages and disadvantages of forming partnerships with different types of partners, including competitors and suppliers.</li>
+                  <li>Assess the capabilities and resources of potential partners. This involves evaluating the strengths and weaknesses of potential partners and determining their suitability for the partnership.</li>
+                  <li>Develop clear and specific partnership agreements. This includes creating contracts or agreements that define the roles and responsibilities of each partnerp.</li>
+                  <li>Monitor and manage partnerships to ensure success. This includes tracking the performance of partnerships and making adjustments as necessary to ensure that the partnerships are meeting their objectives.</li>
+                  <li>Maintain flexibility in partnerships to adapt to changing circumstances.</li>
+                  </ul>                
                 </div>
-                  <div id="what-to-remember" class="popup-text" style="display:none"><h3>What to remember about Customer Segments</h3> <p>What to Remember When Developing the Customer Segments Building Block:
-                  When developing the Customer Segments Building Block, keep in mind: </p>
+                <div id="trigger-questions" class="popup-text" style="display:none"><h3>Trigger Questions for Key Partners</h3>
                   <ul>
-                    <li>Customers are the heart of any business model, and without profitable customers, no company can survive for long. </li>
-                    <li>A business model should group customers into distinct segments with common needs, behaviors, or other attributes.
-                    <li>A business model should make a conscious decision about which segments to serve and which to ignore.
-                    <li>Different customer segments require different offers, distribution channels, types of relationships, and pricing models.
-                    <li>Business models can target mass markets, niche markets, segmented markets, diversified markets, or multi-sided platforms, each with its unique set of customer needs and problems.
-                    <li>Careful design of the business model around a strong understanding of specific customer needs is crucial to success.
-                    </ul>
-                    <strong>To define your Customer Segments and build a solid value propositino with it, visit the Value Proposition Canvas! </strong>
-                  </div>
-                <div id="trigger-questions" class="popup-text" style="display:none"><h3>Trigger Questions for Customer Segments</h3>
-                  <ul>
-                    <li>For whom are we creating value?</li>
-                    <li>Who are our most important customers?</li>
-                    </ul>
-                  </div>
-                  <div id="value-proposition-canvas" class="popup-text" style="display:none">
-                    <h2><a href="/value-proposition-canvas">Value Proposition Canvas</a></h2>
-                    Click on the title of this page to refine your Value Proposition and Customer Segments by developing your Business Model to align customer needs with your value offerings. <br> Fill in the Value Proposition Canvas, and let ChatGPT help you by providing example value propositions, tips, or evaluations tailored to your use case. <br> Use the trigger questions on this page to guide your analysis.
-                  </div>
+                    <li>Who are our Key Partners?</li>
+                    <li>Who are our key suppliers?</li>
+                    <li>Which Key Resources are we acquiring from partners?</li>
+                    <li>Which Key Activities do partners perform?</li>
+                  </ul>
+                </div>
                 <div id="notes" class="popup-text" style="display:none">
                   <h3>Take notes</h3>
                   <textarea name="note-details" id="note-details" class="notes-textarea" placeholder="Take notes for prototyping, saving information or keeping track of tasks..."></textarea>
                 </div>
           </div>
+        </div>
     </div>
+
       <!-- AI Area -->
       <div id="overlay" class="overlay" onclick="toggleButtons()"></div>
       <div id="buttons-container" class="buttons-container">
@@ -151,11 +143,12 @@
           </div>
       </div>
 
-    <script src="../static/scripts/building-block.js"> </script>
+    <script defer src="{{ url_for('static', filename='scripts/app_config.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='scripts/building-block.js') }}"></script>
     <script>
     //Event Listener, welche den building block angeben
-    const blockType = "customer-segments"; 
-    const blockTitle = "Customer Segments";
+    const blockType = "key-partners"; 
+    const blockTitle = "Key Partners";
     loadSavedDetails(blockType, blockTitle);
     document.querySelector(".save-button").addEventListener("click", () => {
         saveDetails(blockType);
@@ -170,7 +163,6 @@
     document.getElementById("prefill-button").addEventListener("click", async () => {
         await prefillBuildingBlock(blockType, blockTitle);
     });
-
     </script>  
 </body>
 </html>

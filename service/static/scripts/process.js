@@ -55,7 +55,7 @@ async function sendMessage(event) {
       messages.push({ role, content });
     });
 
-    const response = await fetch("/chat_with_gpt4", {
+    const response = await fetch(API("/chat"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

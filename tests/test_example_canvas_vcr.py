@@ -5,7 +5,7 @@ CASSETTE_PATH = "tests/cassettes/example_canvas.yaml"
 
 def test_example_canvas_vcr(client):
     with vcr_config.use_cassette(CASSETTE_PATH) as cass:
-        r = client.post("/example_canvas_by_product", json={"product_idea": "bakery"})
+        r = client.post("/api/v1/bmc/example", json={"product_idea": "bakery"})
 
         # Response-Checks
         assert r.status_code == 200
