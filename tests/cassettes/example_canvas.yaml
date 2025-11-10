@@ -1,0 +1,160 @@
+interactions:
+- request:
+    body: '{"input":[{"role":"user","content":"Your role: An AI Business Model Development
+      Assistant.\n    Task: I am Building a Business Model Canvas. Provide an example
+      of the building blocks for said product idea as a JSON object. Example Input
+      product Idea: Bakery. Example output:\n    {\n    \"key-partners\": \"-Local
+      farmers\n-suppliers\n-distributors\",\n    \"key-activities\": -Baking\n-packaging\n-distributing
+      products\",\n    \"key-resources\": \"-Equipment\n-ingredients\n-staff\n-delivery
+      vehicles\",\n    \"value-propositions\": \"-Fresh\n-quality ingredients\n-unique
+      flavor combinations\n-convenience\",\n    \"customer-relationships\": \"-Personalized
+      customer service \n-loyalty programs\",\n    \"channels\": \"-Retail stores\n-online
+      ordering\n-delivery services\",\n    \"customer-segments\": \"-Local residents\n-tourists\n-businesses\",\n    \"cost-structure\":
+      \"-Ingredients\n-labor\n-equipment\n-delivery costs\",\n    \"revenue-streams\":
+      \"-Retail sales\n-online orders\n-delivery fees\"\n    }\n    Input: The Product
+      Idea: bakery \n Output:"}],"max_output_tokens":2000,"model":"gpt-5-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1112'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.1.0
+      x-stainless-arch:
+      - other:amd64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - Windows
+      x-stainless-package-version:
+      - 2.1.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.12.4
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: "{\n  \"id\": \"resp_0c76f6205c396928006912670133188192ac9a0c1d19e8155c\",\n
+        \ \"object\": \"response\",\n  \"created_at\": 1762813697,\n  \"status\":
+        \"completed\",\n  \"background\": false,\n  \"billing\": {\n    \"payer\":
+        \"developer\"\n  },\n  \"error\": null,\n  \"incomplete_details\": null,\n
+        \ \"instructions\": null,\n  \"max_output_tokens\": 2000,\n  \"max_tool_calls\":
+        null,\n  \"model\": \"gpt-5-mini-2025-08-07\",\n  \"output\": [\n    {\n      \"id\":
+        \"rs_0c76f6205c3969280069126701a0548192b0215d608a3a03a2\",\n      \"type\":
+        \"reasoning\",\n      \"summary\": []\n    },\n    {\n      \"id\": \"msg_0c76f6205c396928006912670860088192b3867dab6ed64542\",\n
+        \     \"type\": \"message\",\n      \"status\": \"completed\",\n      \"content\":
+        [\n        {\n          \"type\": \"output_text\",\n          \"annotations\":
+        [],\n          \"logprobs\": [],\n          \"text\": \"{\\n  \\\"key-partners\\\":
+        \\\"- Local farmers and ingredient suppliers\\\\n- Equipment and packaging
+        suppliers\\\\n- Delivery and courier partners\\\\n- Local cafes, restaurants
+        and retailers (wholesale)\\\\n- Event planners and catering partners\\\",\\n
+        \ \\\"key-activities\\\": \\\"- Baking and recipe development\\\\n- Inventory
+        and supply chain management\\\\n- Quality control and food safety\\\\n- Sales,
+        marketing and promotions\\\\n- Order fulfillment (in-store, online, catering)\\\",\\n
+        \ \\\"key-resources\\\": \\\"- Commercial ovens and baking equipment\\\\n-
+        High-quality ingredients\\\\n- Skilled bakers and front-of-house staff\\\\n-
+        Retail storefront and/or kitchen space\\\\n- POS system, website and delivery
+        vehicles\\\",\\n  \\\"value-propositions\\\": \\\"- Freshly baked products
+        made daily\\\\n- High-quality, locally sourced ingredients\\\\n- Variety:
+        breads, pastries, cakes, and dietary options (gluten-free, vegan)\\\\n- Custom
+        cakes and catering for events\\\\n- Convenience: online ordering, delivery
+        and subscriptions\\\",\\n  \\\"customer-relationships\\\": \\\"- Friendly
+        in-store customer service\\\\n- Loyalty and rewards program\\\\n- Custom-order
+        consultation and repeat-event coordination\\\\n- Social media engagement and
+        email promotions\\\",\\n  \\\"channels\\\": \\\"- Brick-and-mortar bakery/storefront\\\\n-
+        Website and mobile ordering\\\\n- Delivery and third-party delivery platforms\\\\n-
+        Wholesale distribution to local businesses\\\\n- Farmers' markets and pop-up
+        events\\\",\\n  \\\"customer-segments\\\": \\\"- Local residents and families\\\\n-
+        Commuters and office workers\\\\n- Cafes, restaurants and retailers (B2B wholesale)\\\\n-
+        Event planners and corporate clients\\\\n- Tourists and occasional visitors\\\",\\n
+        \ \\\"cost-structure\\\": \\\"- Ingredients and packaging\\\\n- Labor and
+        staff wages\\\\n- Rent and utilities for shop/kitchen\\\\n- Equipment purchase
+        and maintenance\\\\n- Marketing, licenses and compliance costs\\\\n- Delivery
+        and logistics expenses\\\",\\n  \\\"revenue-streams\\\": \\\"- Retail sales
+        (in-store)\\\\n- Online orders and delivery fees\\\\n- Wholesale/contract
+        supply to businesses\\\\n- Catering and special orders (weddings, events)\\\\n-
+        Subscription boxes or recurring orders\\\"\\n}\"\n        }\n      ],\n      \"role\":
+        \"assistant\"\n    }\n  ],\n  \"parallel_tool_calls\": true,\n  \"previous_response_id\":
+        null,\n  \"prompt_cache_key\": null,\n  \"prompt_cache_retention\": null,\n
+        \ \"reasoning\": {\n    \"effort\": \"medium\",\n    \"summary\": null\n  },\n
+        \ \"safety_identifier\": null,\n  \"service_tier\": \"default\",\n  \"store\":
+        true,\n  \"temperature\": 1.0,\n  \"text\": {\n    \"format\": {\n      \"type\":
+        \"text\"\n    },\n    \"verbosity\": \"medium\"\n  },\n  \"tool_choice\":
+        \"auto\",\n  \"tools\": [],\n  \"top_logprobs\": 0,\n  \"top_p\": 1.0,\n  \"truncation\":
+        \"disabled\",\n  \"usage\": {\n    \"input_tokens\": 227,\n    \"input_tokens_details\":
+        {\n      \"cached_tokens\": 0\n    },\n    \"output_tokens\": 935,\n    \"output_tokens_details\":
+        {\n      \"reasoning_tokens\": 512\n    },\n    \"total_tokens\": 1162\n  },\n
+        \ \"user\": null,\n  \"metadata\": {}\n}"
+    headers:
+      CF-RAY:
+      - 99c8fb6469a49d7f-MAD
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 10 Nov 2025 22:28:29 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=KVHt1npD4Sk5VZ_YFrROybRn2J72sUV0cjXGmmH3Jhw-1762813709-1.0.1.1-8Dbo59AQXQAidj3j8q25U2nZboP6J2Vqh1lR9qvDnnv5GcWOzW3KMhqPsfzBUbmzmYdoJjlORcKCp85Kn8YcMdMC14oTQAWDxAQW8D4lDuw;
+        path=/; expires=Mon, 10-Nov-25 22:58:29 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=OUYnxfpc4bmLnDuApAbA9ORwygRbFoz3CmDHCYIqoto-1762813709228-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      content-length:
+      - '3704'
+      openai-organization:
+      - user-tcef3qlifclhzor2tnstkteg
+      openai-processing-ms:
+      - '11974'
+      openai-project:
+      - proj_l2vybIC3tavRnF6xzMrQp8ZM
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '11976'
+      x-ratelimit-limit-requests:
+      - '500'
+      x-ratelimit-limit-tokens:
+      - '500000'
+      x-ratelimit-remaining-requests:
+      - '499'
+      x-ratelimit-remaining-tokens:
+      - '499282'
+      x-ratelimit-reset-requests:
+      - 120ms
+      x-ratelimit-reset-tokens:
+      - 86ms
+      x-request-id:
+      - req_bf5a8cb7f6014c50a8e787251ad6d1fb
+    status:
+      code: 200
+      message: OK
+version: 1

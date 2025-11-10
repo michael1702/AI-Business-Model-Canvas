@@ -1,4 +1,4 @@
-from tests.conftest import vcr_config as vcr
+from tests.bmc_service.conftest import vcr_config as vcr
 import json
 
 

@@ -1,5 +1,5 @@
 import json
-from tests.conftest import vcr_config
+from tests.bmc_service.conftest import vcr_config
 
 CASSETTE_PATH = "tests/cassettes/example_canvas.yaml"
 
