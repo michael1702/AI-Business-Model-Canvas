@@ -43,6 +43,9 @@ He configurado una **GitHub Action** para automatizar todo el proceso.
     2.  Si los tests pasan, GitHub construye las 4 imágenes Docker.
     3.  Sube las imágenes automáticamente a **GitHub Container Registry (GHCR)**.
 
+<img width="2129" height="926" alt="image" src="https://github.com/user-attachments/assets/3be68268-78c7-407a-884c-d636304962f9" />
+
+
 ## 5. Orquestación con Docker Compose
 
 El archivo **[compose.yaml](../compose.yaml)** une todas las piezas. Define:
