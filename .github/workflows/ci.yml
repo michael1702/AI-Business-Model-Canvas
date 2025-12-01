@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [bmc_service, user_service]
+        service: [bmc_service, user_service, group_service]
 
     steps:
       - uses: actions/checkout@v4
