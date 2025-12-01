@@ -3,13 +3,36 @@ Proyecto Cloud Computing de Michael Maurer
 
 Este repositorio recoge el avance de un proyecto de despliegue de una aplicación web para diseñar y colaborar sobre Business Model Canvas (BMC). La solución actual parte de una tesis de grado que diseñó y probó un prototipo con IA para ayudar a crear Business Model Canvas. El prototipo tiene explicaciones y ejemplos contextuales, el Value Proposition Canvas y funciones de apoyo durante el proceso para mejorar ideas y comprensión. También incluye exportación del BMC y notas para guardar avances. 
 
-### Estado actual
+### Estado actual (Hito 4)
 
-Base teórica y prototipo inicial enfocado en la ayuda con IA para crear y evaluar el BMC, con VPC, ejemplos y guías breves. 
-El código es de verano de 2023, cuando salió GPT-4. En estos años cambió el acceso a la API de OpenAI, así que ajusté las peticiones en App.py para que funcione.
+La aplicación ha sido completamente **contenerizada**. Ahora utiliza una arquitectura de microservicios orquestada con Docker Compose.
 
-Ahora no hay almacenamiento de datos en servidor. Solo se guarda de forma local en la caché del navegador o por exportación a un archivo JSON. Ese JSON se puede volver a importar.
+* **Infraestructura:** 5 Contenedores orquestados con Docker Compose (Frontend, User, Group, BMC, PostgreSQL).
+* **CI/CD:** Las imágenes Docker se construyen y publican automáticamente en GitHub Packages.
+* **Limitaciones actuales:**
+    * Aunque el contenedor de base de datos está activo, la aplicación aún guarda los datos en memoria (RAM).
+    * El módulo de Grupos está en desarrollo (WIP): la invitación de miembros está pendiente de conexión con la base de datos.
+      
+### Cómo ejecutar el proyecto (Docker)
 
+1.  **Requisitos:** Tener Docker y Docker Compose instalados.
+2.  **Configuración:** Crea un archivo `.env` en la raíz (basado en `env.example`) con tu API Key de OpenAI.
+3.  **Ejecución:**
+    ```bash
+    docker compose up --build
+    ```
+4.  Abrir `http://localhost:8888` en el navegador.
+
+### Ejecución de Tests
+
+Para probar que el clúster levanta correctamente:
+```bash
+# En Linux/Mac/Git Bash
+./tests/test_cluster.sh
+
+# En Windows PowerShell
+.\tests\test_cluster.ps1
+```
 
 ### Plan para el semestre
 
@@ -29,13 +52,9 @@ Crear/borrar grupos, gestionar miembros, y almacenar BMC de grupo accesibles par
 - Infraestructura: CI con GitHub Actions, tests con pytest, mocks de API, y futura integración con base de datos gestionada.
 - Admin: panel simple para ver/gestionar usuarios, grupos.
 
-### Prerequisitos para la ejecución del codigo
-Para ejecutar el codigo necesitas tener python instalado. 
-En una Virtual Environment tienes que instalar todos los librerías iniciado en el fichero "requirements.txt" --> "pip install -r requirements.txt".
-Necesitas añadir un fichero .env, donde añades tu llave de API para OpenAI (mira el fichero env.example)
-
 ### Enlaces
 - [Licencia](LICENSE)
 - [Hito 1](docs/hito1.md)
 - [Hito 2](docs/hito2.md)
 - [Hito 3](docs/hito3.md)
+- [Hito 4](docs/hito4.md)
