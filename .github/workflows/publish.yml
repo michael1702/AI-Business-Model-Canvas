@@ -17,7 +17,8 @@ jobs:
 
     strategy:
       matrix:
-        service: [frontend, user-service, group-service, bmc-service]
+        # HIER WAR DER FEHLER: Namen müssen mit Ordnernamen übereinstimmen (user_service, etc.)
+        service: [frontend, user_service, group_service, bmc_service]
 
     steps:
       - name: Checkout repository
@@ -34,13 +35,14 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
+
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ matrix.service }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
-          # Ajusta la ruta del Dockerfile según el servicio
+
           file: ${{ matrix.service == 'frontend' && 'Dockerfile' || format('{0}/Dockerfile', matrix.service) }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
