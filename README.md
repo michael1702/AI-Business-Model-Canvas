@@ -7,11 +7,12 @@ Este repositorio recoge el avance de un proyecto de despliegue de una aplicació
 
 La aplicación ha sido completamente **contenerizada**. Ahora utiliza una arquitectura de microservicios orquestada con Docker Compose.
 
-* **Frontend:** Flask App.
-* **Microservicios:** User Service, Group Service, BMC Service.
-* **Datos:** Base de datos PostgreSQL en contenedor.
-* **Despliegue:** Imágenes Docker publicadas automáticamente en GitHub Packages.
-
+* **Infraestructura:** 5 Contenedores orquestados con Docker Compose (Frontend, User, Group, BMC, PostgreSQL).
+* **CI/CD:** Las imágenes Docker se construyen y publican automáticamente en GitHub Packages.
+* **Limitaciones actuales:**
+    * Aunque el contenedor de base de datos está activo, la aplicación aún guarda los datos en memoria (RAM).
+    * El módulo de Grupos está en desarrollo (WIP): la invitación de miembros está pendiente de conexión con la base de datos.
+      
 ### Cómo ejecutar el proyecto (Docker)
 
 1.  **Requisitos:** Tener Docker y Docker Compose instalados.
