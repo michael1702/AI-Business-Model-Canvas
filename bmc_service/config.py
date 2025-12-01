@@ -1,7 +1,7 @@
 from flask import Flask
-from api import api
-from adapters.openai_client import OpenAIClient
-from app_logging import setup_logging
+from bmc_service.api import api 
+from bmc_service.adapters.openai_client import OpenAIClient
+from bmc_service.app_logging import setup_logging
 
 def create_app():
     app = Flask(__name__,
