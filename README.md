@@ -32,6 +32,7 @@ Para probar que el clúster levanta correctamente:
 
 # En Windows PowerShell
 .\tests\test_cluster.ps1
+```
 
 ### Plan para el semestre
 
