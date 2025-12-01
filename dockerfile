@@ -1,22 +1,23 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9
+# Dockerfile (Root/Frontend)
+FROM python:3.10-slim
 
-# Set the working directory to /app
 WORKDIR /app
 
-# copy all files to the container
+# 1. Instalar dependencias de TODOS los microservicios
+# (Necesario porque app.py importa el código directamente)
+COPY user_service/requirements.txt user_reqs.txt
+COPY bmc_service/requirements.txt bmc_reqs.txt
+
+# Instalar dependencias combinadas + Gunicorn
+RUN pip install --no-cache-dir -r user_reqs.txt && \
+    pip install --no-cache-dir -r bmc_reqs.txt && \
+    pip install gunicorn
+
+# 2. Copiar todo el código del proyecto
 COPY . .
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
-RUN pip install Flask gunicorn
-
-# Define environment variable
-ENV NAME World
-
-# port number to expose
+# 3. Exponer el puerto
 EXPOSE 8888
 
-# Run app.py when the container launches
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app:app
-
+# 4. Ejecutar la aplicación
+CMD ["gunicorn", "--bind", "0.0.0.0:8888", "app:create_app()"]
