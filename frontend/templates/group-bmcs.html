@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="group-title">Group BMCs</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/building-block.css') }}"> 
+  <script>
+    const GROUP_ID = new URLSearchParams(window.location.pathname).get('group_id');
+    const BMC_ID = new URLSearchParams(window.location.search).get('bmc_id');
+  </script>
+</head>
+<body>
+  <div class="topbar">
+    <h1 id="group-name-header">Shared BMCs</h1>
+    <button class="AI-button" onclick="toggleChat()">AI</button>
+  </div>
+  
+  <div id="sidebar" class="sidebar">
+    <nav class="sidebar-menu">
+      <ul>
+        <li><a href="/">Main Page</a></li>
+        <li data-auth="user"><a href="/my-bmcs">My BMCs</a></li>
+        <li data-auth="user"><a href="/my-groups">My Groups</a></li>
+        <li data-auth="user"><a href="/profile">Profile</a></li>
+        <li class="submenu">
+            <a href="#building-blocks" onclick="toggleBuildingBlocks()">Building Blocks<span id="building-blocks-arrow" class="arrow">&#x25B6;</span></a>
+            <ul id="building-blocks-menu" style="display: none;">
+              <li><a href="/key-partners">Key Partners</a></li>
+              </ul>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  
+  <div id="main-content" class="container">
+      
+      <section id="group-overview-section" class="card" style="width: 100%;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px;">
+            <div style="flex: 2; margin-right: 20px;">
+                <h2>Shared BMCs</h2>
+                <div class="actions">
+                  <input id="new-group-bmc-name" placeholder="New Shared BMC name" />
+                  <button id="create-group-bmc" class="button">Create BMC</button>
+                </div>
+                <div id="bmcs-list-content">Loading shared BMCs...</div>
+            </div>
+            
+            <div style="flex: 1; border-left: 1px solid #ccc; padding-left: 20px;">
+                <h2>Members</h2>
+                <div class="actions">
+                    <input id="invite-email" placeholder="User Email" style="width: 70%;" />
+                    <button id="invite-member-btn" class="button small">Add</button>
+                </div>
+                <p id="invite-msg" class="msg"></p>
+                <ul id="members-list" style="list-style: none; padding: 0;">Loading members...</ul>
+            </div>
+        </div>
+        <button id="back-to-groups" class="button" onclick="window.location.href='/my-groups'">Back to My Groups</button>
+      </section>
+
+      <section id="group-bmc-editor" style="width: 100%; display: none;">
+        
+        <div class="button-container">
+            <button class="back-button" style="position:relative; left:0; top:0; margin-right:10px;" onclick="window.location.search=''">&#8249; Back to List</button>
+            <button class="save-button" id="save-group-bmc-button" type="button" style="position:relative; right:0; bottom:0;">Save Shared BMC</button>
+        </div>
+        <p id="save-group-bmc-msg" class="msg" style="text-align:center;"></p>
+
+        <div class="business-idea" style="justify-content: center; margin-bottom: 20px;">
+          <label for="product-idea">Product Idea: </label>
+          <input type="text" id="product-idea" placeholder="e.g. Project Management Tool" style="width: 50%;">
+        </div>      
+
+        <div id="bmc">
+            <div class="building-block key-partners"><h2><span class="block-title">Key Partners</span></h2><div class="input-wrapper"><textarea id="key-partners-details"></textarea></div></div>
+            <div class="building-block key-activities"><h2><span class="block-title">Key Activities</span></h2><div class="input-wrapper"><textarea id="key-activities-details"></textarea></div></div>
+            <div class="building-block key-resources"><h2><span class="block-title">Key Resources</span></h2><div class="input-wrapper"><textarea id="key-resources-details"></textarea></div></div>
+            <div class="building-block value-propositions"><h2><span class="block-title">Value Propositions</span></h2><div class="input-wrapper"><textarea id="value-propositions-details"></textarea></div></div>
+            <div class="building-block customer-relationships"><h2><span class="block-title">Customer Relationships</span></h2><div class="input-wrapper"><textarea id="customer-relationships-details"></textarea></div></div>
+            <div class="building-block channels"><h2><span class="block-title">Channels</span></h2><div class="input-wrapper"><textarea id="channels-details"></textarea></div></div>
+            <div class="building-block customer-segments"><h2><span class="block-title">Customer Segments</span></h2><div class="input-wrapper"><textarea id="customer-segments-details"></textarea></div></div>
+            <div class="building-block cost-structure"><h2><span class="block-title">Cost Structure</span></h2><div class="input-wrapper"><textarea id="cost-structure-details"></textarea></div></div>
+            <div class="building-block revenue-streams"><h2><span class="block-title">Revenue Streams</span></h2><div class="input-wrapper"><textarea id="revenue-streams-details"></textarea></div></div>
+        </div>
+      </section>
+  </div>
+
+  <div id="overlay" class="overlay" onclick="toggleButtons()"></div>
+  <div id="buttons-container" class="buttons-container">
+      <div class="overlay-content">
+          <div class="methodological-aid">
+              <h2>Support from AI:</h2>
+              <div class="method-buttons">
+                  <button id="tips-button" class="tips-button">Tips from ChatGPT</button>
+                  <button id="correctness-button" class="correctness-button">Check Correctness</button>
+              </div>
+          </div>
+          <div class="contextual-aid">
+              <h2>Tools:</h2>
+              <div class="context-buttons">
+                  <button id="example-button" class="example-button">Example Canvas</button>
+                  <button id="evaluate-button" class="evaluate-button">Evaluate BMC</button>
+                </div>
+          </div>
+      </div>
+  </div>
+
+  <div id="chat-container" class="chat-container">
+      <div class="chat">
+          <div class="chat-header">
+              <span class="chat-header-title">Chat with ChatGPT</span>
+              <button onclick="toggleChat()" class="close-button">Close</button>
+          </div>
+          <div id="chat-history" class="chat-history"></div>
+          <div class="chat-input-container">
+              <input id="chat-input" class="chat-input" placeholder="Type message..." onkeydown="sendMessage(event)">
+              <button id="send-button" class="send-button"> Send </button>
+          </div>
+      </div>
+      <div id="loading-circle-container" class="loading-circle-container">
+          <div id="loading-circle" class="loading-circle"></div>
+      </div>
+  </div>
+
+  <script defer src="{{ url_for('static', filename='scripts/app_config.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='scripts/index.js') }}"></script> <script defer src="{{ url_for('static', filename='scripts/groups.js') }}"></script>
+</body>
+</html>

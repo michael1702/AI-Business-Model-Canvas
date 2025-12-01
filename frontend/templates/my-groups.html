@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>My Groups</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <h1>My Groups</h1>
+  </header>
+
+<div id="sidebar" class="sidebar">
+    <button id="sidebar-toggle" class="sidebar-toggle" onclick="toggleSidebar()">&#9776;</button>
+    <nav class="sidebar-menu">
+      <ul>
+        <li><a href="/">Main Page</a></li>
+        <li data-auth="user"><a href="/my-bmcs">My BMCs</a></li>
+        <li data-auth="user"><a href="/my-groups">My Groups</a></li>
+        <li data-auth="user"><a href="/profile">Profile</a></li>
+        <li data-auth="user"><button id="logout-btn" class="linklike">Sign out</button></li>
+        </ul>
+    </nav>
+  </div>
+   <main class="container">
+    <section class="card">
+      <h2>Groups Overview</h2>
+      <div class="actions">
+        <input id="new-group-name" placeholder="New Group name" />
+        <button id="create-group" type="button">Create Group</button>
+      </div>
+      <div id="groups-list">Loading…</div>
+      <p id="groups-msg" class="msg"></p>
+    </section>
+  </main>
+
+  <script defer src="{{ url_for('static', filename='scripts/app_config.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='scripts/groups.js') }}"></script>
+
+  <script defer>
+    document.addEventListener('DOMContentLoaded', () => {
+      ensureAuthUI();
+      document.getElementById('logout-btn')?.addEventListener('click', () => {
+        clearToken(); sessionStorage.removeItem('currentBmc'); location.href='/';
+      });
+    });
+  </script>
+</body>
+</html>

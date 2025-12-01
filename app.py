@@ -11,6 +11,8 @@ load_dotenv()
 # Import blueprints
 from bmc_service.api import api as bmc_api
 from user_service.api import api as user_api
+from group_service.api import api as group_api
+
 
 def create_app():
     app = Flask(
@@ -23,10 +25,11 @@ def create_app():
     # Register blueprints
     app.register_blueprint(bmc_api)   # -> /api/v1/bmc/...
     app.register_blueprint(user_api)  # -> /api/v1/users/...
+    app.register_blueprint(group_api) # -> /api/v1/groups/...
     app.config["LLM"] = OpenAIClient()   # <- Service injection
     setup_logging(app)                   # <- Enable centralized logging
 
-    # HTML pages (your existing routes)
+    # HTML pages 
     @app.get("/")
     def index():
         return render_template("index.html")
@@ -86,7 +89,15 @@ def create_app():
     @app.get("/value-proposition-canvas")
     def value_proposition_canvas():
         return render_template("value-proposition-canvas.html")
+    
+    @app.get("/my-groups")
+    def my_groups(): 
+        return render_template("my-groups.html")
 
+    @app.get("/group/<group_id>/bmcs")
+    def group_bmcs(group_id): 
+        return render_template("group-bmcs.html")
+    
     return app
 
 if __name__ == "__main__":
