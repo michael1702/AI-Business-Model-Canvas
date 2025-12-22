@@ -6,7 +6,9 @@
   <title id="group-title">Group BMCs</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles/building-block.css') }}"> 
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/process.css') }}"> <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
+    // Extract parameters for client-side logic
     const GROUP_ID = new URLSearchParams(window.location.pathname).get('group_id');
     const BMC_ID = new URLSearchParams(window.location.search).get('bmc_id');
   </script>
@@ -18,18 +20,31 @@
   </div>
   
   <div id="sidebar" class="sidebar">
+    <button id="sidebar-toggle" class="sidebar-toggle" onclick="toggleSidebar()">&#9776;</button>
     <nav class="sidebar-menu">
       <ul>
         <li><a href="/">Main Page</a></li>
         <li data-auth="user"><a href="/my-bmcs">My BMCs</a></li>
         <li data-auth="user"><a href="/my-groups">My Groups</a></li>
         <li data-auth="user"><a href="/profile">Profile</a></li>
+        <li data-auth="user"><button id="logout-btn" class="linklike">Sign out</button></li>
+        
         <li class="submenu">
             <a href="#building-blocks" onclick="toggleBuildingBlocks()">Building Blocks<span id="building-blocks-arrow" class="arrow">&#x25B6;</span></a>
             <ul id="building-blocks-menu" style="display: none;">
               <li><a href="/key-partners">Key Partners</a></li>
-              </ul>
+              <li><a href="/key-activities">Key Activities</a></li>
+              <li><a href="/key-resources">Key Resources</a></li>
+              <li><a href="/value-propositions">Value Propositions</a></li>
+              <li><a href="/customer-segments">Customer Segments</a></li>
+              <li><a href="/customer-relationships">Customer Relationships</a></li>
+              <li><a href="/channels">Channels</a></li>
+              <li><a href="/cost-structure">Cost Structure</a></li>
+              <li><a href="/revenue-streams">Revenue Streams</a></li>
+            </ul>
         </li>
+        <li><a href="/process">Process</a></li>
+        <li><a href="/value-proposition-canvas">Value Proposition Canvas</a></li>
       </ul>
     </nav>
   </div>
@@ -37,52 +52,125 @@
   <div id="main-content" class="container">
       
       <section id="group-overview-section" class="card" style="width: 100%;">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px;">
-            <div style="flex: 2; margin-right: 20px;">
+        
+        <div style="display:flex; flex-wrap: wrap; gap: 20px;">
+            <div style="flex: 2; min-width: 300px;">
                 <h2>Shared BMCs</h2>
-                <div class="actions">
-                  <input id="new-group-bmc-name" placeholder="New Shared BMC name" />
-                  <button id="create-group-bmc" class="button">Create BMC</button>
+                <div class="actions" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                  <input id="new-group-bmc-name" placeholder="New Shared BMC name" style="flex: 1; padding: 8px; border-radius: 5px; border: 1px solid #ccc;" />
+                  <button id="create-group-bmc" class="save-button" style="margin: 0; position: static;">Create</button>
                 </div>
                 <div id="bmcs-list-content">Loading shared BMCs...</div>
+                <p id="group-bmcs-msg" class="msg"></p>
             </div>
             
-            <div style="flex: 1; border-left: 1px solid #ccc; padding-left: 20px;">
+            <div style="flex: 1; min-width: 250px; border-left: 1px solid #eee; padding-left: 20px;">
                 <h2>Members</h2>
-                <div class="actions">
-                    <input id="invite-email" placeholder="User Email" style="width: 70%;" />
-                    <button id="invite-member-btn" class="button small">Add</button>
+                <div class="actions" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <input id="invite-email" placeholder="User Email" style="flex: 1; padding: 8px; border-radius: 5px; border: 1px solid #ccc;" />
+                    <button id="invite-member-btn" class="save-button" style="margin: 0; position: static;">Add</button>
                 </div>
                 <p id="invite-msg" class="msg"></p>
                 <ul id="members-list" style="list-style: none; padding: 0;">Loading members...</ul>
             </div>
         </div>
-        <button id="back-to-groups" class="button" onclick="window.location.href='/my-groups'">Back to My Groups</button>
+        
+        <div style="margin-top: 30px;">
+            <button id="back-to-groups" class="save-button" style="position: static; background-color: #666;" onclick="window.location.href='/my-groups'">Back to My Groups</button>
+        </div>
       </section>
+
 
       <section id="group-bmc-editor" style="width: 100%; display: none;">
         
-        <div class="button-container">
-            <button class="back-button" style="position:relative; left:0; top:0; margin-right:10px;" onclick="window.location.search=''">&#8249; Back to List</button>
-            <button class="save-button" id="save-group-bmc-button" type="button" style="position:relative; right:0; bottom:0;">Save Shared BMC</button>
-        </div>
-        <p id="save-group-bmc-msg" class="msg" style="text-align:center;"></p>
+        <button class="back-button" onclick="window.location.search=''">&#8249;</button>
 
-        <div class="business-idea" style="justify-content: center; margin-bottom: 20px;">
+        <div class="business-idea">
           <label for="product-idea">Product Idea: </label>
-          <input type="text" id="product-idea" placeholder="e.g. Project Management Tool" style="width: 50%;">
+          <input type="text" id="product-idea" placeholder="e.g. Project Management Tool, Fitness App">
         </div>      
 
+        <div class="button-container">
+            <button id="help-button" type="button" class="save-button" style="margin: 0 10px 0 0; position:relative;" onclick="toggleHelpWindow()">Getting Started</button>
+            <button id="edit-button" type="button" class="save-button" style="margin: 0 10px 0 0; position:relative;" onclick="toggleEditMode()">Edit Building Blocks</button>
+            <div class="dropdown-container" style="margin: 0 10px 0 0;">
+              <select id="canvas-select" class="canvas-dropdown" onchange="updateCanvasTemplate()" style="padding: 8px; border-radius: 5px;">
+                <option value="" disabled selected hidden>Choose Template...</option>
+                <option value="bmc">Business Model Canvas</option>
+                <option value="lean">Lean Canvas</option>
+                <option value="environmental">Environmental Layer TLBMC</option>
+                <option value="social">Social Layer TLBMC</option>
+              </select>
+            </div>
+            <button id="notes-button" type="button" class="save-button" style="margin: 0; position:relative;" onclick="toggleNoteWindow()">Notes</button>
+        </div>
+
         <div id="bmc">
-            <div class="building-block key-partners"><h2><span class="block-title">Key Partners</span></h2><div class="input-wrapper"><textarea id="key-partners-details"></textarea></div></div>
-            <div class="building-block key-activities"><h2><span class="block-title">Key Activities</span></h2><div class="input-wrapper"><textarea id="key-activities-details"></textarea></div></div>
-            <div class="building-block key-resources"><h2><span class="block-title">Key Resources</span></h2><div class="input-wrapper"><textarea id="key-resources-details"></textarea></div></div>
-            <div class="building-block value-propositions"><h2><span class="block-title">Value Propositions</span></h2><div class="input-wrapper"><textarea id="value-propositions-details"></textarea></div></div>
-            <div class="building-block customer-relationships"><h2><span class="block-title">Customer Relationships</span></h2><div class="input-wrapper"><textarea id="customer-relationships-details"></textarea></div></div>
-            <div class="building-block channels"><h2><span class="block-title">Channels</span></h2><div class="input-wrapper"><textarea id="channels-details"></textarea></div></div>
-            <div class="building-block customer-segments"><h2><span class="block-title">Customer Segments</span></h2><div class="input-wrapper"><textarea id="customer-segments-details"></textarea></div></div>
-            <div class="building-block cost-structure"><h2><span class="block-title">Cost Structure</span></h2><div class="input-wrapper"><textarea id="cost-structure-details"></textarea></div></div>
-            <div class="building-block revenue-streams"><h2><span class="block-title">Revenue Streams</span></h2><div class="input-wrapper"><textarea id="revenue-streams-details"></textarea></div></div>
+            <div class="building-block key-partners">
+              <h2><a href="#" class="block-title" onclick="return false;"><span id="key-partners-title">Key Partners</span></a></h2>                  
+              <div class="input-wrapper"><textarea id="key-partners-details" class="block-title" placeholder="Enter details..."></textarea></div>
+            </div>
+            <div class="building-block key-activities">
+              <h2><a href="#" class="block-title" onclick="return false;"><span id="key-activities-title">Key Activities</span></a></h2>
+              <div class="input-wrapper"><textarea id="key-activities-details" class="block-title" placeholder="Enter details..."></textarea></div>
+            </div>
+            <div class="building-block key-resources">
+              <h2><a href="#" class="block-title" onclick="return false;"><span id="key-resources-title">Key Resources</span></a></h2>
+              <div class="input-wrapper"><textarea id="key-resources-details" class="block-title" placeholder="Enter details..."></textarea></div>
+            </div>
+            <div class="building-block value-propositions">
+              <h2><a href="#" class="block-title" onclick="return false;"><span id="value-propositions-title">Value Propositions</span></a></h2>
+              <div class="input-wrapper"><textarea id="value-propositions-details" class="block-title" placeholder="Enter details..."></textarea></div>
+            </div>
+            <div class="building-block customer-relationships">
+              <h2><a href="#" class="block-title" onclick="return false;"><span id="customer-relationships-title">Customer Relationships</span></a></h2>
+              <div class="input-wrapper"><textarea id="customer-relationships-details" class="block-title" placeholder="Enter details..."></textarea></div>
+            </div>
+            <div class="building-block channels">
+              <h2><a href="#" class="block-title" onclick="return false;"><span id="channels-title">Channels</span></a></h2>
+              <div class="input-wrapper"><textarea id="channels-details" class="block-title" placeholder="Enter details..."></textarea></div>
+            </div>
+            <div class="building-block customer-segments">
+              <h2><a href="#" class="block-title" onclick="return false;"><span id="customer-segments-title">Customer Segments</span></a></h2>
+              <div class="input-wrapper"><textarea id="customer-segments-details" class="block-title" placeholder="Enter details..."></textarea></div>
+            </div>
+            <div class="building-block cost-structure">
+              <h2><a href="#" class="block-title" onclick="return false;"><span id="cost-structure-title">Cost Structure</span></a></h2>
+              <div class="input-wrapper"><textarea id="cost-structure-details" class="block-title" placeholder="Enter details..."></textarea></div>
+            </div>
+            <div class="building-block revenue-streams">
+              <h2><a href="#" class="block-title" onclick="return false;"><span id="revenue-streams-title">Revenue Streams</span></a></h2>
+              <div class="input-wrapper"><textarea id="revenue-streams-details" class="block-title" placeholder="Enter details..."></textarea></div>
+            </div>
+        </div>
+
+        <div class="button-container" style="margin-top: 20px; display:flex; gap: 10px;">
+            <button class="save-button" id="save-group-bmc-button" type="button" style="position:relative; right:auto; bottom:auto;">Save Shared BMC</button>
+            <button id="export-button" class="save-button" type="button" style="position:relative; right:auto; bottom:auto; background-color: #444;">Export to PNG</button>
+        </div>
+        <p id="save-group-bmc-msg" class="msg" style="text-align:center; font-weight: bold; color: green;"></p>
+
+        <div id="note-container" class="note-container">
+            <div class="note">
+              <div class="note-header">
+                <span class="note-header-title">Notes</span>
+                <button onclick="toggleNoteWindow()" class="close-button">Close</button>
+              </div>
+              <textarea id="note-text" class="note-text" placeholder="Take notes..." onblur="saveNotesToLocalStorage()"></textarea>
+            </div>
+        </div>
+
+        <div id="help-container" class="help-container">
+            <div class="help">
+              <div class="help-header">
+                <span class="help-header-title">Getting Started</span>
+                <button onclick="toggleHelpWindow()" class="close-button">Close</button>
+              </div>
+              <div id="help-text" class="help-text">
+                <p>Welcome to the <strong>Shared</strong> Business Model Canvas.</p>
+                <p>Changes made here are visible to all group members. Remember to click "Save Shared BMC" to persist your changes.</p>
+                </div>
+            </div>
         </div>
       </section>
   </div>
@@ -90,18 +178,26 @@
   <div id="overlay" class="overlay" onclick="toggleButtons()"></div>
   <div id="buttons-container" class="buttons-container">
       <div class="overlay-content">
+        <div class="warning-sign-container">
+            <div class="warning">
+              <span class="warning-sign">&#9888;</span>                
+              <span class="warning-text">ChatGPT may provide unreliable information.</span>
+            </div>
+        </div>
           <div class="methodological-aid">
-              <h2>Support from AI:</h2>
+              <h2>Procedual support from AI:</h2>
               <div class="method-buttons">
-                  <button id="tips-button" class="tips-button">Tips from ChatGPT</button>
+                  <button id="tips-button" class="tips-button">Tips</button>
                   <button id="correctness-button" class="correctness-button">Check Correctness</button>
               </div>
           </div>
           <div class="contextual-aid">
-              <h2>Tools:</h2>
+              <h2>Contextual support from AI:</h2>
               <div class="context-buttons">
                   <button id="example-button" class="example-button">Example Canvas</button>
-                  <button id="evaluate-button" class="evaluate-button">Evaluate BMC</button>
+                  <button id="evaluate-button" class="evaluate-button">Evaluate</button>
+                  <button id="patterns-examples-button" class="patterns-examples-button">Patterns</button>
+                  <button id="whatif-button" class="whatif-button">What-If</button>
                 </div>
           </div>
       </div>
@@ -115,7 +211,7 @@
           </div>
           <div id="chat-history" class="chat-history"></div>
           <div class="chat-input-container">
-              <input id="chat-input" class="chat-input" placeholder="Type message..." onkeydown="sendMessage(event)">
+              <input id="chat-input" class="chat-input" placeholder="Type your message here..." onkeydown="sendMessage(event)">
               <button id="send-button" class="send-button"> Send </button>
           </div>
       </div>
@@ -125,6 +221,7 @@
   </div>
 
   <script defer src="{{ url_for('static', filename='scripts/app_config.js') }}"></script>
-  <script defer src="{{ url_for('static', filename='scripts/index.js') }}"></script> <script defer src="{{ url_for('static', filename='scripts/groups.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='scripts/index.js') }}"></script> 
+  <script defer src="{{ url_for('static', filename='scripts/groups.js') }}"></script>
 </body>
 </html>

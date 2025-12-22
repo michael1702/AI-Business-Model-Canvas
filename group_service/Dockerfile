@@ -5,7 +5,8 @@ WORKDIR /app
 
 # Install dependencies (Group service needs Flask and PyJWT)
 # Using a manual install list since requirements.txt wasn't explicitly provided for group_service
-RUN pip install Flask PyJWT gunicorn requests
+COPY group_service/requirements.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy Group Service Code
 COPY group_service/ group_service/

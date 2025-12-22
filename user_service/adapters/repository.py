@@ -1,74 +1,92 @@
-# user_service/adapters/repo.py
-from typing import Optional, Dict, List
-from dataclasses import dataclass, field
 import uuid
 from datetime import datetime
+from typing import Optional, List
+from dataclasses import dataclass
+
+# Import der DB und Modelle
+from ..database import db
+from ..models import UserModel, BMCModel
 
 @dataclass
 class User:
+    """Domain object (bleibt schlank)"""
     id: str
     email: str
     password_hash: str
-    bmcs: List[dict] = field(default_factory=list)  # each: {id,name,data,updated}
 
 class UserRepo:
-    def __init__(self):
-        self._by_email: Dict[str, User] = {}
-        self._by_id: Dict[str, User] = {}
+    """Repository implementation using SQLAlchemy."""
 
+    # --- User Methoden (bereits bekannt) ---
     def get_by_email(self, email: str) -> Optional[User]:
-        return self._by_email.get((email or "").lower())
+        model = db.session.query(UserModel).filter_by(email=email).first()
+        return self._to_domain(model) if model else None
 
     def create_user(self, email: str, password_hash: str) -> User:
-        email_l = (email or "").lower()
-        if self.get_by_email(email_l):
-            raise ValueError("email_already_exists")
-        u = User(id=str(uuid.uuid4()), email=email_l, password_hash=password_hash)
-        self._by_email[email_l] = u
-        self._by_id[u.id] = u
-        return u
+        new_user = UserModel(email=email, password_hash=password_hash)
+        db.session.add(new_user)
+        db.session.commit()
+        return self._to_domain(new_user)
 
     def get_by_id(self, user_id: str) -> Optional[User]:
-        return self._by_id.get(user_id)
+        model = db.session.get(UserModel, user_id)
+        return self._to_domain(model) if model else None
+
+    def _to_domain(self, model: UserModel) -> User:
+        return User(id=model.id, email=model.email, password_hash=model.password_hash)
+
+    # --- BMC Methoden (NEU für SQL) ---
 
     def list_bmcs(self, user_id: str) -> List[dict]:
-        u = self.get_by_id(user_id)
-        return u.bmcs[:] if u else []
+        """Liest alle BMCs eines Users aus der DB."""
+        # SQL: SELECT * FROM bmcs WHERE user_id = ...
+        bmcs = db.session.query(BMCModel).filter_by(user_id=user_id).all()
+        return [b.to_dict() for b in bmcs]
 
     def upsert_bmc(self, user_id: str, *, bmc_id: Optional[str], name: str, data: dict) -> dict:
-        """Create or update a BMC for this user."""
-        u = self.get_by_id(user_id)
-        if not u:
-            raise ValueError("user_not_found")
+        """Erstellt oder aktualisiert einen BMC in der DB."""
         now = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        
+        # Prüfen, ob User existiert (wegen Foreign Key Constraint wichtig)
+        if not self.get_by_id(user_id):
+             raise ValueError("user_not_found")
+
         if bmc_id:
-            # update existing
-            for b in u.bmcs:
-                if b["id"] == bmc_id:
-                    b["name"] = name
-                    b["data"] = data
-                    b["updated"] = now
-                    return b
-        # create new
-        new_bmc = {"id": str(uuid.uuid4()), "name": name, "data": data, "updated": now}
-        u.bmcs.append(new_bmc)
-        return new_bmc
+            # Versuch, existierenden BMC zu laden
+            # SQL: SELECT * FROM bmcs WHERE id = ... AND user_id = ...
+            bmc_entry = db.session.query(BMCModel).filter_by(id=bmc_id, user_id=user_id).first()
+            if bmc_entry:
+                # Update
+                bmc_entry.name = name
+                bmc_entry.data = data
+                bmc_entry.updated = now
+                db.session.commit()
+                return bmc_entry.to_dict()
+        
+        # Create New
+        new_bmc = BMCModel(
+            user_id=user_id,
+            name=name,
+            data=data,
+            updated=now
+        )
+        db.session.add(new_bmc)
+        db.session.commit()
+        return new_bmc.to_dict()
 
     def get_bmc(self, user_id: str, bmc_id: str) -> Optional[dict]:
-        u = self.get_by_id(user_id)
-        if not u:
-            return None
-        for b in u.bmcs:
-            if b["id"] == bmc_id:
-                return b
-        return None
-    
+        """Holt einen spezifischen BMC aus der DB."""
+        bmc_entry = db.session.query(BMCModel).filter_by(id=bmc_id, user_id=user_id).first()
+        return bmc_entry.to_dict() if bmc_entry else None
 
     def delete_bmc(self, user_id: str, bmc_id: str) -> bool:
-        u = self.get_by_id(user_id)
-        if not u:
+        """Löscht einen BMC aus der DB."""
+        bmc_entry = db.session.query(BMCModel).filter_by(id=bmc_id, user_id=user_id).first()
+        if not bmc_entry:
             return False
-        before = len(u.bmcs)
-        u.bmcs = [b for b in u.bmcs if b["id"] != bmc_id]
-        return len(u.bmcs) != before
-
+        
+        db.session.delete(bmc_entry)
+        db.session.commit()
+        return True
+    
+_repo = UserRepo()

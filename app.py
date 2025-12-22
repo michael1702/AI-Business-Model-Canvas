@@ -13,19 +13,40 @@ from bmc_service.api import api as bmc_api
 from user_service.api import api as user_api
 from group_service.api import api as group_api
 
+# Import database object
+from user_service.database import db
+
 
 def create_app():
-    app = Flask(
-        __name__,
-        # Until your frontend is separated, serve assets from bmc_service
-        static_folder="frontend/static",
-        template_folder="frontend/templates",
-    )
+    app = Flask(__name__, 
+                static_folder="frontend/static", 
+                template_folder="frontend/templates")
+
+    # Load configuration
+
+    app.config["JWT_SECRET"] = os.getenv("JWT_SECRET", "change-me-in-prod")
+    app.config["JWT_EXP_S"] = int(os.getenv("JWT_EXP_S", "2592000"))
+    
+    # Database URL
+    default_db = "postgresql://admin:secret@db:5432/aibmc_db"
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", default_db)
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+    # Initialization:  One instance for all the app
+    db.init_app(app)
+
+    # Create tables (in monolith mode, the frontend does this)
+    with app.app_context():
+            try:
+                db.create_all()
+            except Exception as e:
+                print(f"Warning creating tables: {e}")
+
 
     # Register blueprints
-    app.register_blueprint(bmc_api)   # -> /api/v1/bmc/...
-    app.register_blueprint(user_api)  # -> /api/v1/users/...
-    app.register_blueprint(group_api) # -> /api/v1/groups/...
+    app.register_blueprint(user_api)
+    app.register_blueprint(group_api)
+    app.register_blueprint(bmc_api)
     app.config["LLM"] = OpenAIClient()   # <- Service injection
     setup_logging(app)                   # <- Enable centralized logging
 

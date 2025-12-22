@@ -7,10 +7,12 @@ WORKDIR /app
 # (Necesario porque app.py importa el código directamente)
 COPY user_service/requirements.txt user_reqs.txt
 COPY bmc_service/requirements.txt bmc_reqs.txt
+COPY group_service/requirements.txt group_reqs.txt
 
 # Instalar dependencias combinadas + Gunicorn
 RUN pip install --no-cache-dir -r user_reqs.txt && \
     pip install --no-cache-dir -r bmc_reqs.txt && \
+    pip install --no-cache-dir -r group_reqs.txt && \
     pip install gunicorn
 
 # 2. Copiar todo el código del proyecto

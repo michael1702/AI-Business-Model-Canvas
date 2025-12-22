@@ -1,5 +1,4 @@
 Flask
-Flask-SQLAlchemy
 Flask-Migrate
 Flask-Bcrypt
 Flask-JWT-Extended
@@ -7,3 +6,8 @@ python-dotenv
 psycopg2-binary  # O el driver para tu base de datos (ej. mysqlclient, o puedes usar sqlite)
 gunicorn
 Flask-Cors       # Importante para permitir que el navegador hable con ambos servicios
+PyJWT
+requests
+# Nuevas dependencias para base de datos
+Flask-SQLAlchemy
+psycopg2-binary
