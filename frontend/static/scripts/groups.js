@@ -8,12 +8,28 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // Helper function for headers with token
+    // ID sicher holen 
+    // 1. Versuch: ID aus globaler Variable (vom Server in group-bmcs.html gesetzt)
+    // 2. Versuch: ID aus URL parsen (Fallback)
+    let groupId = null;
+    if (typeof GROUP_ID !== 'undefined' && GROUP_ID) {
+        groupId = GROUP_ID;
+        console.log("Using Server Group ID:", groupId);
+    } else {
+        const pathParts = window.location.pathname.split('/');
+        // Nimmt das letzte Segment, egal wie lang der Pfad ist
+        groupId = pathParts[pathParts.length - 1] || pathParts[pathParts.length - 2];
+        console.log("Parsed URL Group ID:", groupId);
+    }
+
     const getAuthHeaders = () => ({
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token
     });
 
+    
+
+    // Prüfen, auf welcher Seite wir sind
     const path = window.location.pathname;
 
     // --- VIEW 1: My Groups Overview (/my-groups) ---
@@ -109,25 +125,46 @@ document.addEventListener('DOMContentLoaded', async () => {
         // 2. Load group BMCs
         async function loadGroupBmcs() {
             try {
+                // --- ÄNDERUNG: Zuerst die Group ID holen, bevor wir fetchen ---
+                const pathParts = window.location.pathname.split('/');
+                // Nimmt an, URL ist /group/<ID>/bmcs. ID ist an Index 2.
+                // Falls die URL anders aufgebaut ist, muss der Index angepasst werden.
+                const groupId = pathParts[2]; 
+
+                // Sicherstellen, dass wir eine ID haben, bevor wir den Server fragen
+                if (!groupId) {
+                    console.error("Keine Group ID in der URL gefunden!");
+                    return;
+                }
+
+                // Jetzt können wir groupId benutzen:
                 const res = await fetch(API(`/groups/${groupId}/bmcs`), {
                     headers: getAuthHeaders()
                 });
                 const bmcs = await res.json();
 
                 if (!Array.isArray(bmcs) || bmcs.length === 0) {
-                    listContent.innerHTML = '<p>No shared BMCs yet.</p>';
+                    if(typeof listContent !== 'undefined') {
+                        listContent.innerHTML = '<p>No shared BMCs yet.</p>';
+                    }
                     return;
                 }
 
-                listContent.innerHTML = bmcs.map(b => `
-                    <div class="bmc-item" onclick="window.location.href='?bmc_id=${b.id}'" style="cursor:pointer;">
-                        <strong>${b.name}</strong> <br>
-                        <small>Last updated: ${b.updated}</small>
+                listContent.innerHTML = bmcs.map(b => {
+                    const bmcUrl = `/group/${groupId}/bmc/${b.id}`;
+                    
+                    return `
+                    <div class="bmc-item" onclick="window.location.href='${bmcUrl}'" style="cursor:pointer;">
+                        <h3>${b.name}</h3>
+                        <p>Last updated: ${b.updated || 'Never'}</p>
                     </div>
-                `).join('');
+                    `;
+                }).join('');
+
             } catch (e) {
                 console.error(e);
-                listContent.innerText = "Error loading BMCs.";
+                // Auch hier Variable prüfen
+                if(typeof listContent !== 'undefined') listContent.innerText = "Error loading BMCs.";
             }
         }
 

@@ -101,6 +101,11 @@ class GroupRepo:
         """Retrieves a specific BMC (Business Model Canvas)."""
         bmc_entry = db.session.query(SharedBMCModel).filter_by(id=bmc_id, group_id=group_id).first()
         return bmc_entry.to_dict() if bmc_entry else None
+    
+    def list_group_bmcs(self, group_id: str) -> List[dict]:
+        """Lists all BMCs for a specific group."""
+        bmcs = db.session.query(SharedBMCModel).filter_by(group_id=group_id).all()
+        return [b.to_dict() for b in bmcs]
 
     def _to_domain(self, model: GroupModel) -> Group:
         """Helper method: Converts DB model to domain object."""

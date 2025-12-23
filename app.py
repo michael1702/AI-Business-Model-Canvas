@@ -117,12 +117,13 @@ def create_app():
     @app.get("/my-groups")
     def my_groups(): return render_template("my-groups.html")
 
-    @app.get("/group/<group_id>/bmcs")
-    def group_bmcs(group_id): return render_template("group-bmcs.html")
+    @app.get("/group-bmcs/<group_id>")
+    def group_bmcs(group_id): 
+        return render_template("group-bmcs.html", group_id=group_id)
 
 
-    @app.get('/group-bmcs/<canvas_id>')
-    def group_bmc_canvas(canvas_id): return render_template("group-bmcs.html")
+    @app.get('/group/<group_id>/bmc/<canvas_id>')
+    def group_bmc_canvas(group_id, canvas_id): return render_template("bmc.html")
 
     return app
 

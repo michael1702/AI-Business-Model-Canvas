@@ -8,9 +8,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='styles/building-block.css') }}"> 
   <link rel="stylesheet" href="{{ url_for('static', filename='styles/process.css') }}"> <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
-    // Extract parameters for client-side logic
-    const GROUP_ID = new URLSearchParams(window.location.pathname).get('group_id');
-    const BMC_ID = new URLSearchParams(window.location.search).get('bmc_id');
+      const GROUP_ID = "{{ group_id }}";
   </script>
 </head>
 <body>

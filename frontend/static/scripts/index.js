@@ -1,3 +1,12 @@
+
+// Globales Objekt für Inputs initialisieren
+let inputData = {};
+try {
+    inputData = JSON.parse(localStorage.getItem("inputData")) || {};
+} catch (e) {
+    console.error("Fehler beim Laden von inputData:", e);
+}
+
 // Inhalte in den Browser laden
 document.addEventListener("DOMContentLoaded", () => {
   // Gespeicherte Eingaben und Titel laden

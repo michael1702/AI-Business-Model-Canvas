@@ -36,51 +36,99 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // If we have an existing BMC id, fetch from API and render
   async function loadExistingIfAny() {
-    if (current?.id) {
+      const path = window.location.pathname;
+      let apiUrl;
+      let bmcId;
+
+      // 1. PRÜFUNG: Ist es ein Gruppen-BMC? 
+      // URL Muster: /group/<group_id>/bmc/<bmc_id>
+      const groupMatch = path.match(/\/group\/([^\/]+)\/bmc\/([^\/]+)/);
+
+      if (groupMatch) {
+          const groupId = groupMatch[1];
+          bmcId = groupMatch[2];
+          // WICHTIG: Wir nutzen den Gruppen-Endpunkt!
+          apiUrl = API(`/groups/${groupId}/bmcs/${bmcId}`);
+          console.log("Loading Group BMC:", bmcId);
+      } else {
+          // 2. FALLBACK: Normaler persönlicher BMC
+          // Versucht ID aus URL zu lesen (z.B. /bmc/<id>) oder aus Session
+          const urlId = path.split('/').pop();
+          // Einfacher Check: Ist das letzte Element eine UUID? (grob geschätzt länge > 20)
+          if (urlId.length > 20) {
+              bmcId = urlId;
+              apiUrl = API(`/users/me/bmcs/${bmcId}`); // oder Ihr entsprechender Endpunkt
+          } else {
+              // Kein BMC in URL -> vielleicht ein neuer oder aus Session (alte Logik)
+              return; 
+          }
+      }
+
+      if (!apiUrl) return;
+
       try {
-        const r = await fetch(API(`/users/me/bmcs/${current.id}`), {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (r.ok) {
-          const b = await r.json();
-          if (ideaInput && !ideaInput.value) ideaInput.value = b.name || '';
-          applyCanvasData(b.data || {});
-          return true;
-        }
-      } catch { /* ignore */ }
+          const r = await fetch(apiUrl, {
+              headers: { 
+                  'Authorization': `Bearer ${getToken()}`,
+                  'Content-Type': 'application/json'
+              }
+          });
+
+          if (r.status === 401) {
+              console.warn("Unauthorized accessing BMC.");
+              window.location.href = '/auth';
+              return;
+          }
+          
+          if (!r.ok) throw new Error("Failed to load BMC");
+
+          const data = await r.json();
+          
+          // Titel setzen
+          if (document.getElementById('product-idea')) {
+              document.getElementById('product-idea').value = data.name || "";
+          }
+          
+          // Daten in die Boxen füllen
+          applyCanvasData(data.data || data); // Je nach Ihrer DB-Struktur (manchmal ist es data.data)
+
+      } catch (e) {
+          console.error("Error loading BMC:", e);
+          // Optional: User benachrichtigen statt redirect
+          alert("Could not load the Canvas. Do you have access?");
+      }
+
     }
-    return false;
-  }
 
-  // initial naming
-  if (!current) {
-    const name = (sessionStorage.getItem('product_idea') || ideaInput?.value || '').trim() || 'Untitled';
-    current = { name };
-    sessionStorage.setItem('currentBmc', JSON.stringify(current));
-  }
-  if (ideaInput && !ideaInput.value) ideaInput.value = current.name || '';
-
-  // 1) Try to load existing saved canvas
-  const loaded = await loadExistingIfAny();
-
-  // 2) If none exists, optionally prefill once from example
-  if (!loaded && ideaInput?.value) {
-    const firstLoadKey = `prefilled_${current.id || 'new'}`;
-    if (!sessionStorage.getItem(firstLoadKey)) {
-      try {
-        const resp = await fetch(API('/bmc/example'), {
-          method: 'POST',
-          headers: { 'Content-Type':'application/json', 'Authorization': `Bearer ${token}` },
-          body: JSON.stringify({ product_idea: ideaInput.value })
-        });
-        if (resp.ok) {
-          const data = await resp.json();
-          applyCanvasData(data);
-          sessionStorage.setItem(firstLoadKey, '1');
-        }
-      } catch { /* ignore */ }
+    // initial naming
+    if (!current) {
+      const name = (sessionStorage.getItem('product_idea') || ideaInput?.value || '').trim() || 'Untitled';
+      current = { name };
+      sessionStorage.setItem('currentBmc', JSON.stringify(current));
     }
-  }
+    if (ideaInput && !ideaInput.value) ideaInput.value = current.name || '';
+
+    // 1) Try to load existing saved canvas
+    const loaded = await loadExistingIfAny();
+
+    // 2) If none exists, optionally prefill once from example
+    if (!loaded && ideaInput?.value) {
+      const firstLoadKey = `prefilled_${current.id || 'new'}`;
+      if (!sessionStorage.getItem(firstLoadKey)) {
+        try {
+          const resp = await fetch(API('/bmc/example'), {
+            method: 'POST',
+            headers: { 'Content-Type':'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ product_idea: ideaInput.value })
+          });
+          if (resp.ok) {
+            const data = await resp.json();
+            applyCanvasData(data);
+            sessionStorage.setItem(firstLoadKey, '1');
+          }
+        } catch { /* ignore */ }
+      }
+    }
 
   const saveMsg = document.getElementById('save-msg');
   const saveBtn = document.getElementById('save-button');      // Update current
