@@ -5,50 +5,58 @@ from dotenv import load_dotenv
 from bmc_service.adapters.openai_client import OpenAIClient
 from bmc_service.app_logging import setup_logging
 
-# Load .env (JWT_SECRET etc.)
+# Load .env (For JWT_SECRET and Service URLs)
 load_dotenv()
-
-# Import blueprints
-from bmc_service.api import api as bmc_api
-from user_service.api import api as user_api
-from group_service.api import api as group_api
-
-# Import database object
-from user_service.database import db
-
 
 def create_app():
     app = Flask(__name__, 
                 static_folder="frontend/static", 
                 template_folder="frontend/templates")
 
-    # Load configuration
-
-    app.config["JWT_SECRET"] = os.getenv("JWT_SECRET", "change-me-in-prod")
-    app.config["JWT_EXP_S"] = int(os.getenv("JWT_EXP_S", "2592000"))
+    # --- CONFIGURATION ---
+    # We no longer need SQLALCHEMY_DATABASE_URI here!
+    # The frontend doesn't talk to the DB directly anymore.
     
-    # Database URL
-    default_db = "postgresql://admin:secret@db:5432/aibmc_db"
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", default_db)
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config["JWT_SECRET"] = os.getenv("JWT_SECRET", "change-me-in-prod")
+    
+    # Pass Service URLs to templates if needed (so JS knows where to fetch data)
+    @app.context_processor
+    def inject_service_urls():
+        return dict(
+            bmc_service_url=os.getenv("BMC_SERVICE_URL", "http://localhost:5001"),
+            user_service_url=os.getenv("USER_SERVICE_URL", "http://localhost:5002"),
+            group_service_url=os.getenv("GROUP_SERVICE_URL", "http://localhost:5003")
+        )
 
-    # Initialization:  One instance for all the app
-    db.init_app(app)
-
-    # Create tables (in monolith mode, the frontend does this)
-    with app.app_context():
-            try:
-                db.create_all()
-            except Exception as e:
-                print(f"Warning creating tables: {e}")
-
-
-    # Register blueprints
-    app.register_blueprint(user_api)
-    app.register_blueprint(group_api)
-    app.register_blueprint(bmc_api)
     app.config["LLM"] = OpenAIClient()   # <- Service injection
     setup_logging(app)                   # <- Enable centralized logging
+
+    # --- ROUTES (UI ONLY) ---
+    # These routes just serve the HTML "Shells". 
+    # The JavaScript in these pages will fetch data from the URLs above.
+
+    @app.route("/")
+    def index():
+        return render_template("index.html")
+
+    @app.route("/login")
+    @app.route("/register")
+    def auth():
+        # Ensure your auth.js posts to user_service_url
+        return render_template("auth.html")
+
+    @app.route("/profile")
+    def profile():
+        return render_template("profile.html")
+
+    @app.get("/my-bmcs")
+    def my_bmcs():
+        return render_template("my-bmcs.html")
+
+    @app.get("/bmc/<canvas_id>")
+    def bmc_canvas(canvas_id):
+        # The JS will use the canvas_id to fetch details from BMC Service
+        return render_template("bmc.html", canvas_id=canvas_id)
 
     # HTML pages 
     @app.get("/")

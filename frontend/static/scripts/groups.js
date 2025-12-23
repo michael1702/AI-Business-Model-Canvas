@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Load groups
         async function loadGroups() {
             try {
-                const res = await fetch(API('/api/v1/groups/'), {
+                const res = await fetch(API('/groups/'), {
                     headers: getAuthHeaders()
                 });
                 if (res.status === 401) return handleAuthError();
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!name) return;
 
             try {
-                const res = await fetch(API('/api/v1/groups/'), {
+                const res = await fetch(API('/groups/'), {
                     method: 'POST',
                     headers: getAuthHeaders(),
                     body: JSON.stringify({ name })
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // 1. Load group info & members
         async function loadGroupInfo() {
             try {
-                const res = await fetch(API(`/api/v1/groups/${groupId}`), {
+                const res = await fetch(API(`/groups/${groupId}`), {
                     headers: getAuthHeaders()
                 });
                 if (!res.ok) throw new Error("Group not found");
@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // 2. Load group BMCs
         async function loadGroupBmcs() {
             try {
-                const res = await fetch(API(`/api/v1/groups/${groupId}/bmcs`), {
+                const res = await fetch(API(`/groups/${groupId}/bmcs`), {
                     headers: getAuthHeaders()
                 });
                 const bmcs = await res.json();
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!email) return;
 
             try {
-                const res = await fetch(API(`/api/v1/groups/${groupId}/members`), {
+                const res = await fetch(API(`/groups/${groupId}/members`), {
                     method: 'POST',
                     headers: getAuthHeaders(),
                     body: JSON.stringify({ email })
@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const name = document.getElementById('new-group-bmc-name').value;
             if (!name) return;
             
-            const res = await fetch(API(`/api/v1/groups/${groupId}/bmcs`), {
+            const res = await fetch(API(`/groups/${groupId}/bmcs`), {
                 method: 'POST',
                 headers: getAuthHeaders(),
                 body: JSON.stringify({ name, data: {} })
@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('group-bmc-editor').style.display = 'block';
             
             // Load BMC data
-            const res = await fetch(API(`/api/v1/groups/${groupId}/bmcs/${bmcId}`), {
+            const res = await fetch(API(`/groups/${groupId}/bmcs/${bmcId}`), {
                 headers: getAuthHeaders()
             });
             if (res.ok) {
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const data = getCanvasData(); // Function from index.js
                 const name = document.getElementById('product-idea').value || "Untitled";
                 
-                const saveRes = await fetch(API(`/api/v1/groups/${groupId}/bmcs`), {
+                const saveRes = await fetch(API(`/groups/${groupId}/bmcs`), {
                     method: 'POST', // or PUT if your API supports update
                     headers: getAuthHeaders(),
                     body: JSON.stringify({ id: bmcId, name, data })
