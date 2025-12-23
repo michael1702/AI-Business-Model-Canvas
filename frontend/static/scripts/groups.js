@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Load groups
         async function loadGroups() {
             try {
-                const res = await fetch(API('/groups/'), {
+                const res = await fetch(API('/groups'), {
                     headers: getAuthHeaders()
                 });
                 if (res.status === 401) return handleAuthError();
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!name) return;
 
             try {
-                const res = await fetch(API('/groups/'), {
+                const res = await fetch(API('/groups'), {
                     method: 'POST',
                     headers: getAuthHeaders(),
                     body: JSON.stringify({ name })

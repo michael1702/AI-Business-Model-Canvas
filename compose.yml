@@ -17,7 +17,7 @@ services:
     networks:
       - aibmc-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d aibmc-user-db"]
+      test: ["CMD-SHELL", "pg_isready -U admin -d user_db"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -36,7 +36,7 @@ services:
     networks:
       - aibmc-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d aibmc-group-db"]
+      test: ["CMD-SHELL", "pg_isready -U admin -d group_db"]
       interval: 5s
       timeout: 5s
       retries: 5
