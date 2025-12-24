@@ -149,6 +149,10 @@ buildingBlocks.forEach((block) => {
 //Inputwerte aus dem Local Storage laden und als Placeholder setzen
 function loadSavedInputs() {
   const product_idea = document.querySelector("#product-idea");
+  
+  // ABBRUCH, wenn das Element auf dieser Seite gar nicht existiert
+  if (!product_idea) return; 
+
   const saved_product_idea = localStorage.getItem("product-idea");
   if(saved_product_idea) {
     product_idea.value = saved_product_idea;
@@ -750,34 +754,43 @@ document.addEventListener('DOMContentLoaded', async () => {
   const logoutBtn = document.getElementById('logout-btn');
 
   async function loadMe() {
+    const guest = document.getElementById('guest-actions');
+    const user = document.getElementById('user-actions');
+    const emailSpan = document.getElementById('user-email');
+
     const token = getToken();
+
+    // Helper: Nur stylen, wenn Element existiert
+    const setDisplay = (el, val) => { if (el) el.style.display = val; };
+
     if (!token) {
-      guest.style.display = '';
-      user.style.display = 'none';
+      setDisplay(guest, '');
+      setDisplay(user, 'none');
       return;
     }
+
     try {
       const r = await fetch(API('/users/me'), {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+
       if (!r.ok) throw new Error('unauthorized');
+      
       const me = await r.json();
-      emailSpan.textContent = me.email;
-      guest.style.display = 'none';
-      user.style.display = '';
+      if (emailSpan) emailSpan.textContent = me.email;
+      
+      setDisplay(guest, 'none');
+      setDisplay(user, '');
+
     } catch (e) {
-      clearToken();
-      guest.style.display = '';
-      user.style.display = 'none';
+      console.error("Auth check failed:", e);
+      // WICHTIG: Nur ausloggen, wenn es wirklich ein Auth-Fehler ist (z.B. 401)
+      // Wenn es nur ein fehlendes HTML-Element war, wollen wir nicht den Token löschen!
+      if (e.message === 'unauthorized') {
+          clearToken();
+          setDisplay(guest, '');
+          setDisplay(user, 'none');
+      }
     }
   }
-
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
-      clearToken();
-      location.reload();
-    });
-  }
-
-  loadMe();
-});
+})
