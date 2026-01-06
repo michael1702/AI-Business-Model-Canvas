@@ -3,6 +3,5 @@ Flask-SQLAlchemy
 PyJWT
 requests
 gunicorn
-# Neu:
-
+python-dotenv
 psycopg2-binary

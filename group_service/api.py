@@ -1,9 +1,8 @@
 from flask import Blueprint, request, jsonify
-# Wir nutzen die lokale Domain-Logik der Alten Version
+import os, requests
 from .adapters.repository import _repo
 
-# WICHTIG: Damit das hier läuft, muss die security.py im group_service liegen,
-# oder wir fangen den Import-Fehler ab.
+
 try:
     from .security import decode_token
 except ImportError:
@@ -12,8 +11,9 @@ except ImportError:
     def decode_token(token): return {"sub": "1"} 
 
 api = Blueprint("group_api", __name__, url_prefix="/api/v1/groups")
+USER_SERVICE_URL = os.getenv("USER_SERVICE_URL", "http://user-service:5002")
 
-# --- AUTHENTIFIZIERUNG (Aus der Alten Version) ---
+# --- AUTHENTIFIZIERUNG 
 # Wir nutzen diese Funktion, da wir den Decorator aus user_service nicht importieren können.
 def _require_auth():
     auth = request.headers.get("Authorization", "")
@@ -27,100 +27,129 @@ def _require_auth():
     payload = decode_token(token)
     if not payload:
         return None, (jsonify({"error": "invalid_or_expired_token"}), 401)
-    return payload, None
+    return payload, None, token  # <--- WICHTIG: Token zurückgeben für Weiterleitung!
 
+
+
+# --- HELPER: Kommunikation mit User Service ---
+def resolve_email_to_id(email, auth_token):
+    try:
+        resp = requests.post(
+            f"{USER_SERVICE_URL}/api/v1/users/lookup",
+            json={"email": email},
+            headers={"Authorization": f"Bearer {auth_token}"}
+        )
+        if resp.status_code == 200:
+            return resp.json(), None
+        return None, resp.json().get("error", "lookup_failed")
+    except Exception as e:
+        return None, str(e)
+
+def resolve_ids_to_emails(user_ids, auth_token):
+    try:
+        resp = requests.post(
+            f"{USER_SERVICE_URL}/api/v1/users/batch-info",
+            json={"ids": user_ids},
+            headers={"Authorization": f"Bearer {auth_token}"}
+        )
+        if resp.status_code == 200:
+            return resp.json() # Liste von {id, email}
+        return []
+    except:
+        return []
+    
 # --- ROUTEN ---
 
-@api.post("/")
-def create_group():
-    payload, err = _require_auth()
-    if err: return err
+# @api.post("/")
+# def create_group():
+#     payload, err, token = _require_auth()
+#     if err: return err
     
-    body = request.get_json(force=True) or {}
-    name = body.get("name")
-    owner_id = payload["sub"]
+#     body = request.get_json(force=True) or {}
+#     name = body.get("name")
+#     owner_id = payload["sub"]
 
-    # ÄNDERUNG: Direkt das Repo nutzen, da die Domain-Logik dort integriert wurde
-    try:
-        # Hier nutzen wir direkt dein Repo, wie du sagtest
-        group = _repo.create_group(name, owner_id) 
-        return jsonify(group.to_dict()), 201 
-        # Hinweis: create_group im Repo gibt bei dir vermutlich schon das Domain-Objekt zurück
-        # oder das Model. Falls es ein Model ist, pass auf .to_dict() auf.
-    except Exception as ex:
-        return jsonify({"error": str(ex)}), 400
+#     # ÄNDERUNG: Direkt das Repo nutzen, da die Domain-Logik dort integriert wurde
+#     try:
+#         # Hier nutzen wir direkt dein Repo, wie du sagtest
+#         group = _repo.create_group(name, owner_id) 
+#         return jsonify(group.to_dict()), 201 
+#         # Hinweis: create_group im Repo gibt bei dir vermutlich schon das Domain-Objekt zurück
+#         # oder das Model. Falls es ein Model ist, pass auf .to_dict() auf.
+#     except Exception as ex:
+#         return jsonify({"error": str(ex)}), 400
     
 
-@api.get("/")
-def list_my_groups():
-    payload, err = _require_auth()
-    if err: return err
-    user_id = payload["sub"]
+# @api.get("/")
+# def list_my_groups():
+#     payload, err, token = _require_auth()
+#     if err: return err
+#     user_id = payload["sub"]
     
-    groups = _repo.list_groups_for_user(user_id)
-    slim_groups = [{
-        "id": g.id, 
-        "name": g.name, 
-        "is_owner": g.owner_id == user_id, 
-        "member_count": len(g.members)
-    } for g in groups]
-    return jsonify(slim_groups), 200
+#     groups = _repo.list_groups_for_user(user_id)
+#     slim_groups = [{
+#         "id": g.id, 
+#         "name": g.name, 
+#         "is_owner": g.owner_id == user_id, 
+#         "member_count": len(g.members)
+#     } for g in groups]
+#     return jsonify(slim_groups), 200
 
-@api.get("/<group_id>")
-def get_group_details(group_id: str):
-    payload, err = _require_auth()
-    if err: return err
-    user_id = payload["sub"]
+# @api.get("/<group_id>")
+# def get_group_details(group_id: str):
+#     payload, err, token = _require_auth()
+#     if err: return err
+#     user_id = payload["sub"]
     
-    group = _repo.get_by_id(group_id)
-    if not group: return jsonify({"error": "group_not_found"}), 404
+#     group = _repo.get_by_id(group_id)
+#     if not group: return jsonify({"error": "group_not_found"}), 404
     
-    # Check Access
-    if user_id not in group.members: 
-        return jsonify({"error": "access_denied"}), 403
+#     # Check Access
+#     if user_id not in group.members: 
+#         return jsonify({"error": "access_denied"}), 403
 
-    # CRITICAL FIX: Kein Zugriff auf UserRepo (verursacht Crash)!
-    # Wir geben die Member-IDs zurück ohne Email-Lookup.
-    member_details = []
-    for member_id in group.members:
-        member_details.append({
-            "id": member_id, 
-            "email": "hidden_in_microservice", # E-Mail Auflösung benötigt HTTP-Request
-            "is_owner": member_id == group.owner_id
-        })
+#     # CRITICAL FIX: Kein Zugriff auf UserRepo (verursacht Crash)!
+#     # Wir geben die Member-IDs zurück ohne Email-Lookup.
+#     member_details = []
+#     for member_id in group.members:
+#         member_details.append({
+#             "id": member_id, 
+#             "email": "hidden_in_microservice", # E-Mail Auflösung benötigt HTTP-Request
+#             "is_owner": member_id == group.owner_id
+#         })
 
-    return jsonify({
-        "id": group.id,
-        "name": group.name,
-        "owner_id": group.owner_id,
-        "members": member_details
-    }), 200
+#     return jsonify({
+#         "id": group.id,
+#         "name": group.name,
+#         "owner_id": group.owner_id,
+#         "members": member_details
+#     }), 200
 
-@api.post("/<group_id>/members")
-def add_member_to_group_route(group_id: str):
-    payload, err = _require_auth()
-    if err: return err
+# @api.post("/<group_id>/members")
+# def add_member_to_group_route(group_id: str):
+#     payload, err, token = _require_auth()
+#     if err: return err
     
-    body = request.get_json(force=True) or {}
-    email = body.get("email")
-    admin_id = payload["sub"]
+#     body = request.get_json(force=True) or {}
+#     email = body.get("email")
+#     admin_id = payload["sub"]
     
-    if not email:
-        return jsonify({"error": "missing_email"}), 400
+#     if not email:
+#         return jsonify({"error": "missing_email"}), 400
 
-    # FIX: Wir können UserRepo hier NICHT benutzen.
-    # Damit der Code nicht crasht, geben wir "Not Implemented" zurück 
-    # oder faken das Hinzufügen, wenn du die ID direkt sendest.
+#     # FIX: Wir können UserRepo hier NICHT benutzen.
+#     # Damit der Code nicht crasht, geben wir "Not Implemented" zurück 
+#     # oder faken das Hinzufügen, wenn du die ID direkt sendest.
     
-    return jsonify({
-        "error": "Adding by Email requires User-Service Communication (HTTP). Logic disabled to prevent crash."
-    }), 501
+#     return jsonify({
+#         "error": "Adding by Email requires User-Service Communication (HTTP). Logic disabled to prevent crash."
+#     }), 501
 
 # --- BMC Routen (Funktionieren in beiden Versionen ähnlich) ---
 
 @api.get("/<group_id>/bmcs")
 def list_group_bmcs(group_id: str):
-    payload, err = _require_auth()
+    payload, err, token = _require_auth()
     if err: return err
     user_id = payload["sub"]
     group = _repo.get_by_id(group_id)
@@ -131,7 +160,7 @@ def list_group_bmcs(group_id: str):
 
 @api.post("/<group_id>/bmcs")
 def upsert_group_bmc(group_id: str):
-    payload, err = _require_auth()
+    payload, err, token = _require_auth()
     if err: return err
     user_id = payload["sub"]
     group = _repo.get_by_id(group_id)
@@ -148,7 +177,7 @@ def upsert_group_bmc(group_id: str):
 
 @api.get("/<group_id>/bmcs/<bmc_id>")
 def get_group_bmc(group_id: str, bmc_id: str):
-    payload, err = _require_auth()
+    payload, err, token = _require_auth()
     if err: return err
     user_id = payload["sub"]
     group = _repo.get_by_id(group_id)
@@ -156,3 +185,126 @@ def get_group_bmc(group_id: str, bmc_id: str):
     bmc = _repo.get_group_bmc(group_id, bmc_id)
     if not bmc: return jsonify({"error": "bmc_not_found"}), 404
     return jsonify(bmc), 200
+
+
+@api.post("/")
+def create_group():
+    payload, err, token = _require_auth() # <--- Unpacking updated
+    if err: return err
+    
+    body = request.get_json(force=True) or {}
+    name = body.get("name")
+    owner_id = payload["sub"]
+
+    try:
+        group = _repo.create_group(name, owner_id) 
+        return jsonify(group.to_dict()), 201 
+    except Exception as ex:
+        return jsonify({"error": str(ex)}), 400
+
+@api.get("/")
+def list_my_groups():
+    payload, err, token = _require_auth()
+    if err: return err
+    user_id = payload["sub"]
+    
+    groups = _repo.list_groups_for_user(user_id)
+    slim_groups = [{
+        "id": g.id, 
+        "name": g.name, 
+        "is_owner": g.owner_id == user_id, 
+        "member_count": len(g.members)
+    } for g in groups]
+    return jsonify(slim_groups), 200
+
+
+@api.get("/<group_id>")
+def get_group_details(group_id: str):
+    payload, err, token = _require_auth()
+    if err: return err
+    user_id = payload["sub"]
+    
+    group = _repo.get_by_id(group_id)
+    if not group: return jsonify({"error": "group_not_found"}), 404
+    
+    if user_id not in group.members: 
+        return jsonify({"error": "access_denied"}), 403
+
+    # Echte Namen/Emails auflösen
+    members_info = resolve_ids_to_emails(group.members, token)
+    
+    # Map erstellen für schnellen Zugriff
+    info_map = {m["id"]: m["email"] for m in members_info}
+
+    member_details = []
+    for member_id in group.members:
+        member_details.append({
+            "id": member_id, 
+            "email": info_map.get(member_id, "Unknown User"), 
+            "is_owner": member_id == group.owner_id
+        })
+
+    return jsonify({
+        "id": group.id,
+        "name": group.name,
+        "owner_id": group.owner_id,
+        "members": member_details
+    }), 200
+
+
+@api.post("/<group_id>/members")
+def add_member_to_group_route(group_id: str):
+    payload, err, token = _require_auth()
+    if err: return err
+    
+    requester_id = payload["sub"]
+    group = _repo.get_by_id(group_id)
+    if not group: return jsonify({"error": "group_not_found"}), 404
+    
+    # Nur Owner darf hinzufügen
+    if group.owner_id != requester_id:
+        return jsonify({"error": "only_owner_can_add_members"}), 403
+
+    body = request.get_json(force=True) or {}
+    email = body.get("email")
+    if not email: return jsonify({"error": "missing_email"}), 400
+
+    # 1. User ID per Email holen
+    user_info, error_msg = resolve_email_to_id(email, token)
+    if not user_info:
+        return jsonify({"error": f"User not found or service error: {error_msg}"}), 404
+    
+    new_member_id = user_info["id"]
+
+    # 2. Prüfen ob schon drin
+    if new_member_id in group.members:
+        return jsonify({"error": "user_already_in_group"}), 409
+
+    # 3. Hinzufügen
+    group.members.append(new_member_id)
+    _repo.save(group) # Annahme: save Methode existiert im Repo
+    
+    return jsonify({"status": "added", "user": user_info}), 200
+
+
+@api.delete("/<group_id>/members/<member_id>")
+def remove_member_from_group_route(group_id: str, member_id: str):
+    payload, err, token = _require_auth()
+    if err: return err
+    
+    requester_id = payload["sub"]
+    group = _repo.get_by_id(group_id)
+    if not group: return jsonify({"error": "group_not_found"}), 404
+
+    # Nur Owner darf löschen (oder User sich selbst -> "Leave Group")
+    if group.owner_id != requester_id and member_id != requester_id:
+        return jsonify({"error": "permission_denied"}), 403
+    
+    # Owner kann sich nicht selbst entfernen (außer Gruppe wird gelöscht, was hier nicht implementiert ist)
+    if member_id == group.owner_id:
+        return jsonify({"error": "owner_cannot_leave_group"}), 400
+
+    if member_id in group.members:
+        group.members.remove(member_id)
+        _repo.save(group)
+        return jsonify({"status": "removed"}), 200

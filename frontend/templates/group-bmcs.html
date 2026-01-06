@@ -63,13 +63,31 @@
             </div>
             
             <div style="flex: 1; min-width: 250px; border-left: 1px solid #eee; padding-left: 20px;">
-                <h2>Members</h2>
-                <div class="actions" style="display: flex; gap: 10px; margin-bottom: 15px;">
-                    <input id="invite-email" placeholder="User Email" style="flex: 1; padding: 8px; border-radius: 5px; border: 1px solid #ccc;" />
-                    <button id="invite-member-btn" class="save-button" style="margin: 0; position: static;">Add</button>
-                </div>
-                <p id="invite-msg" class="msg"></p>
-                <ul id="members-list" style="list-style: none; padding: 0;">Loading members...</ul>
+               <section id="members-section" style="margin-top: 40px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                      <h2>Members</h2>
+                  </div>
+
+                  <div class="add-member-box" style="background: #f0f0f0; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
+                      <input type="email" id="new-member-email" placeholder="Enter user email address" onkeydown="if(event.key === 'Enter') addMember()" style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                      <button onclick="addMember()" class="action-btn" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Add User</button>
+                  </div>
+                  <p id="member-msg" style="color: red;"></p>
+
+                  <div class="members-list">
+                      <table style="width: 100%; border-collapse: collapse;">
+                          <thead>
+                              <tr style="text-align: left; border-bottom: 2px solid #ddd;">
+                                  <th style="padding: 10px;">Email</th>
+                                  <th style="padding: 10px;">Role</th>
+                                  <th style="padding: 10px; text-align: right;">Action</th>
+                              </tr>
+                          </thead>
+                          <tbody id="members-table-body">
+                              </tbody>
+                      </table>
+                  </div>
+              </section>
             </div>
         </div>
         

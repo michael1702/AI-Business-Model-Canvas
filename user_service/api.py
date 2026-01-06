@@ -83,3 +83,36 @@ def delete_my_bmc(bmc_id: str):
     if not ok:
         return jsonify({"error": "not_found"}), 404
     return jsonify({"status": "deleted"}), 200
+
+
+@api.post("/lookup")
+def lookup_user():
+    # Dieser Endpoint sollte idealerweise geschützt sein, 
+    # aber für interne Kommunikation nutzen wir hier den User-Token weiter.
+    # Wir erwarten: {"email": "..."}
+    
+    body = request.get_json(force=True) or {}
+    email = body.get("email")
+    
+    if not email:
+        return jsonify({"error": "missing_email"}), 400
+        
+    user = _repo.get_by_email(email)
+    if not user:
+        return jsonify({"error": "user_not_found"}), 404
+        
+    return jsonify({"id": user.id, "email": user.email}), 200
+
+# Optional: Ein Endpoint um Details für mehrere IDs zu holen (für die Anzeige der Mitgliederliste)
+@api.post("/batch-info")
+def get_users_info():
+    body = request.get_json(force=True) or {}
+    user_ids = body.get("ids", [])
+    
+    results = []
+    for uid in user_ids:
+        u = _repo.get_by_id(uid)
+        if u:
+            results.append({"id": u.id, "email": u.email})
+            
+    return jsonify(results), 200

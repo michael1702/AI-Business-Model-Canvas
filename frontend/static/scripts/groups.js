@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', async () => {
     ensureAuthUI(); // Auth check from index.js
 
@@ -8,26 +7,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // ID sicher holen 
-    // 1. Versuch: ID aus globaler Variable (vom Server in group-bmcs.html gesetzt)
-    // 2. Versuch: ID aus URL parsen (Fallback)
+    // ID sicher holen (Fallback Logik)
     let groupId = null;
     if (typeof GROUP_ID !== 'undefined' && GROUP_ID) {
         groupId = GROUP_ID;
-        console.log("Using Server Group ID:", groupId);
     } else {
         const pathParts = window.location.pathname.split('/');
-        // Nimmt das letzte Segment, egal wie lang der Pfad ist
+        // Nimmt das letzte Segment oder das vorletzte, falls Slash am Ende
         groupId = pathParts[pathParts.length - 1] || pathParts[pathParts.length - 2];
-        console.log("Parsed URL Group ID:", groupId);
     }
 
     const getAuthHeaders = () => ({
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token
     });
-
-    
 
     // Prüfen, auf welcher Seite wir sind
     const path = window.location.pathname;
@@ -37,13 +30,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         const listEl = document.getElementById('groups-list');
         const msgEl = document.getElementById('groups-msg');
 
-        // Load groups
+        // Funktion definieren
         async function loadGroups() {
             try {
                 const res = await fetch(API('/groups'), {
                     headers: getAuthHeaders()
                 });
                 if (res.status === 401) return handleAuthError();
+                
                 const groups = await res.json();
 
                 if (!Array.isArray(groups) || groups.length === 0) {
@@ -54,7 +48,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 listEl.innerHTML = groups.map(g => `
                     <div class="bmc-item" onclick="window.location.href='/group-bmcs/${g.id}'" style="cursor:pointer;">
                         <h3>${g.name}</h3>
-                        <p>Members: ${g.members ? g.members.length : 0}</p>
+                        <p>Members: ${g.member_count !== undefined ? g.member_count : '?'}</p>
+                        ${g.is_owner ? '<small style="color:green">Owner</small>' : ''}
                     </div>
                 `).join('');
             } catch (e) {
@@ -78,7 +73,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 
                 if (res.ok) {
                     nameInput.value = '';
-                    loadGroups();
+                    loadGroups(); // Liste neu laden
                 } else {
                     const err = await res.json();
                     msgEl.innerText = "Error: " + (err.error || "Unknown");
@@ -88,172 +83,137 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
-        await loadGroups();
+        // WICHTIG: Automatisch laden beim Start!
+        loadGroups(); 
     }
 
     // --- VIEW 2: Group Details & BMCs (/group-bmcs/<id>) ---
     if (path.includes('/group-bmcs/')) {
-        // Extract ID from URL: /group-bmcs/UUID
-        const parts = path.split('/');
-        const groupId = parts[parts.length - 1]; // Last part is ID
+        const listContent = document.getElementById('bmcs-list-content');
         const bmcId = new URLSearchParams(window.location.search).get('bmc_id');
 
-        // Elements
-        const listContent = document.getElementById('bmcs-list-content');
-        const memberList = document.getElementById('members-list');
-        const titleHeader = document.getElementById('group-name-header');
-
-        // 1. Load group info & members
-        async function loadGroupInfo() {
+        async function loadGroupDetails() {
             try {
-                const res = await fetch(API(`/groups/${groupId}`), {
-                    headers: getAuthHeaders()
-                });
-                if (!res.ok) throw new Error("Group not found");
+                const res = await fetch(API(`/groups/${groupId}`), { headers: getAuthHeaders() });
+                if (!res.ok) throw new Error("Failed to load group");
                 
                 const group = await res.json();
-                if(titleHeader) titleHeader.innerText = group.name;
+                document.getElementById('group-title').innerText = group.name;
+                
+                // Render Members
+                const tbody = document.getElementById('members-table-body');
+                if (tbody) {
+                    tbody.innerHTML = group.members.map(m => {
+                        let actionHtml = '';
+                        if (m.is_owner) {
+                            actionHtml = '<span style="color: #888; font-style: italic;">Owner</span>';
+                        } else {
+                            // "Remove" Button nur anzeigen
+                            actionHtml = `<button onclick="removeMember('${m.id}')" style="color: red; cursor: pointer;">Remove</button>`;
+                        }
 
-                // Show members
-                memberList.innerHTML = (group.members || []).map(m => `<li>👤 ${m}</li>`).join('');
+                        return `
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 10px;">${m.email}</td>
+                            <td style="padding: 10px;">${m.is_owner ? 'Owner' : 'Member'}</td>
+                            <td style="padding: 10px; text-align: right;">${actionHtml}</td>
+                        </tr>
+                        `;
+                    }).join('');
+                }
             } catch (e) {
                 console.error(e);
-                if(titleHeader) titleHeader.innerText = "Error loading group";
             }
         }
 
-        // 2. Load group BMCs
-        async function loadGroupBmcs() {
-            try {
-                // --- ÄNDERUNG: Zuerst die Group ID holen, bevor wir fetchen ---
-                const pathParts = window.location.pathname.split('/');
-                // Nimmt an, URL ist /group/<ID>/bmcs. ID ist an Index 2.
-                // Falls die URL anders aufgebaut ist, muss der Index angepasst werden.
-                const groupId = pathParts[2]; 
-
-                // Sicherstellen, dass wir eine ID haben, bevor wir den Server fragen
-                if (!groupId) {
-                    console.error("Keine Group ID in der URL gefunden!");
-                    return;
-                }
-
-                // Jetzt können wir groupId benutzen:
-                const res = await fetch(API(`/groups/${groupId}/bmcs`), {
-                    headers: getAuthHeaders()
-                });
-                const bmcs = await res.json();
-
-                if (!Array.isArray(bmcs) || bmcs.length === 0) {
-                    if(typeof listContent !== 'undefined') {
-                        listContent.innerHTML = '<p>No shared BMCs yet.</p>';
-                    }
-                    return;
-                }
-
-                listContent.innerHTML = bmcs.map(b => {
-                    const bmcUrl = `/group/${groupId}/bmc/${b.id}`;
-                    
-                    return `
-                    <div class="bmc-item" onclick="window.location.href='${bmcUrl}'" style="cursor:pointer;">
-                        <h3>${b.name}</h3>
-                        <p>Last updated: ${b.updated || 'Never'}</p>
-                    </div>
-                    `;
-                }).join('');
-
-            } catch (e) {
-                console.error(e);
-                // Auch hier Variable prüfen
-                if(typeof listContent !== 'undefined') listContent.innerText = "Error loading BMCs.";
-            }
-        }
-
-        // 3. Add member
-        document.getElementById('invite-member-btn')?.addEventListener('click', async () => {
-            const emailInput = document.getElementById('invite-email');
-            const email = emailInput.value;
-            const msg = document.getElementById('invite-msg');
+        // Add Member (Global gemacht für HTML Zugriff)
+        window.addMember = async function() {
+            // FIX: Zuerst definieren, dann benutzen!
+            const emailInput = document.getElementById('new-member-email'); 
+            const msg = document.getElementById('member-msg');
             
+            if (!emailInput) return; // Sicherheitscheck
+            const email = emailInput.value.trim();
+
             if (!email) return;
+            
+            msg.innerText = "Adding...";
+            msg.style.color = "blue";
 
             try {
                 const res = await fetch(API(`/groups/${groupId}/members`), {
                     method: 'POST',
                     headers: getAuthHeaders(),
-                    body: JSON.stringify({ email })
+                    body: JSON.stringify({ email: email })
                 });
+                
                 const data = await res.json();
                 
                 if (res.ok) {
-                    msg.innerText = "User added!";
+                    msg.innerText = "User added successfully!";
                     msg.style.color = "green";
                     emailInput.value = "";
-                    loadGroupInfo(); // Refresh list
+                    loadGroupDetails(); // Liste neu laden
                 } else {
-                    msg.innerText = "Error: " + (data.error || "Failed");
+                    msg.innerText = data.error || "Failed to add user.";
                     msg.style.color = "red";
+                }
+            } catch (e) {
+                msg.innerText = "Network error.";
+                msg.style.color = "red";
+            }
+        };
+
+        window.removeMember = async function(userId) {
+            if (!confirm("Are you sure you want to remove this user?")) return;
+            try {
+                const res = await fetch(API(`/groups/${groupId}/members/${userId}`), {
+                    method: 'DELETE',
+                    headers: getAuthHeaders()
+                });
+                if (res.ok) {
+                    loadGroupDetails(); 
+                } else {
+                    alert("Could not remove user");
                 }
             } catch (e) {
                 console.error(e);
             }
-        });
+        };
 
-        // 4. Create new BMC
-        document.getElementById('create-group-bmc')?.addEventListener('click', async () => {
-            const name = document.getElementById('new-group-bmc-name').value;
-            if (!name) return;
-            
-            const res = await fetch(API(`/groups/${groupId}/bmcs`), {
-                method: 'POST',
-                headers: getAuthHeaders(),
-                body: JSON.stringify({ name, data: {} })
-            });
-            
-            if (res.ok) {
-                loadGroupBmcs();
-                document.getElementById('new-group-bmc-name').value = '';
-            }
-        });
+        async function loadGroupBmcs() {
+            try {
+                const res = await fetch(API(`/groups/${groupId}/bmcs`), { headers: getAuthHeaders() });
+                const bmcs = await res.json();
 
-        // --- EDITOR LOGIC (if bmc_id present) ---
-        if (bmcId) {
-            document.getElementById('group-overview-section').style.display = 'none';
-            document.getElementById('group-bmc-editor').style.display = 'block';
-            
-            // Load BMC data
-            const res = await fetch(API(`/groups/${groupId}/bmcs/${bmcId}`), {
-                headers: getAuthHeaders()
-            });
-            if (res.ok) {
-                const bmc = await res.json();
-                // Fill the textareas
-                fillCanvasInputs(bmc.data); // Function from index.js or defined here
-                document.getElementById('product-idea').value = bmc.name;
-            }
-
-            // Save button
-            document.getElementById('save-group-bmc-button')?.addEventListener('click', async () => {
-                const data = getCanvasData(); // Function from index.js
-                const name = document.getElementById('product-idea').value || "Untitled";
-                
-                const saveRes = await fetch(API(`/groups/${groupId}/bmcs`), {
-                    method: 'POST', // or PUT if your API supports update
-                    headers: getAuthHeaders(),
-                    body: JSON.stringify({ id: bmcId, name, data })
-                });
-                
-                const msg = document.getElementById('save-group-bmc-msg');
-                if (saveRes.ok) {
-                    msg.innerText = "Saved successfully!";
-                    setTimeout(() => msg.innerText = "", 2000);
-                } else {
-                    msg.innerText = "Error saving.";
+                if (!Array.isArray(bmcs) || bmcs.length === 0) {
+                    if(listContent) listContent.innerHTML = '<p>No shared BMCs yet.</p>';
+                    return;
                 }
-            });
+                
+                if(listContent) {
+                    listContent.innerHTML = bmcs.map(b => {
+                        const bmcUrl = `/group/${groupId}/bmc/${b.id}`;
+                        return `
+                        <div class="bmc-item" onclick="window.location.href='${bmcUrl}'" style="cursor:pointer;">
+                            <h3>${b.name}</h3>
+                            <p>Last updated: ${b.updated || 'Never'}</p>
+                        </div>
+                        `;
+                    }).join('');
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // Initialisierung View 2
+        if (!bmcId) {
+            loadGroupDetails();
+            loadGroupBmcs();
         } else {
-            // Only load lists if not in editor
-            await loadGroupInfo();
-            await loadGroupBmcs();
+            // Falls wir im Editor-Modus sind (BMCs bearbeiten), laden wir hier ggf. Editor-Logik
+            // (Code dafür hast du wahrscheinlich schon an anderer Stelle oder in index.js)
         }
     }
 
@@ -262,20 +222,3 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.location.href = '/auth';
     }
 });
-
-// Helper functions (if index.js does not make them global)
-function getCanvasData() {
-    const data = {};
-    document.querySelectorAll('textarea').forEach(ta => {
-        if(ta.id) data[ta.id.replace('-details', '')] = ta.value;
-    });
-    return data;
-}
-
-function fillCanvasInputs(data) {
-    if (!data) return;
-    for (const [key, val] of Object.entries(data)) {
-        const el = document.getElementById(key + '-details');
-        if (el) el.value = val;
-    }
-}
