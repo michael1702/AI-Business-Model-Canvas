@@ -47,13 +47,14 @@ def resolve_email_to_id(email, auth_token):
 
 def resolve_ids_to_emails(user_ids, auth_token):
     try:
+        # Wir fragen den User Service nach Details für alle IDs auf einmal
         resp = requests.post(
             f"{USER_SERVICE_URL}/api/v1/users/batch-info",
             json={"ids": user_ids},
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         if resp.status_code == 200:
-            return resp.json() # Liste von {id, email}
+            return resp.json() # Erwartet Liste: [{"id": "...", "email": "..."}, ...]
         return []
     except:
         return []
@@ -227,20 +228,23 @@ def get_group_details(group_id: str):
     group = _repo.get_by_id(group_id)
     if not group: return jsonify({"error": "group_not_found"}), 404
     
+    # Prüfen, ob der Anfragende überhaupt Mitglied ist
     if user_id not in group.members: 
         return jsonify({"error": "access_denied"}), 403
 
-    # Echte Namen/Emails auflösen
+    # 1. Wir holen die Infos für ALLE Mitglieder auf einmal
     members_info = resolve_ids_to_emails(group.members, token)
     
-    # Map erstellen für schnellen Zugriff
-    info_map = {m["id"]: m["email"] for m in members_info}
+    # 2. Wir bauen eine Map für schnellen Zugriff: ID -> Email
+    email_map = {m["id"]: m["email"] for m in members_info}
 
+    # 3. Wir bauen die Antwort zusammen
     member_details = []
     for member_id in group.members:
         member_details.append({
             "id": member_id, 
-            "email": info_map.get(member_id, "Unknown User"), 
+            # Hier setzen wir die Email ein (oder "Unknown", falls User gelöscht wurde)
+            "email": email_map.get(member_id, "Unknown User"), 
             "is_owner": member_id == group.owner_id
         })
 
@@ -248,7 +252,7 @@ def get_group_details(group_id: str):
         "id": group.id,
         "name": group.name,
         "owner_id": group.owner_id,
-        "members": member_details
+        "members": member_details 
     }), 200
 
 
@@ -281,10 +285,12 @@ def add_member_to_group_route(group_id: str):
         return jsonify({"error": "user_already_in_group"}), 409
 
     # 3. Hinzufügen
-    group.members.append(new_member_id)
-    _repo.save(group) # Annahme: save Methode existiert im Repo
+    updated_group = _repo.add_member(group.id, new_member_id)
     
-    return jsonify({"status": "added", "user": user_info}), 200
+    if updated_group:
+            return jsonify({"status": "added", "user": user_info}), 200
+    else:
+            return jsonify({"error": "database_error"}), 500
 
 
 @api.delete("/<group_id>/members/<member_id>")
@@ -296,15 +302,17 @@ def remove_member_from_group_route(group_id: str, member_id: str):
     group = _repo.get_by_id(group_id)
     if not group: return jsonify({"error": "group_not_found"}), 404
 
-    # Nur Owner darf löschen (oder User sich selbst -> "Leave Group")
+    # Nur Owner darf löschen oder User sich selbst
     if group.owner_id != requester_id and member_id != requester_id:
         return jsonify({"error": "permission_denied"}), 403
     
-    # Owner kann sich nicht selbst entfernen (außer Gruppe wird gelöscht, was hier nicht implementiert ist)
     if member_id == group.owner_id:
         return jsonify({"error": "owner_cannot_leave_group"}), 400
 
-    if member_id in group.members:
-        group.members.remove(member_id)
-        _repo.save(group)
+    # FIX: Nutze die neue Repo-Methode remove_member
+    success = _repo.remove_member(group.id, member_id)
+    
+    if success:
         return jsonify({"status": "removed"}), 200
+    else:
+        return jsonify({"error": "member_not_found"}), 404

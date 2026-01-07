@@ -64,6 +64,16 @@ class GroupRepo:
 
         # Return the updated object
         return self._to_domain(g_model)
+    
+
+    def remove_member(self, group_id: str, user_id: str) -> bool:
+        """Removes a member from the group."""
+        entry = db.session.query(MemberModel).filter_by(group_id=group_id, user_id=user_id).first()
+        if entry:
+            db.session.delete(entry)
+            db.session.commit()
+            return True
+        return False
 
     def upsert_group_bmc(self, group_id: str, *, bmc_id: Optional[str], name: str, data: dict) -> Optional[dict]:
         """Creates or updates a shared BMC (Business Model Canvas)."""

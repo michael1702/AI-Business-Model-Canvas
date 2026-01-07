@@ -106,13 +106,16 @@ def lookup_user():
 # Optional: Ein Endpoint um Details für mehrere IDs zu holen (für die Anzeige der Mitgliederliste)
 @api.post("/batch-info")
 def get_users_info():
-    body = request.get_json(force=True) or {}
-    user_ids = body.get("ids", [])
-    
-    results = []
-    for uid in user_ids:
-        u = _repo.get_by_id(uid)
-        if u:
-            results.append({"id": u.id, "email": u.email})
-            
-    return jsonify(results), 200
+    try:
+        body = request.get_json(force=True) or {}
+        user_ids = body.get("ids", [])
+        
+        results = []
+        for uid in user_ids:
+            u = _repo.get_by_id(uid)
+            if u:
+                results.append({"id": u.id, "email": u.email})
+                
+        return jsonify(results), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

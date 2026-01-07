@@ -85,7 +85,7 @@ services:
       - JWT_SECRET=${JWT_SECRET:-super-secret-key}
       - DATABASE_URL=postgresql://${DB_USER:-admin}:${DB_PASSWORD:-secret}@group-db:5432/group_db
       # In a real microservice scenario, group service might need to call user service:
-      - USER_SERVICE_URL=http://user-service:5002/api/v1/users
+      - USER_SERVICE_URL=http://user-service:5002
     depends_on:
       group-db:
         condition: service_healthy
