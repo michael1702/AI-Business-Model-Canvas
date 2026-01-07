@@ -103,10 +103,11 @@ def lookup_user():
         
     return jsonify({"id": user.id, "email": user.email}), 200
 
-# Optional: Ein Endpoint um Details für mehrere IDs zu holen (für die Anzeige der Mitgliederliste)
+#in Endpoint um Details für mehrere IDs zu holen (für die Anzeige der Mitgliederliste)
 @api.post("/batch-info")
 def get_users_info():
     try:
+        # Wir erwarten eine Liste von IDs: {"ids": ["uuid-1", "uuid-2"]}
         body = request.get_json(force=True) or {}
         user_ids = body.get("ids", [])
         
@@ -118,4 +119,5 @@ def get_users_info():
                 
         return jsonify(results), 200
     except Exception as e:
+        print(f"Error in batch-info: {e}", flush=True) # Debugging-Ausgabe
         return jsonify({"error": str(e)}), 500

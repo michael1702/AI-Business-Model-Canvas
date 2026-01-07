@@ -47,106 +47,21 @@ def resolve_email_to_id(email, auth_token):
 
 def resolve_ids_to_emails(user_ids, auth_token):
     try:
-        # Wir fragen den User Service nach Details für alle IDs auf einmal
+        # Wir fragen den User Service nach Details für alle IDs auf einmal, user_ids werden in Liste umgewandelt für die JSON
         resp = requests.post(
             f"{USER_SERVICE_URL}/api/v1/users/batch-info",
-            json={"ids": user_ids},
+            json={"ids": list(user_ids)},
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         if resp.status_code == 200:
             return resp.json() # Erwartet Liste: [{"id": "...", "email": "..."}, ...]
+        print(f"User Service Error: {resp.status_code} - {resp.text}", flush=True)
         return []
-    except:
+    except Exception as e:
+        # NEU: Exception ausgeben
+        print(f"Connection Error to User Service: {e}", flush=True)
         return []
     
-# --- ROUTEN ---
-
-# @api.post("/")
-# def create_group():
-#     payload, err, token = _require_auth()
-#     if err: return err
-    
-#     body = request.get_json(force=True) or {}
-#     name = body.get("name")
-#     owner_id = payload["sub"]
-
-#     # ÄNDERUNG: Direkt das Repo nutzen, da die Domain-Logik dort integriert wurde
-#     try:
-#         # Hier nutzen wir direkt dein Repo, wie du sagtest
-#         group = _repo.create_group(name, owner_id) 
-#         return jsonify(group.to_dict()), 201 
-#         # Hinweis: create_group im Repo gibt bei dir vermutlich schon das Domain-Objekt zurück
-#         # oder das Model. Falls es ein Model ist, pass auf .to_dict() auf.
-#     except Exception as ex:
-#         return jsonify({"error": str(ex)}), 400
-    
-
-# @api.get("/")
-# def list_my_groups():
-#     payload, err, token = _require_auth()
-#     if err: return err
-#     user_id = payload["sub"]
-    
-#     groups = _repo.list_groups_for_user(user_id)
-#     slim_groups = [{
-#         "id": g.id, 
-#         "name": g.name, 
-#         "is_owner": g.owner_id == user_id, 
-#         "member_count": len(g.members)
-#     } for g in groups]
-#     return jsonify(slim_groups), 200
-
-# @api.get("/<group_id>")
-# def get_group_details(group_id: str):
-#     payload, err, token = _require_auth()
-#     if err: return err
-#     user_id = payload["sub"]
-    
-#     group = _repo.get_by_id(group_id)
-#     if not group: return jsonify({"error": "group_not_found"}), 404
-    
-#     # Check Access
-#     if user_id not in group.members: 
-#         return jsonify({"error": "access_denied"}), 403
-
-#     # CRITICAL FIX: Kein Zugriff auf UserRepo (verursacht Crash)!
-#     # Wir geben die Member-IDs zurück ohne Email-Lookup.
-#     member_details = []
-#     for member_id in group.members:
-#         member_details.append({
-#             "id": member_id, 
-#             "email": "hidden_in_microservice", # E-Mail Auflösung benötigt HTTP-Request
-#             "is_owner": member_id == group.owner_id
-#         })
-
-#     return jsonify({
-#         "id": group.id,
-#         "name": group.name,
-#         "owner_id": group.owner_id,
-#         "members": member_details
-#     }), 200
-
-# @api.post("/<group_id>/members")
-# def add_member_to_group_route(group_id: str):
-#     payload, err, token = _require_auth()
-#     if err: return err
-    
-#     body = request.get_json(force=True) or {}
-#     email = body.get("email")
-#     admin_id = payload["sub"]
-    
-#     if not email:
-#         return jsonify({"error": "missing_email"}), 400
-
-#     # FIX: Wir können UserRepo hier NICHT benutzen.
-#     # Damit der Code nicht crasht, geben wir "Not Implemented" zurück 
-#     # oder faken das Hinzufügen, wenn du die ID direkt sendest.
-    
-#     return jsonify({
-#         "error": "Adding by Email requires User-Service Communication (HTTP). Logic disabled to prevent crash."
-#     }), 501
-
-# --- BMC Routen (Funktionieren in beiden Versionen ähnlich) ---
 
 @api.get("/<group_id>/bmcs")
 def list_group_bmcs(group_id: str):
