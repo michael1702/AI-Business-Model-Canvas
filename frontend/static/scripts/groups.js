@@ -304,6 +304,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
         return data;
     }
+    window.getCanvasData = getCanvasData;
 
     function fillCanvasInputs(data) {
         if (!data) return;

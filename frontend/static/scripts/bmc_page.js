@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     return data;
   }
+  window.getCanvasData = getCanvasData;
 
   // If we have an existing BMC id, fetch from API and render
   async function loadExistingIfAny() {

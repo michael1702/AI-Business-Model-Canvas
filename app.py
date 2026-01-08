@@ -42,8 +42,6 @@ def create_app():
         except requests.exceptions.ConnectionError:
             return jsonify({"error": "Service unavailable"}), 503
 
-    # --- PROXY ROUTES ---
-    # Diese Routen fangen die Anfragen vom Browser ab und leiten sie weiter
 
 # --- PROXY ROUTES (Updated) ---
     
@@ -64,6 +62,23 @@ def create_app():
     @app.route('/api/v1/groups/<path:subpath>', methods=['GET', 'POST', 'PUT', 'DELETE'])
     def group_proxy(subpath):
         return proxy_request(f"{GROUP_SERVICE_URL}/api/v1/groups", subpath)
+    
+    # 4. BMC Service / AI Helper Proxy
+    # 4.1. Proxy for BMC Helper (z.B. /api/v1/bmc/example)
+    @app.route('/api/v1/bmc/<path:subpath>', methods=['POST', 'GET'])
+    def bmc_helper_proxy(subpath):
+        # Leitet weiter an: http://bmc-service:5001/api/v1/bmc/example
+        return proxy_request(BMC_SERVICE_URL, f"api/v1/bmc/{subpath}")
+
+    # 4.2. Proxy for VPC Helper (z.B. /api/v1/vpc/tips)
+    @app.route('/api/v1/vpc/<path:subpath>', methods=['POST', 'GET'])
+    def vpc_helper_proxy(subpath):
+        return proxy_request(BMC_SERVICE_URL, f"api/v1/vpc/{subpath}")
+
+    # 4.3. Proxy for Chat (Exact Match)
+    @app.route('/api/v1/chat_with_gpt5', methods=['POST'])
+    def chat_gpt5_proxy():
+        return proxy_request(BMC_SERVICE_URL, "api/v1/chat_with_gpt5")
 
     # --- ROUTES (UI ONLY) ---
     @app.route("/")

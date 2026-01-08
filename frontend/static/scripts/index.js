@@ -52,48 +52,68 @@ function toggleButtons() {
 
 
 // Nachricht an den Chat senden und KI-Antwort anzeigen
-async function sendMessage(event) {
-  const chatInput = document.getElementById("chat-input");
-  const message = chatInput.value;
+window.sendMessage = async function(event) {
+    // Nur bei Enter-Taste oder Klick (kein Event) feuern
+    if (event && event.type === 'keydown' && event.key !== 'Enter') return;
 
+    const input = document.getElementById('chat-input');
+    const loading = document.getElementById('loading-circle-container');
+    const history = document.getElementById('chat-history');
+    
+    if (!input || !input.value.trim()) return;
+    
+    const userMessage = input.value.trim();
+    input.value = ''; // Input leeren
 
-  if (event.type === 'click' || (event.type === 'keydown' && event.key === 'Enter')) { // Abfrage, ob der gewählte input ein click oder eine Entereingabe ist
-    event.preventDefault(); //Verhindern der default form behavior, wenn der Benutzer Enter drückt.
-    if (!message) return;
-    // Ladekreis anzeigen
-    document.getElementById("loading-circle-container").style.display = 'block';
-    // Chatverlauf extrahieren und ins erforderliche Format konvertieren
-  
-    const chatHistory = document.querySelectorAll(".chat-message");
-    const messages = [];
-    chatHistory.forEach(message => {
-      const role = message.classList.contains("user-message") ? "user" : "assistant";
-      const content = message.textContent.slice(role === "user" ? 6 : 7); // Remove the "User: " or "GPT-4: " part
-      messages.push({ role, content });
-    });
+    // User Nachricht anzeigen
+    if (history) {
+        history.innerHTML += `<div class="message user-message"><strong>You:</strong> ${userMessage}</div>`;
+        history.scrollTop = history.scrollHeight;
+    }
 
-    const response = await fetch(API("/chat"), {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ messages: messages, new_message: message }),
-    });
+    // Loading anzeigen
+    if (loading) loading.style.display = 'flex';
 
-    const data = await response.json();
-    const reply = data.reply;
-    let formattedMessage = reply.replace(/\n/g, '<br>');
+    try {
+        // Daten sammeln (funktioniert für Group UND Single BMC)
+        // Wir suchen nach einer globalen Funktion 'getCanvasData' (die in groups.js oder bmc_page.js liegt)
+        let contextData = {};
+        if (typeof window.getCanvasData === 'function') {
+            contextData = window.getCanvasData();
+        } else if (typeof getCanvasData === 'function') {
+            contextData = getCanvasData();
+        }
 
-    // Ladekreis ausblenden
-    document.getElementById("loading-circle-container").style.display = 'none';
+        const res = await fetch('/api/v1/ai/chat_with_gpt5', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + (typeof getToken === 'function' ? getToken() : '')
+            },
+            body: JSON.stringify({
+                messages: [], // api.py erwartet "messages" (Liste), nicht nur "message"
+                new_message: userMessage, // api.py erwartet "new_message"
+                // context: contextData // <--- ACHTUNG: Deine api.py unterstützt "context" aktuell NICHT!
+            })
+        });
 
-    const chatHistoryContainer = document.getElementById("chat-history");
-    chatHistoryContainer.innerHTML += `<div class="chat-message user-message">User: ${message}</div>`;
-    chatHistoryContainer.innerHTML += `<div class="chat-message ai-message">ChatGPT: ${formattedMessage}</div>`;
+        const data = await res.json();
+        
+        // AI Antwort anzeigen
+        if (history) {
+            const aiText = data.reply || data.error || "No response.";
+            history.innerHTML += `<div class="message ai-message"><strong>AI:</strong> ${aiText}</div>`;
+            history.scrollTop = history.scrollHeight;
+        }
 
-    chatInput.value = "";
-  }
-}
+    } catch (e) {
+        console.error("Chat Error:", e);
+        if (history) history.innerHTML += `<div class="message error"><strong>Error:</strong> Could not connect to AI.</div>`;
+    } finally {
+        // Loading verstecken
+        if (loading) loading.style.display = 'none';
+    }
+};
 
 
 // Produktidee im local Storage speichern
