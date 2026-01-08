@@ -21,9 +21,9 @@ def create_app():
             return f"https://{url}"
         return url
 
-    BMC_SERVICE_URL = get_service_url("BMC_SERVICE_URL", "http://bmc-service:5001")
-    USER_SERVICE_URL = get_service_url("USER_SERVICE_URL", "http://user-service:5002")
-    GROUP_SERVICE_URL = get_service_url("GROUP_SERVICE_URL", "http://group-service:5003")
+    BMC_SERVICE_URL = get_service_url("BMC_SERVICE_URL", "http://bmc-service:10000")
+    USER_SERVICE_URL = get_service_url("USER_SERVICE_URL", "http://user-service:10000")
+    GROUP_SERVICE_URL = get_service_url("GROUP_SERVICE_URL", "http://group-service:10000")
 
     # --- HELPER: Proxy Function ---
     def proxy_request(service_url, subpath):
