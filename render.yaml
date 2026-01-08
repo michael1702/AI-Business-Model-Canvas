@@ -12,17 +12,17 @@ services:
         fromService:
           type: web
           name: user-service
-          property: url
+          property: host
       - key: GROUP_SERVICE_URL
         fromService:
           type: web
           name: group-service
-          property: url
+          property: host
       - key: BMC_SERVICE_URL
         fromService:
           type: web
           name: bmc-service
-          property: url
+          property: host
 
   # --- 2. User Service ---
   - type: web
@@ -57,7 +57,7 @@ services:
         fromService:
           type: web
           name: user-service
-          property: url
+          property: host
       - key: JWT_SECRET
         fromService:
           type: web

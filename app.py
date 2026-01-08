@@ -14,10 +14,16 @@ def create_app():
 
     app.config["JWT_SECRET"] = os.getenv("JWT_SECRET", "change-me-in-prod")
     
-    # Service URLs (Intern im Docker-Netzwerk erreichbar)
-    BMC_SERVICE_URL = os.getenv("BMC_SERVICE_URL", "http://bmc-service:5001")
-    USER_SERVICE_URL = os.getenv("USER_SERVICE_URL", "http://user-service:5002")
-    GROUP_SERVICE_URL = os.getenv("GROUP_SERVICE_URL", "http://group-service:5003")
+# Función auxiliar para asegurar que la URL tiene protocolo
+    def get_service_url(key, default):
+        url = os.getenv(key, default)
+        if not url.startswith("http"):
+            return f"http://{url}"
+        return url
+
+    BMC_SERVICE_URL = get_service_url("BMC_SERVICE_URL", "http://bmc-service:5001")
+    USER_SERVICE_URL = get_service_url("USER_SERVICE_URL", "http://user-service:5002")
+    GROUP_SERVICE_URL = get_service_url("GROUP_SERVICE_URL", "http://group-service:5003")
 
     # --- HELPER: Proxy Function ---
     def proxy_request(service_url, subpath):

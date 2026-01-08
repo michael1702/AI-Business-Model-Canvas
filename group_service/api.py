@@ -11,7 +11,15 @@ except ImportError:
     def decode_token(token): return {"sub": "1"} 
 
 api = Blueprint("group_api", __name__, url_prefix="/api/v1/groups")
-USER_SERVICE_URL = os.getenv("USER_SERVICE_URL", "http://user-service:5002")
+# Función auxiliar (añádela arriba o usa la lógica inline)
+def get_service_url(key, default):
+    url = os.getenv(key, default)
+    if not url.startswith("http"):
+        return f"http://{url}"
+    return url
+
+# CAMBIA LA CARGA DE LA URL:
+USER_SERVICE_URL = get_service_url("USER_SERVICE_URL", "http://user-service:5002")
 
 # --- AUTHENTIFIZIERUNG 
 # Wir nutzen diese Funktion, da wir den Decorator aus user_service nicht importieren können.
