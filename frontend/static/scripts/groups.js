@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             // Save Button Logic
-            const saveBtn = document.getElementById('save-group-bmc-btn');
+            const saveBtn = document.getElementById('save-group-bmc-button');
             if(saveBtn) {
                 saveBtn.addEventListener('click', async () => {
                     const data = getCanvasData(); 

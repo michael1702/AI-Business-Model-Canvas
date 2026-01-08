@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title id="group-title">Group BMCs</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles/building-block.css') }}"> 
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles/process.css') }}"> <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <!-- <link rel="stylesheet" href="{{ url_for('static', filename='styles/building-block.css') }}">  -->
+  <!-- <link rel="stylesheet" href="{{ url_for('static', filename='styles/process.css') }}"> <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
   <script>
       const GROUP_ID = "{{ group_id }}";
   </script>
@@ -122,42 +122,96 @@
         </div>
 
         <div id="bmc">
-            <div class="building-block key-partners">
-              <h2><a href="#" class="block-title" onclick="return false;"><span id="key-partners-title">Key Partners</span></a></h2>                  
-              <div class="input-wrapper"><textarea id="key-partners-details" class="block-title" placeholder="Enter details..."></textarea></div>
+
+          <div class="building-block key-partners">
+            <h2>
+              <a href="key-partners" class="block-title"  onclick="editTitle(event)">
+                <span id="key-partners-title">Key Partners</span>
+              </a>
+            </h2>                  
+            <div class="input-wrapper">
+              <textarea name="key-partners-details" id="key-partners-details" class="block-title" placeholder="Enter your key partners details here..."></textarea>
             </div>
-            <div class="building-block key-activities">
-              <h2><a href="#" class="block-title" onclick="return false;"><span id="key-activities-title">Key Activities</span></a></h2>
-              <div class="input-wrapper"><textarea id="key-activities-details" class="block-title" placeholder="Enter details..."></textarea></div>
+          </div>
+          <div class="building-block key-activities">
+            <h2>
+              <a href="key-activities" class="block-title"  onclick="editTitle(event)">
+                <span id="key-activities-title">Key Activities</span>
+              </a>          
+            </h2>
+            <div class="input-wrapper">
+              <textarea name="key-activities-details" id="key-activities-details" class="block-title" placeholder="Enter your key activities details here..."></textarea>          </div>
+          </div>
+          <div class="building-block key-resources">
+            <h2>
+              <a href="key-resources" class="block-title"  onclick="editTitle(event)">
+                <span id="key-resources-title">Key Resources</span>
+              </a>          
+            </h2>
+            <div class="input-wrapper">
+              <textarea name="key-resources-details" id="key-resources-details" class="block-title" placeholder="Enter your key resources details here..."></textarea>
             </div>
-            <div class="building-block key-resources">
-              <h2><a href="#" class="block-title" onclick="return false;"><span id="key-resources-title">Key Resources</span></a></h2>
-              <div class="input-wrapper"><textarea id="key-resources-details" class="block-title" placeholder="Enter details..."></textarea></div>
+          </div>
+          <div class="building-block value-propositions">
+            <h2>
+              <a href="value-propositions" class="block-title" onclick="editTitle(event)">
+                <span id="value-propositions-title">Value Propositions</span>
+              </a>
+            </h2>
+            <div class="input-wrapper">
+              <textarea name="value-propositions-details" id="value-propositions-details" class="block-title"  placeholder="Enter your value propositions details here..."></textarea>
             </div>
-            <div class="building-block value-propositions">
-              <h2><a href="#" class="block-title" onclick="return false;"><span id="value-propositions-title">Value Propositions</span></a></h2>
-              <div class="input-wrapper"><textarea id="value-propositions-details" class="block-title" placeholder="Enter details..."></textarea></div>
+          </div>
+          <div class="building-block customer-relationships">
+            <h2>
+              <a href="customer-relationships" class="block-title"  onclick="editTitle(event)">
+                <span id="customer-relationships-title">Customer Relationships</span>
+              </a>
+            </h2>
+            <div class="input-wrapper">
+              <textarea name="customer-relationships-details" id="customer-relationships-details" class="block-title" placeholder="Enter your customer relationships details here..."></textarea>
             </div>
-            <div class="building-block customer-relationships">
-              <h2><a href="#" class="block-title" onclick="return false;"><span id="customer-relationships-title">Customer Relationships</span></a></h2>
-              <div class="input-wrapper"><textarea id="customer-relationships-details" class="block-title" placeholder="Enter details..."></textarea></div>
+          </div>
+          <div class="building-block channels">
+            <h2>
+              <a href="channels" class="block-title"  onclick="editTitle(event)">
+                <span id="channels-title">Channels</span>
+              </a>
+            </h2>
+            <div class="input-wrapper">
+              <textarea name="channels-details" id="channels-details" class="block-title" placeholder="Enter your channels details here..."></textarea>
             </div>
-            <div class="building-block channels">
-              <h2><a href="#" class="block-title" onclick="return false;"><span id="channels-title">Channels</span></a></h2>
-              <div class="input-wrapper"><textarea id="channels-details" class="block-title" placeholder="Enter details..."></textarea></div>
+          </div>
+          <div class="building-block customer-segments">
+            <h2>
+              <a href="customer-segments" class="block-title"  onclick="editTitle(event)">
+                <span id="customer-segments-title">Customer Segments</span>
+              </a>
+            </h2>
+            <div class="input-wrapper">
+              <textarea name="customer-segments-details" id="customer-segments-details" class="block-title" placeholder="Enter your customer segments details here..."></textarea>
             </div>
-            <div class="building-block customer-segments">
-              <h2><a href="#" class="block-title" onclick="return false;"><span id="customer-segments-title">Customer Segments</span></a></h2>
-              <div class="input-wrapper"><textarea id="customer-segments-details" class="block-title" placeholder="Enter details..."></textarea></div>
+          </div>
+          <div class="building-block cost-structure">
+            <h2>
+              <a href="cost-structure" class="block-title"  onclick="editTitle(event)">
+                <span id="cost-structure-title">Cost Structure</span>
+              </a>
+            </h2>
+            <div class="input-wrapper">
+              <textarea name="cost-structure-details" id="cost-structure-details" class="block-title" placeholder="Enter your cost structure details here..."></textarea>
             </div>
-            <div class="building-block cost-structure">
-              <h2><a href="#" class="block-title" onclick="return false;"><span id="cost-structure-title">Cost Structure</span></a></h2>
-              <div class="input-wrapper"><textarea id="cost-structure-details" class="block-title" placeholder="Enter details..."></textarea></div>
+          </div>
+          <div class="building-block revenue-streams">
+            <h2>
+              <a href="revenue-streams" class="block-title"  onclick="editTitle(event)">
+                <span id="revenue-streams-title">Revenue Streams</span>
+              </a>
+            </h2>
+            <div class="input-wrapper">
+              <textarea name="revenue-streams-details" id="revenue-streams-details" class="block-title" placeholder="Enter your revenue streams details here..."></textarea>
             </div>
-            <div class="building-block revenue-streams">
-              <h2><a href="#" class="block-title" onclick="return false;"><span id="revenue-streams-title">Revenue Streams</span></a></h2>
-              <div class="input-wrapper"><textarea id="revenue-streams-details" class="block-title" placeholder="Enter details..."></textarea></div>
-            </div>
+          </div>
         </div>
 
         <div class="button-container" style="margin-top: 20px; display:flex; gap: 10px;">
@@ -236,8 +290,16 @@
       </div>
   </div>
 
-  <script defer src="{{ url_for('static', filename='scripts/app_config.js') }}"></script>
-  <script defer src="{{ url_for('static', filename='scripts/index.js') }}"></script> 
+  <script defer src="{{ url_for('static', filename='scripts/app_config.js') }}"></script>    <script defer src="{{ url_for('static', filename='scripts/groups.js') }}"></script>
   <script defer src="{{ url_for('static', filename='scripts/groups.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='scripts/index.js') }}"></script> 
+  <script defer>
+  document.addEventListener('DOMContentLoaded', () => {
+    ensureAuthUI();
+    document.getElementById('logout-btn')?.addEventListener('click', () => {
+      clearToken(); sessionStorage.removeItem('currentBmc'); location.href='/';
+    });
+  });
+</script>
 </body>
 </html>
