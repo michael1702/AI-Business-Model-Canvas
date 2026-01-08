@@ -18,4 +18,4 @@ COPY user_service/ user_service/
 ENV PYTHONPATH=/app
 
 # Run on port 5003
-CMD gunicorn --bind 0.0.0.0:$PORT wsgi:app
+CMD gunicorn --bind 0.0.0.0:$PORT group_service.wsgi:app
