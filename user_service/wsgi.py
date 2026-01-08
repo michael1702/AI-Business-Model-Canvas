@@ -12,7 +12,11 @@ def create_app():
     
     # URL de conexión a PostgreSQL (leída de compose.yaml o render.yaml)
     # Formato: postgresql://user:pass@host:port/dbname
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "sqlite:///local_users.db")
+    db_url = os.getenv("DATABASE_URL", "sqlite:///local_users.db")
+    if db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql://", 1)
+        
+    app.config["SQLALCHEMY_DATABASE_URI"] = db_url
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     # Inicializar DB
