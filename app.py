@@ -1,6 +1,11 @@
 import os, requests
 from flask import Flask, render_template, request, jsonify, Response
 from dotenv import load_dotenv
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Load .env 
 load_dotenv()
@@ -27,26 +32,38 @@ def create_app():
 
     # --- HELPER: Proxy Function ---
     def proxy_request(service_url, subpath):
-        # Baut die Ziel-URL zusammen
-        url = f"{service_url}/{subpath}"
-        
-        # Leitet die Anfrage mit derselben Methode, Headern und Body weiter
-        try:
-            resp = requests.request(
-                method=request.method,
-                url=url,
-                headers={k: v for k, v in request.headers if k.lower() != 'host'},
-                data=request.get_data(),
-                cookies=request.cookies,
-                allow_redirects=False
-            )
-            # Gibt die Antwort des Microservices an den Browser zurück
-            excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
-            headers = [(name, value) for (name, value) in resp.raw.headers.items()
-                       if name.lower() not in excluded_headers]
-            return Response(resp.content, resp.status_code, headers)
-        except requests.exceptions.ConnectionError:
-            return jsonify({"error": "Service unavailable"}), 503
+            if subpath:
+                url = f"{service_url}/{subpath}"
+            else:
+                url = service_url
+                
+            logger.info(f"Proxying request to: {url}")
+
+            try:
+                # allow_redirects=True ist oft sicherer für API-Calls, die keine 307s brauchen
+                resp = requests.request(
+                    method=request.method,
+                    url=url,
+                    headers={k: v for k, v in request.headers if k.lower() != 'host'},
+                    data=request.get_data(),
+                    cookies=request.cookies,
+                    allow_redirects=True 
+                )
+
+                # Wir filtern Hop-by-Hop Header heraus, die Probleme machen
+                excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
+                headers = [(name, value) for (name, value) in resp.raw.headers.items()
+                        if name.lower() not in excluded_headers]
+
+                # WICHTIG: Explizit den Content zurückgeben
+                return Response(resp.content, resp.status_code, headers)
+
+            except requests.exceptions.ConnectionError as e:
+                logger.error(f"Connection failed to {url}: {e}")
+                return jsonify({"error": f"Service unavailable at {url}"}), 503
+            except Exception as e:
+                logger.error(f"Unexpected error proxying to {url}: {e}")
+                return jsonify({"error": "Internal Proxy Error"}), 500
 
 
 # --- PROXY ROUTES (Updated) ---
