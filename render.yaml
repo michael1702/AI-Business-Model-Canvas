@@ -1,0 +1,84 @@
+services:
+  # --- 1. Frontend ---
+  - type: web
+    name: aibmc-frontend
+    runtime: docker
+    region: frankfurt # Cumple requisito Europa
+    plan: free
+    dockerContext: .
+    dockerfilePath: ./dockerfile
+    envVars:
+      - key: USER_SERVICE_URL
+        fromService:
+          type: web
+          name: user-service
+          property: url
+      - key: GROUP_SERVICE_URL
+        fromService:
+          type: web
+          name: group-service
+          property: url
+      - key: BMC_SERVICE_URL
+        fromService:
+          type: web
+          name: bmc-service
+          property: url
+
+  # --- 2. User Service ---
+  - type: web
+    name: user-service
+    runtime: docker
+    region: frankfurt
+    plan: free
+    dockerContext: .
+    dockerfilePath: ./user_service/Dockerfile
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: aibmc-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+
+  # --- 3. Group Service ---
+  - type: web
+    name: group-service
+    runtime: docker
+    region: frankfurt
+    plan: free
+    dockerContext: .
+    dockerfilePath: ./group_service/Dockerfile
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: aibmc-db
+          property: connectionString
+      - key: USER_SERVICE_URL
+        fromService:
+          type: web
+          name: user-service
+          property: url
+      - key: JWT_SECRET
+        fromService:
+          type: web
+          name: user-service
+          envVarKey: JWT_SECRET
+
+  # --- 4. BMC Service ---
+  - type: web
+    name: bmc-service
+    runtime: docker
+    region: frankfurt
+    plan: free
+    dockerContext: .
+    dockerfilePath: ./bmc_service/Dockerfile
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false # Lo introducirás manualmente en el dashboard por seguridad
+
+databases:
+  - name: aibmc-db
+    region: frankfurt
+    plan: free
+    databaseName: aibmc_db
+    user: admin

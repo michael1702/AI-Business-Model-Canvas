@@ -15,4 +15,4 @@ ENV PYTHONPATH=/app
 
 # Run the application using Gunicorn
 # Calls the create_app factory in config.py
-CMD ["gunicorn", "--bind", "0.0.0.0:5001", "bmc_service.config:create_app()"]
+CMD gunicorn --bind 0.0.0.0:$PORT bmc_service.config:create_app()

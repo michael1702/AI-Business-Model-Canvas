@@ -14,4 +14,4 @@ COPY user_service/ user_service/
 ENV PYTHONPATH=/app
 
 # Ejecutar en el puerto 5002
-CMD ["gunicorn", "--bind", "0.0.0.0:5002", "user_service.wsgi:app"]
+CMD gunicorn --bind 0.0.0.0:$PORT wsgi:app
