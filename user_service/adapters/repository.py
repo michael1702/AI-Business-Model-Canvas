@@ -23,20 +23,21 @@ class UserRepo:
         model = db.session.query(UserModel).filter_by(email=email).first()
         return self._to_domain(model) if model else None
 
-    def create_user(self, email, password_hash):
-        new_user = User(email=email, password_hash=password_hash)
-        self.session.add(new_user)
-        try:
-            self.session.commit()
-            return new_user
-        except IntegrityError:
-            # WICHTIG: Bei Fehler DB zurücksetzen, sonst bleiben "Zombie"-Transaktionen
-            self.session.rollback()
-            return None
-        except Exception as e:
-            # Andere Fehler auch abfangen
-            self.session.rollback()
-            raise e
+    def create_user(self, email: str, password_hash: str) -> Optional[User]:
+            # WICHTIG: Hier muss UserModel stehen, nicht User!
+            new_user = UserModel(email=email, password_hash=password_hash)
+            
+            db.session.add(new_user)
+            try:
+                db.session.commit()
+                # Wir wandeln das DB-Modell in das Domain-Objekt um
+                return self._to_domain(new_user)
+            except IntegrityError:
+                db.session.rollback()
+                return None
+            except Exception as e:
+                db.session.rollback()
+                raise e
 
     def get_by_id(self, user_id: str) -> Optional[User]:
         model = db.session.get(UserModel, user_id)
