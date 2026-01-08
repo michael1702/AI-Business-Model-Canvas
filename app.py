@@ -18,7 +18,7 @@ def create_app():
     def get_service_url(key, default):
         url = os.getenv(key, default)
         if not url.startswith("http"):
-            return f"http://{url}"
+            return f"https://{url}"
         return url
 
     BMC_SERVICE_URL = get_service_url("BMC_SERVICE_URL", "http://bmc-service:5001")
