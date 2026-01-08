@@ -17,14 +17,21 @@ def _require_auth():
         return None, (jsonify({"error": "invalid_or_expired_token"}), 401)
     return payload, None
 
-@api.post("/register")
+@api.route('/register', methods=['POST'])
 def register():
-    data = request.get_json(force=True) or {}
-    try:
-        u = register_user(data.get("email"), data.get("password"), _repo)
-        return jsonify({"id": u.id, "email": u.email}), 201
-    except ValueError as ex:
-        return jsonify({"error": str(ex)}), 400
+    data = request.get_json()
+    if not data or not data.get("email") or not data.get("password"):
+        return jsonify({"error": "Missing email or password"}), 400
+
+    # Hier rufen wir die Logik auf
+    user = register_user(data.get("email"), data.get("password"), _repo)
+
+    # NEU: Prüfen, ob User erstellt wurde
+    if user is None:
+        # Code 409 steht für "Conflict" (Ressource existiert bereits)
+        return jsonify({"error": "User with this email already exists"}), 409
+
+    return jsonify({"id": user.id, "email": user.email}), 201
 
 @api.post("/login")
 def login():
