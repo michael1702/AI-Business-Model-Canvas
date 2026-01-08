@@ -23,6 +23,11 @@ services:
           type: web
           name: bmc-service
           property: host
+      - key: JWT_SECRET
+        fromService:
+          type: web
+          name: user-service
+          envVarKey: JWT_SECRET
 
   # --- 2. User Service ---
   - type: web
