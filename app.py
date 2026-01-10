@@ -31,10 +31,10 @@ def create_app():
             # Dann bauen wir die interne URL mit Port 10000
             return f"http://{host}:10000"
 
-        # Jetzt nutzen wir die schlaue Funktion
-        USER_SERVICE_URL = build_service_url("USER_SERVICE_HOST", "localhost")
-        GROUP_SERVICE_URL = build_service_url("GROUP_SERVICE_HOST", "localhost")
-        BMC_SERVICE_URL = build_service_url("BMC_SERVICE_HOST", "localhost")
+    
+    USER_SERVICE_URL = build_service_url("USER_SERVICE_HOST", "localhost")
+    GROUP_SERVICE_URL = build_service_url("GROUP_SERVICE_HOST", "localhost")
+    BMC_SERVICE_URL = build_service_url("BMC_SERVICE_HOST", "localhost")
 
     # --- HELPER: Proxy Function ---
     def proxy_request(service_url, subpath):
