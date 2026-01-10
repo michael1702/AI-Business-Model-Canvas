@@ -7,14 +7,30 @@ os.environ["JWT_SECRET"] = "test-secret-key"
 
 from group_service.api import api as group_api
 from user_service.security import create_access_token
+from group_service.database import db 
 
 @pytest.fixture
 def app():
     """Erstellt eine Instanz des Group-Services für Tests."""
     app = Flask(__name__)
-    app.config["TESTING"] = True
+    
+    # 1. Konfiguration für In-Memory-Datenbank hinzufügen
+    app.config.update(
+        TESTING=True,
+        SQLALCHEMY_DATABASE_URI="sqlite:///:memory:",
+        SQLALCHEMY_TRACK_MODIFICATIONS=False
+    )
+
+    # 2. Die Datenbank mit der Test-App verknüpfen
+    db.init_app(app)
+
     app.register_blueprint(group_api)
-    return app
+    
+    # 3. Tabellen im Application-Context anlegen
+    with app.app_context():
+        db.create_all()
+        yield app
+        db.drop_all()
 
 @pytest.fixture
 def client(app):
@@ -24,7 +40,7 @@ def client(app):
 @pytest.fixture
 def auth_headers():
     """Generiert Header für einen eingeloggten 'Owner'."""
-    # Wir erstellen ein Token für eine fiktive User-ID
+    # Token für fiktive User-ID
     token = create_access_token(user_id="owner-user-id", email="owner@test.com")
     return {
         "Authorization": f"Bearer {token}",

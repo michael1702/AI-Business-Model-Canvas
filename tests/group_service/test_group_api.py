@@ -1,5 +1,5 @@
 import json
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 def test_create_group(client, auth_headers):
     """Testet das Erstellen einer neuen Gruppe."""

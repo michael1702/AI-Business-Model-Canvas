@@ -27,17 +27,17 @@ def app():
     app = Flask(__name__)
     app.config["TESTING"] = True
 
-    # 1. API Key Dummy setzen, falls nicht vorhanden (für CI/CD wichtig)
+    # 1. API Key Dummy setzen (für CI/CD wichtig)
     if not os.getenv("OPENAI_API_KEY"):
         os.environ["OPENAI_API_KEY"] = "sk-test-placeholder"
 
-    # 2. Den echten OpenAI Client laden (damit VCR ihn aufzeichnen kann)
-    # Wir hängen ihn an die App-Config, da api.py darauf zugreift: current_app.config["LLM"]
-    app.config["LLM"] = OpenAIClient(model="gpt-5-mini")
+    # 2. Den echten OpenAI Client laden
+    # KORREKTUR: Das Argument 'model' entfernen
+    app.config["LLM"] = OpenAIClient() 
 
-    # 3. Den Blueprint registrieren
+    from bmc_service.api import api as bmc_api
     app.register_blueprint(bmc_api)
-    
+
     return app
 
 @pytest.fixture
