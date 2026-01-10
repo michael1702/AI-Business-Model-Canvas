@@ -36,7 +36,7 @@ def create_app():
     GROUP_SERVICE_URL = build_service_url("GROUP_SERVICE_HOST", "localhost")
     BMC_SERVICE_URL = build_service_url("BMC_SERVICE_HOST", "localhost")
 
-    # --- HELPER: Proxy Function ---
+# --- HELPER: Proxy Function ---
     def proxy_request(service_url, subpath):
             if subpath:
                 url = f"{service_url}/{subpath}"
@@ -46,22 +46,31 @@ def create_app():
             logger.info(f"Proxying request to: {url}")
 
             try:
-                # allow_redirects=True ist oft sicherer für API-Calls, die keine 307s brauchen
+                # 1. Header vorbereiten
+                # Wir entfernen 'host' (macht requests automatisch)
+                # WICHTIG: Wir entfernen 'accept-encoding' und setzen es auf 'identity'.
+                # Das zwingt den Backend-Service, UNKOMPRIMIERTES JSON zu senden.
+                req_headers = {k: v for k, v in request.headers if k.lower() not in ['host', 'accept-encoding', 'content-length']}
+                req_headers['Accept-Encoding'] = 'identity' 
+
+                # 2. Request an den Backend-Service
                 resp = requests.request(
                     method=request.method,
                     url=url,
-                    headers={k: v for k, v in request.headers if k.lower() != 'host'},
+                    headers=req_headers,
                     data=request.get_data(),
                     cookies=request.cookies,
-                    allow_redirects=True 
+                    allow_redirects=True
                 )
 
-                # Wir filtern Hop-by-Hop Header heraus, die Probleme machen
+                # 3. Response Header filtern
+                # Wir entfernen Encoding-Header, da wir jetzt sicher Plaintext haben
                 excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
                 headers = [(name, value) for (name, value) in resp.raw.headers.items()
                         if name.lower() not in excluded_headers]
 
-                # WICHTIG: Explizit den Content zurückgeben
+                # 4. Antwort zurückgeben
+                # resp.content sind jetzt sicher die rohen Bytes (Text), kein Gzip-Müll
                 return Response(resp.content, resp.status_code, headers)
 
             except requests.exceptions.ConnectionError as e:
@@ -70,7 +79,6 @@ def create_app():
             except Exception as e:
                 logger.error(f"Unexpected error proxying to {url}: {e}")
                 return jsonify({"error": "Internal Proxy Error"}), 500
-
 
 # --- PROXY ROUTES (Updated) ---
     
