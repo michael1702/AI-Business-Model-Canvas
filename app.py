@@ -19,25 +19,22 @@ def create_app():
 
     app.config["JWT_SECRET"] = os.getenv("JWT_SECRET", "change-me-in-prod")
     
-# Función auxiliar para asegurar que la URL tiene protocolo
-    def get_service_url(key, default):
-        url = os.getenv(key, default)
-        if not url.startswith("http"):
-            return f"https://{url}"
-        return url
+    def build_service_url(env_var_name, default_host):
+            host = os.getenv(env_var_name, default_host)
+            
+            # 1. Check: Ist es bereits eine volle URL (z.B. Public Render URL)?
+            if host.startswith("http"):
+                # Wenn am Ende ein Slash ist, weg damit
+                return host.rstrip("/")
+                
+            # 2. Fallback: Es ist nur ein Hostname (z.B. "user-service" oder "localhost")
+            # Dann bauen wir die interne URL mit Port 10000
+            return f"http://{host}:10000"
 
-    # BMC_SERVICE_URL = get_service_url("BMC_SERVICE_URL", "http://bmc-service:10000")
-    # USER_SERVICE_URL = get_service_url("USER_SERVICE_URL", "http://user-service:10000")
-    # GROUP_SERVICE_URL = get_service_url("GROUP_SERVICE_URL", "http://group-service:10000")
-
-    user_host = os.getenv("USER_SERVICE_HOST", "localhost")
-    USER_SERVICE_URL = f"http://{user_host}:10000"
-
-    group_host = os.getenv("GROUP_SERVICE_HOST", "localhost")
-    GROUP_SERVICE_URL = f"http://{group_host}:10000"
-
-    bmc_host = os.getenv("BMC_SERVICE_HOST", "localhost")
-    BMC_SERVICE_URL = f"http://{bmc_host}:10000"
+        # Jetzt nutzen wir die schlaue Funktion
+        USER_SERVICE_URL = build_service_url("USER_SERVICE_HOST", "localhost")
+        GROUP_SERVICE_URL = build_service_url("GROUP_SERVICE_HOST", "localhost")
+        BMC_SERVICE_URL = build_service_url("BMC_SERVICE_HOST", "localhost")
 
     # --- HELPER: Proxy Function ---
     def proxy_request(service_url, subpath):
