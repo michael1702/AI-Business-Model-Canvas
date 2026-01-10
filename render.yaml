@@ -8,17 +8,17 @@ services:
     dockerContext: .
     dockerfilePath: ./dockerfile
     envVars:
-      - key: USER_SERVICE_URL
+      - key: USER_SERVICE_HOST
         fromService:
           type: web
           name: user-service
           property: host
-      - key: GROUP_SERVICE_URL
+      - key: GROUP_SERVICE_HOST
         fromService:
           type: web
           name: group-service
           property: host
-      - key: BMC_SERVICE_URL
+      - key: BMC_SERVICE_HOST
         fromService:
           type: web
           name: bmc-service
