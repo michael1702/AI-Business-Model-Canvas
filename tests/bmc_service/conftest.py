@@ -1,26 +1,45 @@
 import os
 import pytest
 import vcr
-from app import create_app
-
+from flask import Flask
 from dotenv import load_dotenv
 
-load_dotenv()  # load environment data
- 
-# VCR-Instance: specify how the vcr-cassette is being recorded
+# WICHTIG: Importiere den Blueprint des Services und den Adapter direkt
+from bmc_service.api import api as bmc_api
+from bmc_service.adapters.openai_client import OpenAIClient 
+
+load_dotenv()
+
+# VCR Config (bleibt wie es war)
 vcr_config = vcr.VCR(
-    record_mode="once",  # first run recorded, afterwards it's reused to reduce the amount of calls for the API
-    filter_headers=["authorization"], #hide the API key from the cassette
-    decode_compressed_response=True, # prettier yaml format
+    record_mode="once", 
+    filter_headers=["authorization"],
+    decode_compressed_response=True,
     match_on=["method", "scheme", "host", "port", "path", "query", "body"],
 )
 
-#If no OPENAI-Key use sk-test-placeholder
-if not os.getenv("OPENAI_API_KEY"):
-    os.environ["OPENAI_API_KEY"] = "sk-test-placeholder"
-
-#cliente de pruebas de Flask y helpers
 @pytest.fixture
-def client():
-    app = create_app()
+def app():
+    """
+    Erstellt eine isolierte Instanz NUR des BMC-Services.
+    Kein Frontend-Proxy dazwischen!
+    """
+    app = Flask(__name__)
+    app.config["TESTING"] = True
+
+    # 1. API Key Dummy setzen, falls nicht vorhanden (für CI/CD wichtig)
+    if not os.getenv("OPENAI_API_KEY"):
+        os.environ["OPENAI_API_KEY"] = "sk-test-placeholder"
+
+    # 2. Den echten OpenAI Client laden (damit VCR ihn aufzeichnen kann)
+    # Wir hängen ihn an die App-Config, da api.py darauf zugreift: current_app.config["LLM"]
+    app.config["LLM"] = OpenAIClient(model="gpt-5-mini")
+
+    # 3. Den Blueprint registrieren
+    app.register_blueprint(bmc_api)
+    
+    return app
+
+@pytest.fixture
+def client(app):
     return app.test_client()
