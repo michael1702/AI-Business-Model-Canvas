@@ -2,7 +2,15 @@ import os, requests
 from flask import Flask, render_template, request, jsonify, Response
 from dotenv import load_dotenv
 import logging
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 
+sentry_sdk.init(
+    dsn= os.getenv("SENTRY_DSN"),
+    integrations=[FlaskIntegration()],
+    traces_sample_rate=1.0, # Für Tests 100% aufzeichnen
+    profiles_sample_rate=1.0,
+)
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

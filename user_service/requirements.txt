@@ -11,3 +11,4 @@ requests
 # Nuevas dependencias para base de datos
 Flask-SQLAlchemy
 psycopg2-binary
+sentry-sdk
