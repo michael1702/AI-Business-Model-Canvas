@@ -12,6 +12,7 @@
     <nav>
       <a href="/">Home</a>
       <a href="/profile">Profile</a>
+      <button id="logout-btn" class="button button-outline">Sign out</button>
     </nav>
   </header>
 
@@ -24,7 +25,6 @@
         <li data-auth="user"><a href="/my-bmcs">My BMCs</a></li>
         <li data-auth="user"><a href="/my-groups">My Groups</a></li>
         <li data-auth="user"><a href="/profile">Profile</a></li>
-        <li data-auth="user"><button id="logout-btn" class="linklike">Sign out</button></li>
 
         <li class="submenu">
           <a href="#building-blocks" onclick="toggleBuildingBlocks()">
@@ -53,7 +53,7 @@
       <h2>Overview</h2>
       <div class="actions">
         <input id="new-bmc-name" placeholder="New BMC name" />
-        <button id="create-bmc" class="button">Create</button>
+        <button id="create-bmc" class="button button-primary">Create</button>
       </div>
       <div id="bmcs-list">Loading…</div>
       <p id="bmcs-msg" class="msg"></p>

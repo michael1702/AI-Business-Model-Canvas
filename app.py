@@ -127,8 +127,13 @@ def create_app():
 
     # --- ROUTES (UI ONLY) ---
     @app.route("/")
-    def index(): return render_template("index.html")
-
+    def index(): 
+        return render_template("index.html")
+    
+    @app.route("/testerror")
+    def testError():
+        1/0  # raises an error
+        return "<p>Hello, World!</p>"
     @app.route("/auth")
     def auth(): return render_template("auth.html")
 

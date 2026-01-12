@@ -13,9 +13,16 @@
 </head>
 <body>
   <div class="topbar">
-    <h1 id="group-name-header">Shared BMCs</h1>
-    <button class="AI-button" onclick="toggleChat()">AI</button>
-  </div>
+      <div style="display:flex; align-items:center; gap:15px;">
+          <a href="/my-groups" class="button button-outline">&larr; Back</a>
+          <h1 id="group-name-header" style="margin:0; font-size:1.2rem;">Shared BMCs</h1>
+      </div>
+      
+      <div class="topbar-right">
+          <button class="button button-primary" onclick="toggleChat()">AI Chat</button>
+          <button id="logout-btn" class="button button-outline">Sign out</button>
+      </div>
+    </div>
   
   <div id="sidebar" class="sidebar">
     <button id="sidebar-toggle" class="sidebar-toggle" onclick="toggleSidebar()">&#9776;</button>
@@ -25,7 +32,6 @@
         <li data-auth="user"><a href="/my-bmcs">My BMCs</a></li>
         <li data-auth="user"><a href="/my-groups">My Groups</a></li>
         <li data-auth="user"><a href="/profile">Profile</a></li>
-        <li data-auth="user"><button id="logout-btn" class="linklike">Sign out</button></li>
         
         <li class="submenu">
             <a href="#building-blocks" onclick="toggleBuildingBlocks()">Building Blocks<span id="building-blocks-arrow" class="arrow">&#x25B6;</span></a>
@@ -98,8 +104,6 @@
 
 
       <section id="group-bmc-editor" style="width: 100%; display: none;">
-        
-        <button class="back-button" onclick="window.location.search=''">&#8249;</button>
 
         <div class="business-idea">
           <label for="product-idea">Product Idea: </label>
