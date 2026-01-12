@@ -5,12 +5,23 @@ import logging
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 
+# --- DEBUGGING START ---
+dsn = os.getenv("SENTRY_DSN")
+
+# Prüfen, ob die Variable überhaupt da ist
+if not dsn:
+    print("❌ CRITICAL: SENTRY_DSN environment variable is NOT SET or EMPTY!")
+else:
+    print(f"✅ SENTRY_DSN found: {dsn[:10]}...") # Zeigt die ersten 10 Zeichen
+
 sentry_sdk.init(
-    dsn= os.getenv("SENTRY_DSN"),
+    dsn=dsn,
     integrations=[FlaskIntegration()],
-    traces_sample_rate=1.0, # Für Tests 100% aufzeichnen
+    traces_sample_rate=1.0,
     profiles_sample_rate=1.0,
+    debug=True  # <--- WICHTIG: Das zeigt uns im Render-Log, was Sentry tut
 )
+# --- DEBUGGING END ---
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
