@@ -1,19 +1,25 @@
 # proyecto-cc-michael-maurer
 Proyecto Cloud Computing de Michael Maurer
 
-Este repositorio recoge el avance de un proyecto de despliegue de una aplicación web para diseñar y colaborar sobre Business Model Canvas (BMC). La solución actual parte de una tesis de grado que diseñó y probó un prototipo con IA para ayudar a crear Business Model Canvas. El prototipo tiene explicaciones y ejemplos contextuales, el Value Proposition Canvas y funciones de apoyo durante el proceso para mejorar ideas y comprensión. También incluye exportación del BMC y notas para guardar avances. 
+Este repositorio recoge el avance de un proyecto de despliegue de una aplicación web para diseñar y colaborar sobre Business Model Canvas (BMC). La solución actual parte de una tesis de grado que diseñó y probó un prototipo con IA para ayudar a crear Business Model Canvas. El prototipo tiene explicaciones y ejemplos contextuales, el Value Proposition Canvas y funciones de apoyo durante el proceso para mejorar ideas y comprensión. También incluye exportación del BMC y notas para guardar avances.
 
-### Estado actual (Hito 4)
+### Estado actual (Hito 5)
 
-La aplicación ha sido completamente **contenerizada**. Ahora utiliza una arquitectura de microservicios orquestada con Docker Compose.
+La aplicación ha sido completamente **desplegada en la nube**. Ahora utiliza una arquitectura de microservicios productiva alojada en **Render**.
 
-* **Infraestructura:** 5 Contenedores orquestados con Docker Compose (Frontend, User, Group, BMC, PostgreSQL).
-* **CI/CD:** Las imágenes Docker se construyen y publican automáticamente en GitHub Packages.
-* **Limitaciones actuales:**
-    * Aunque el contenedor de base de datos está activo, la aplicación aún guarda los datos en memoria (RAM).
-    * El módulo de Grupos está en desarrollo (WIP): la invitación de miembros está pendiente de conexión con la base de datos.
-      
-### Cómo ejecutar el proyecto (Docker)
+* **Infraestructura:** Despliegue automatizado mediante Infrastructure as Code (IaC) con `render.yaml`.
+* **Persistencia:** Base de datos PostgreSQL gestionada para usuarios, grupos y BMCs (ya no se usa memoria RAM).
+* **CI/CD:**
+    * Tests automáticos en cada Push (GitHub Actions).
+    * Despliegue continuo (CD) a Render tras pasar los tests.
+* **Observabilidad:**
+    * Monitorización de errores con **Sentry**.
+    * Monitorización de disponibilidad con **UptimeRobot**.
+    * Pruebas de carga realizadas con **Locust**.
+
+> **URL del despliegue:** [https://aibmc-frontend.onrender.com](https://aibmc-frontend.onrender.com/)
+
+### Cómo ejecutar el proyecto (Local con Docker)
 
 1.  **Requisitos:** Tener Docker y Docker Compose instalados.
 2.  **Configuración:** Crea un archivo `.env` en la raíz (basado en `env.example`) con tu API Key de OpenAI.
@@ -32,25 +38,19 @@ Para probar que el clúster levanta correctamente:
 
 # En Windows PowerShell
 .\tests\test_cluster.ps1
-```
 
 ### Plan para el semestre
-
-- Despliegue en la nube con base de datos.
-Los BMC deben estar almacenados en la nube y ser accesibles desde distintos usuarios y dispositivos vía web. Ahora mismo los BMC están solo en la caché del navegador o en un fichero JSON compartible.
-- Gestión de usuarios con registro e inicio de sesión.
-Añadir registro, login y logout. Cada usuario podrá crear, ver, editar y borrar sus BMC en la nube, unirse a grupos y salir de ellos, y ver o editar BMC del grupo según permisos.
-- Creación de equipos con acceso compartido a un mismo BMC.
-Crear/borrar grupos, gestionar miembros, y almacenar BMC de grupo accesibles para todos los miembros con permisos definidos.
+[x] Despliegue en la nube con base de datos (Hito 5).
+[x] Gestión de usuarios con registro e inicio de sesión (Hito 4/5).
+[x] Creación de equipos con acceso compartido a un mismo BMC (Hito 4/5).
 
 ### Funciones a añadir (resumen)
 
-- Usuarios y seguridad: registro, login, recuperación de contraseña, roles básicos (usuario, admin), API rate limit.
-- BMC en la nube: Almacenamiento de BMC en la nube, accesible de varios dispositivos.
-- Grupos y colaboración: crear grupos, invitar y expulsar miembros, permisos de lectura y edición.
-- Plantillas: cambiar entre plantillas (BMC, Lean Canvas, plantilla personalizada).
-- Infraestructura: CI con GitHub Actions, tests con pytest, mocks de API, y futura integración con base de datos gestionada.
-- Admin: panel simple para ver/gestionar usuarios, grupos.
+- Usuarios y seguridad: Registro, login (JWT), almacenamiento seguro de contraseñas.
+- BMC en la nube: Creación, edición y borrado de BMCs persistentes en base de datos.
+- Microservicios: Arquitectura separada para Frontend, User-Service, Group-Service y BMC-Service.
+- Infraestructura: CI/CD con GitHub Actions, tests de integración, despliegue en PaaS (Render).
+- Monitorización: Alertas de caída y trazas de errores en tiempo real.
 
 ### Enlaces
 - [Licencia](LICENSE)
@@ -58,3 +58,4 @@ Crear/borrar grupos, gestionar miembros, y almacenar BMC de grupo accesibles par
 - [Hito 2](docs/hito2.md)
 - [Hito 3](docs/hito3.md)
 - [Hito 4](docs/hito4.md)
+- [Hito 5](docs/hito5.md)
