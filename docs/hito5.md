@@ -11,24 +11,24 @@ Para el despliegue productivo de la aplicación AI Business Model Canvas, se ha 
 * **Base de datos gestionada:** Provee una instancia de PostgreSQL gestionada, lo cual es más robusto que el archivo SQLite utilizado en el entorno de desarrollo.
 
 ---
-
 ## 2. Configuración de la Infraestructura (IaC)
 
-La infraestructura se ha definido en el archivo `render.yaml` situado en la raíz del repositorio.
+La infraestructura se ha definido en el archivo `render.yaml` situado en la raíz del repositorio, orquestando una arquitectura de **microservicios**.
 
 ### Descripción del archivo `render.yaml`
-El archivo define dos servicios principales que se despliegan conjuntamente:
+El archivo define la orquestación de **4 servicios web y 2 bases de datos** que se comunican a través de la red privada de Render:
 
-1.  **Servicio Web (`web`):**
-    * **Entorno:** Python 3.10.
-    * **Comando de arranque:** `gunicorn app:app`. Se utiliza Gunicorn como servidor WSGI de producción en lugar del servidor de desarrollo de Flask.
-    * **Variables de entorno:** Se inyectan automáticamente las credenciales de la base de datos (`DATABASE_URL`) y otras claves secretas definidas en el dashboard de Render.
-    
+1.  **Servicios Web:**
+    * **Frontend:** Sirve la interfaz de usuario (Flask + Jinja2) y actúa como Gateway.
+    * **User Service:** Gestiona autenticación y usuarios.
+    * **Group Service:** Gestiona la lógica de grupos.
+    * **BMC Service:** Gestiona la lógica de negocio del canvas e integración con IA.
+    * **Configuración:** Todos utilizan Docker y se inician mediante Gunicorn (`gunicorn --bind 0.0.0.0:$PORT ...`). 
 2.  **Base de Datos (`postgres`):**
     * Motor: PostgreSQL.
     * Persistencia: Almacenamiento persistente en disco para asegurar que los datos de usuarios y BMCs no se pierdan entre reinicios.
 
-**Enlace al código:** [`render.yaml`](./render.yaml)
+**Enlace al código:** [`render.yaml`](../render.yaml)
 
 ---
 
