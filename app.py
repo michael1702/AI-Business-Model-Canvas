@@ -142,9 +142,9 @@ def create_app():
         return proxy_request(BMC_SERVICE_URL, f"api/v1/vpc/{subpath}")
 
     # 4.3. Proxy for Chat (Exact Match)
-    @app.route('/api/v1/chat_with_gpt5', methods=['POST'])
+    @app.route('/api/v1/chat_with_gpt', methods=['POST'])
     def chat_gpt5_proxy():
-        return proxy_request(BMC_SERVICE_URL, "api/v1/chat_with_gpt5")
+        return proxy_request(BMC_SERVICE_URL, "api/v1/chat_with_gpt")
 
     # --- ROUTES (UI ONLY) ---
     @app.route("/")

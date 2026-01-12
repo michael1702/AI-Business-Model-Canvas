@@ -8,7 +8,7 @@ def health(): return jsonify({"status":"ok"})
 
 
 # Ruta: Chat con GPT
-@api.post("/chat_with_gpt5")
+@api.post("/chat_with_gpt")
 def chat_with_gpt5():
     messages = request.json["messages"]
     new_message = request.json["new_message"]

@@ -84,7 +84,7 @@ window.sendMessage = async function(event) {
             contextData = getCanvasData();
         }
 
-        const res = await fetch('/api/v1/ai/chat_with_gpt5', {
+        const res = await fetch('/api/v1/chat_with_gpt', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
