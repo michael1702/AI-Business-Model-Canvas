@@ -32,15 +32,20 @@ function Test-Endpoint ($url, $name) {
 
 # Tests ausführen
 $frontendOk = Test-Endpoint "http://localhost:8888/" "Frontend"
-$apiOk = Test-Endpoint "http://localhost:5001/api/v1/health" "BMC Service API"
+$bmcOk      = Test-Endpoint "http://localhost:5001/api/v1/health" "BMC Service API"
+
+# NEU: User & Group Service hinzufügen (Ports in compose.yml prüfen!)
+$userOk     = Test-Endpoint "http://localhost:5002/api/v1/health" "User Service API"
+$groupOk    = Test-Endpoint "http://localhost:5003/api/v1/health" "Group Service API"
 
 # Ergebnis prüfen und aufräumen
-if ($frontendOk -and $apiOk) {
-    Write-Host "Cluster-Test erfolgreich!" -ForegroundColor Green
+# WICHTIG: Alle neuen Variablen hier mit verknüpfen (-and)
+if ($frontendOk -and $bmcOk -and $userOk -and $groupOk) {
+    Write-Host "Cluster-Test erfolgreich! Alle Services sind online." -ForegroundColor Green
     docker compose down
     exit 0
 } else {
-    Write-Host "Tests fehlgeschlagen. Logs werden abgerufen..." -ForegroundColor Yellow
+    Write-Host "Cluster-Test FEHLGESCHLAGEN!" -ForegroundColor Red
     docker compose logs
     docker compose down
     exit 1
