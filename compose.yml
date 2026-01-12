@@ -48,7 +48,7 @@ services:
       dockerfile: bmc_service/Dockerfile
     container_name: aibmc-bmc-service
     ports:
-      - "5001:5001"
+      - "5001:10000"
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - FLASK_ENV=production
@@ -63,7 +63,7 @@ services:
       dockerfile: user_service/Dockerfile
     container_name: aibmc-user-service
     ports:
-      - "5002:5002"
+      - "5002:10000"
     environment:
       - JWT_SECRET=${JWT_SECRET:-super-secret-key}
       - DATABASE_URL=postgresql://${DB_USER:-admin}:${DB_PASSWORD:-secret}@user-db:5432/user_db
@@ -80,7 +80,7 @@ services:
       dockerfile: group_service/Dockerfile
     container_name: aibmc-group-service
     ports:
-      - "5003:5003"
+      - "5003:10000"
     environment:
       - JWT_SECRET=${JWT_SECRET:-super-secret-key}
       - DATABASE_URL=postgresql://${DB_USER:-admin}:${DB_PASSWORD:-secret}@group-db:5432/group_db
