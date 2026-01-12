@@ -771,7 +771,8 @@ a:visited:hover{
   display: flex;
   align-items: center;
   gap: 15px;
-  padding-left: 50 px;
+  padding-left: 5%;
+  padding-right: 2%;
 }
 .topbar a {
   color: white;
