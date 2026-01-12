@@ -16,7 +16,7 @@ Para el despliegue productivo de la aplicación AI Business Model Canvas, se ha 
 La infraestructura se ha definido en el archivo `render.yaml` situado en la raíz del repositorio, orquestando una arquitectura de **microservicios**.
 
 ### Descripción del archivo `render.yaml`
-El archivo define la orquestación de **4 servicios web y 2 bases de datos** que se comunican a través de la red privada de Render:
+El archivo define la orquestación de **4 servicios web y una base de datos** que se comunican a través de la red privada de Render:
 
 1.  **Servicios Web:**
     * **Frontend:** Sirve la interfaz de usuario (Flask + Jinja2) y actúa como Gateway.
