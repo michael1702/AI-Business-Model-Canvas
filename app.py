@@ -18,8 +18,7 @@ sentry_sdk.init(
     dsn=dsn,
     integrations=[FlaskIntegration()],
     traces_sample_rate=1.0,
-    profiles_sample_rate=1.0,
-    debug=True  # <--- WICHTIG: Das zeigt uns im Render-Log, was Sentry tut
+    profiles_sample_rate=1.0
 )
 # --- DEBUGGING END ---
 # Configure logging
@@ -37,23 +36,34 @@ def create_app():
                 template_folder="frontend/templates")
 
     app.config["JWT_SECRET"] = os.getenv("JWT_SECRET", "change-me-in-prod")
-    
-    def build_service_url(env_var_name, default_host):
-            host = os.getenv(env_var_name, default_host)
+    def get_service_url(url_env, host_env, default_host):
+        # 1. Priorität: Volle URL aus Env (für Docker Compose / Localhost)
+        # Wenn wir z.B. USER_SERVICE_URL="http://user-service:5002" setzen, wird das genommen.
+        direct_url = os.getenv(url_env)
+        if direct_url:
+            return direct_url.rstrip("/")
             
-            # 1. Check: Ist es bereits eine volle URL (z.B. Public Render URL)?
-            if host.startswith("http"):
-                # Wenn am Ende ein Slash ist, weg damit
-                return host.rstrip("/")
-                
-            # 2. Fallback: Es ist nur ein Hostname (z.B. "user-service" oder "localhost")
-            # Dann bauen wir die interne URL mit Port 10000
-            return f"http://{host}:10000"
+        # 2. Priorität: Hostname Construction (für Render)
+        # Render setzt oft nur den Host, wir hängen den Standard-Port 10000 an.
+        host = os.getenv(host_env, default_host)
+        
+        # Falls der Host schon http enthält (Render interne URLs), nehmen wir ihn
+        if host.startswith("http"):
+            return host.rstrip("/")
+            
+        # Sonst bauen wir die Render-Standard-URL
+        return f"http://{host}:10000"
 
+    # Services konfigurieren
+    # Wir lesen jetzt ZUERST die _URL Variable, dann erst _HOST
+    USER_SERVICE_URL = get_service_url("USER_SERVICE_URL", "USER_SERVICE_HOST", "localhost")
+    GROUP_SERVICE_URL = get_service_url("GROUP_SERVICE_URL", "GROUP_SERVICE_HOST", "localhost")
+    BMC_SERVICE_URL = get_service_url("BMC_SERVICE_URL", "BMC_SERVICE_HOST", "localhost")
     
-    USER_SERVICE_URL = build_service_url("USER_SERVICE_HOST", "localhost")
-    GROUP_SERVICE_URL = build_service_url("GROUP_SERVICE_HOST", "localhost")
-    BMC_SERVICE_URL = build_service_url("BMC_SERVICE_HOST", "localhost")
+    # Debug-Ausgabe beim Start (damit du siehst, wohin es geht)
+    logger.info(f"🔗 User Service: {USER_SERVICE_URL}")
+    logger.info(f"🔗 Group Service: {GROUP_SERVICE_URL}")
+    logger.info(f"🔗 BMC Service:  {BMC_SERVICE_URL}")
 
 # --- HELPER: Proxy Function ---
     def proxy_request(service_url, subpath):

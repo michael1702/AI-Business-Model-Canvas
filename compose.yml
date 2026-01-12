@@ -1,17 +1,15 @@
 name: ai-business-model-canvas
 
 services:
-  # 1. Database Container (PostgreSQL)
-  # Fulfills the requirement: "cluster of three containers including one exclusively for data"
-# --- DATABASE FOR USER SERVICE ---
+  # --- DATENBANKEN ---
   user-db:
     image: postgres:15-alpine
     container_name: aibmc-user-db
     restart: always
     environment:
-      POSTGRES_USER: ${DB_USER:-admin}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
-      POSTGRES_DB: user_db  # Specific DB name
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: user_db
     volumes:
       - user_postgres_data:/var/lib/postgresql/data
     networks:
@@ -22,15 +20,14 @@ services:
       timeout: 5s
       retries: 5
 
-  # --- DATABASE FOR GROUP SERVICE ---
   group-db:
     image: postgres:15-alpine
     container_name: aibmc-group-db
     restart: always
     environment:
-      POSTGRES_USER: ${DB_USER:-admin}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
-      POSTGRES_DB: group_db # Specific DB name
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: group_db
     volumes:
       - group_postgres_data:/var/lib/postgresql/data
     networks:
@@ -41,76 +38,75 @@ services:
       timeout: 5s
       retries: 5
 
-  # 2. BMC Service (AI Logic)
+  # --- MICROSERVICES (Lokal auf 5001-5003) ---
+  
   bmc-service:
     build:
       context: .
       dockerfile: bmc_service/Dockerfile
     container_name: aibmc-bmc-service
     ports:
-      - "5001:10000"
+      - "5001:5001" # Mapping 5001 -> 5001
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - FLASK_ENV=production
-      - PORT=10000
+      - PORT=5001   # WICHTIG: Damit der Container intern auf 5001 hört
     networks:
       - aibmc-network
 
-
-  # 3. User Service (Authentication & User Data)
   user-service:
     build:
       context: .
       dockerfile: user_service/Dockerfile
     container_name: aibmc-user-service
     ports:
-      - "5002:10000"
+      - "5002:5002" 
     environment:
-      - JWT_SECRET=${JWT_SECRET:-super-secret-key}
-      - DATABASE_URL=postgresql://${DB_USER:-admin}:${DB_PASSWORD:-secret}@user-db:5432/user_db
-      - PORT=10000
+      - JWT_SECRET=super-secret-key
+      - DATABASE_URL=postgresql://admin:secret@user-db:5432/user_db
+      - PORT=5002   # WICHTIG
     depends_on:
       user-db:
         condition: service_healthy
     networks:
       - aibmc-network
 
-  # 4. Group Service (Group Management & Shared BMCs)
   group-service:
     build:
       context: .
       dockerfile: group_service/Dockerfile
     container_name: aibmc-group-service
     ports:
-      - "5003:10000"
+      - "5003:5003"
     environment:
-      - JWT_SECRET=${JWT_SECRET:-super-secret-key}
-      - DATABASE_URL=postgresql://${DB_USER:-admin}:${DB_PASSWORD:-secret}@group-db:5432/group_db
-      # In a real microservice scenario, group service might need to call user service:
-      - USER_SERVICE_URL=http://user-service:10000
-      - PORT=10000
+      - JWT_SECRET=super-secret-key
+      - DATABASE_URL=postgresql://admin:secret@group-db:5432/group_db
+      - USER_SERVICE_URL=http://user-service:5002 # Explizite URL
+      - PORT=5003   # WICHTIG
     depends_on:
       group-db:
         condition: service_healthy
     networks:
       - aibmc-network
 
-  # 5. Frontend / Main Application
-  # Acts as the gateway/UI server
+  # --- FRONTEND ---
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile  # The root Dockerfile
+      dockerfile: Dockerfile
     container_name: aibmc-frontend
     ports:
       - "8888:8888"
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - JWT_SECRET=${JWT_SECRET:-super-secret-key}
-      # Configuration to let the frontend know where the backend services are (if refactoring to HTTP calls)
-      - BMC_SERVICE_URL=http://bmc-service:10000
-      - USER_SERVICE_URL=http://user-service:10000
-      - GROUP_SERVICE_URL=http://group-service:10000
+      - JWT_SECRET=super-secret-key
+      - PORT=8888
+      # HIER TRICK: Wir übergeben die vollen URLs.
+      # app.py nutzt diese nun bevorzugt und ignoriert die Render-Logik.
+      - BMC_SERVICE_URL=http://bmc-service:5001
+      - USER_SERVICE_URL=http://user-service:5002
+      - GROUP_SERVICE_URL=http://group-service:5003
+      - SENTRY_DSN=${SENTRY_DSN}
     depends_on:
       - bmc-service
       - user-service
@@ -118,12 +114,10 @@ services:
     networks:
       - aibmc-network
 
-# Define persistent storage for the database
 volumes:
   user_postgres_data:
   group_postgres_data:
 
-# Define a private network for the containers to communicate
 networks:
   aibmc-network:
     driver: bridge
