@@ -37,20 +37,23 @@ El archivo define dos servicios principales que se despliegan conjuntamente:
 Para garantizar la operación continua y detectar incidencias proactivamente, se han implementado herramientas de observabilidad en dos niveles: interno (aplicación) y externo (disponibilidad).
 
 ### 3.1. Monitorización de Errores y Rendimiento (Sentry)
-Se ha integrado Sentry en la aplicación Flask (`app.py`).
+Se ha integrado **Sentry** en la aplicación Flask (`app.py`) para capturar excepciones y métricas de rendimiento en tiempo real.
 
-* **Funcionalidad:** Captura excepciones no controladas (Errores 500) y monitoriza el rendimiento de las transacciones HTTP.
-* **Beneficio:** Permite ver la traza completa del error (Stack Trace) y las variables locales en el momento del fallo, facilitando una corrección rápida.
+* **Validación de la integración:** Para verificar el correcto funcionamiento del sistema de alertas, se implementó una ruta de prueba temporal (`/testerror`) diseñada para provocar un fallo intencionado (una división por cero).
+* **Resultado:** Como se observa en la captura de pantalla, Sentry detectó inmediatamente la excepción `ZeroDivisionError`, proporcionando la traza completa (Stack Trace) y el contexto de la petición, lo que demuestra la capacidad de la aplicación para reportar incidencias críticas automáticamente.
 
-*(Insertar aquí: Captura de pantalla del Dashboard de Sentry mostrando una incidencia o la lista de transacciones)*
+<img width="1281" height="901" alt="image" src="https://github.com/user-attachments/assets/792852cd-6706-488f-a898-f28ecbb8eca5" />
 
+Adicionalmente, Sentry monitoriza la latencia de las peticiones HTTP (Performance Monitoring), permitiendo identificar cuellos de botella en los endpoints de la API.
+
+*(Opcional: Insertar aquí una captura del tab "Performance" de Sentry)*
 ### 3.2. Monitorización de Disponibilidad (UptimeRobot)
 Se utiliza UptimeRobot como monitor sintético externo.
 
 * **Configuración:** Realiza una petición HTTP `GET` cada 5 minutos al endpoint principal de la aplicación.
 * **Alerta:** En caso de que la respuesta no sea `200 OK` (por ejemplo, caída del servidor o error 503), se envía una notificación inmediata por correo electrónico.
 
-*(Insertar aquí: Captura de pantalla de UptimeRobot mostrando el estado "Up" y el historial de respuesta)*
+<img width="1872" height="950" alt="image" src="https://github.com/user-attachments/assets/64509e73-7056-490a-9e34-ae1c732bd30e" />
 
 ---
 
@@ -65,9 +68,17 @@ El script de prueba simula un comportamiento realista de usuario:
 
 ### Ejecución y Resultados
 * **Configuración:** 50 usuarios concurrentes con una tasa de crecimiento (spawn rate) de 5 usuarios/segundo.
-* **Resultado:** La aplicación desplegada en Render respondió correctamente a todas las peticiones sin errores de servidor (5xx) y manteniendo tiempos de respuesta estables.
+* **Resultado:** La aplicación desplegada **en el entorno local** respondió correctamente a todas las peticiones sin errores de servidor (5xx) y manteniendo tiempos de respuesta estables.
 
-*(Insertar aquí: Captura de pantalla de los gráficos de Locust mostrando "Requests per Second" y "Response Times")*
+**Nota sobre el entorno de pruebas:** Las pruebas de estrés se realizaron contra el despliegue local (Docker Compose) en lugar de la versión en la nube. Esto se debe a que la capa de seguridad de Render (Cloudflare) bloquea automáticamente el tráfico automatizado de alta frecuencia (Error 429), interpretándolo como un ataque DDoS.
+
+<img width="916" height="66" alt="image" src="https://github.com/user-attachments/assets/670915f9-f37c-41b6-b781-92d031dc15c6" />
+Al probar localmente, podemos medir el rendimiento real de los microservicios sin la limitación del WAF externo.
+
+<img width="1649" height="557" alt="image" src="https://github.com/user-attachments/assets/cd4a2a98-553f-4d71-ae44-fbb9ff94946d" />
+
+<img width="1514" height="904" alt="image" src="https://github.com/user-attachments/assets/ecb765c7-3614-4ab7-a4dc-8a65c3b50748" />
+
 
 ---
 
