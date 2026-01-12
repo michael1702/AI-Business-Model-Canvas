@@ -38,7 +38,7 @@ Para probar que el clúster levanta correctamente:
 
 # En Windows PowerShell
 .\tests\test_cluster.ps1
-
+```
 ### Plan para el semestre
 [x] Despliegue en la nube con base de datos (Hito 5).
 [x] Gestión de usuarios con registro e inicio de sesión (Hito 4/5).
