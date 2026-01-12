@@ -1,4 +1,6 @@
 #!/bin/bash
+export OPENAI_API_KEY="sk-dummy-key-for-testing"
+export JWT_SECRET="test-secret"
 set -e
 
 echo "🚀 Start Container-Cluster..."
